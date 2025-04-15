@@ -62,7 +62,7 @@
         .login-title {
             font-size: 28px;
             margin-bottom: 30px;
-            color: #333;
+            color: var(--light-text);
         }
 
         .input-group {
@@ -88,6 +88,7 @@
 
         .input-field:focus {
             border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
         }
 
         .btn {
@@ -144,7 +145,7 @@
         }
 
         .modal-content {
-            background-color: white;
+            background-color: var(--light-component);
             border-radius: var(--border-radius);
             padding: 30px;
             width: 90%;
@@ -162,8 +163,12 @@
         .modal-title {
             font-size: 22px;
             margin-bottom: 20px;
-            color: #333;
+            color: var(--light-text);
             text-align: center;
+        }
+
+        .dark-mode .modal-title {
+            color: var(--dark-text);
         }
 
         .modal-footer {
@@ -223,7 +228,7 @@
         }
 
         .dark-mode .icon-btn {
-            color: #ccc;
+            color: var(--dark-text);
         }
 
         .icon-btn:hover {
@@ -270,7 +275,7 @@
             padding: 10px;
             border-bottom: 1px solid #eee;
             font-size: 14px;
-            color: #333;
+            color: var(--light-text);
             cursor: pointer;
         }
 
@@ -280,7 +285,7 @@
         }
 
         .dark-mode .notification-item {
-            color: #ccc;
+            color: var(--dark-text);
             border-bottom-color: #444;
         }
 
@@ -301,7 +306,7 @@
             box-shadow: var(--box-shadow);
             padding: 15px;
             font-size: 14px;
-            color: #333;
+            color: var(--light-text);
             max-width: 300px;
             z-index: 1000;
             opacity: 0;
@@ -352,6 +357,11 @@
             padding: 20px;
             box-shadow: var(--box-shadow);
             text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
         }
 
         .dark-mode .stat-card {
@@ -379,6 +389,7 @@
             border-radius: var(--border-radius);
             padding: 20px;
             box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
         }
 
         .dark-mode .todo-section {
@@ -389,13 +400,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .todo-header h2 {
-            color: #000;
             font-size: 24px;
             font-weight: 700;
+            color: #000; /* Black in light mode */
         }
 
         .dark-mode .todo-header h2 {
@@ -408,7 +419,15 @@
         }
 
         .filters-container {
+            background-color: var(--light-component);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            box-shadow: var(--box-shadow);
             margin-bottom: 20px;
+        }
+
+        .dark-mode .filters-container {
+            background-color: var(--dark-component);
         }
 
         .filters-grid {
@@ -419,7 +438,7 @@
         }
 
         .filter-group {
-            margin-bottom: 10px;
+            position: relative;
         }
 
         .filter-label {
@@ -435,15 +454,16 @@
 
         .filter-select, .filter-date {
             width: 100%;
-            padding: 8px 10px;
+            padding: 10px;
             border-radius: var(--border-radius);
             border: 1px solid #ddd;
             background-color: white;
+            font-size: 14px;
         }
 
         .dark-mode .filter-select, .dark-mode .filter-date {
             background-color: #444;
-            color: white;
+            color: var(--dark-text);
             border-color: #555;
         }
 
@@ -454,7 +474,14 @@
         }
 
         .tasks-container {
-            margin-top: 20px;
+            background-color: var(--light-component);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .dark-mode .tasks-container {
+            background-color: var(--dark-component);
         }
 
         .graph-container {
@@ -463,6 +490,14 @@
             gap: 20px;
             flex-wrap: wrap;
             justify-content: space-between;
+            background-color: var(--light-component);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .dark-mode .graph-container {
+            background-color: var(--dark-component);
         }
 
         .graph-item {
@@ -489,7 +524,7 @@
             padding: 15px;
             border-radius: var(--border-radius);
             margin-bottom: 10px;
-            background-color: #fff;
+            background-color: var(--light-component);
             box-shadow: var(--box-shadow);
         }
 
@@ -502,7 +537,7 @@
         }
 
         .task-item.pending {
-            background-color: #fff;
+            background-color: var(--light-component);
         }
 
         .dark-mode .task-item.pending {
@@ -516,6 +551,11 @@
         .task-title {
             font-weight: 500;
             margin-bottom: 5px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .task-title {
+            color: var(--dark-text);
         }
 
         .task-details {
@@ -612,7 +652,7 @@
             top: 100%;
             left: 0;
             z-index: 10;
-            background-color: white;
+            background-color: var(--light-component);
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             width: 300px;
@@ -622,6 +662,7 @@
 
         .dark-mode .calendar-dropdown {
             background-color: var(--dark-component);
+            color: var(--dark-text);
         }
 
         .calendar-header {
@@ -640,6 +681,10 @@
             justify-content: center;
             align-items: center;
             border-radius: 50%;
+        }
+
+        .calendar-nav:hover {
+            background-color: rgba(0, 0, 0, 0.1);
         }
 
         .calendar-day {
@@ -686,7 +731,7 @@
 <body>
     <!-- Login Page -->
     <div class="login-container" id="loginContainer">
-        <h1 class="login-title">Welcome to Todo App</h1>
+        <h1 class="login-title">Welcome to To-Do App</h1>
         <div class="input-group">
             <label for="email">Email</label>
             <input type="email" id="email" class="input-field" placeholder="Enter your email">
@@ -712,32 +757,8 @@
                 <input type="email" id="regEmail" class="input-field" placeholder="Enter your email">
             </div>
             <div class="input-group">
-                <label for="regEmailConfirm">Confirm Email</label>
-                <input type="email" id="regEmailConfirm" class="input-field" placeholder="Confirm your email">
-            </div>
-            <div class="input-group">
                 <label for="regPassword">Password</label>
                 <input type="password" id="regPassword" class="input-field" placeholder="Enter your password">
-            </div>
-            <div class="input-group">
-                <label for="regPasswordConfirm">Confirm Password</label>
-                <input type="password" id="regPasswordConfirm" class="input-field" placeholder="Confirm your password">
-            </div>
-            <div class="input-group">
-                <label for="regCountry">Country</label>
-                <select id="regCountry" class="input-field">
-                    <option value="">Select your country</option>
-                    <option value="USA">United States</option>
-                    <option value="UK">United Kingdom</option>
-                    <option value="CA">Canada</option>
-                    <option value="AU">Australia</option>
-                    <option value="DE">Germany</option>
-                    <option value="FR">France</option>
-                    <option value="JP">Japan</option>
-                    <option value="IN">India</option>
-                    <option value="BR">Brazil</option>
-                    <option value="ZA">South Africa</option>
-                </select>
             </div>
             <div class="modal-footer">
                 <button class="btn" id="cancelRegisterBtn">Cancel</button>
@@ -755,11 +776,11 @@
                 <input type="text" id="taskTitle" class="input-field" placeholder="Enter task title">
             </div>
             <div class="input-group">
-                <label for="taskDetails">Add More Details</label>
+                <label for="taskDetails">Details</label>
                 <textarea id="taskDetails" class="input-field" rows="4" placeholder="Enter task details"></textarea>
             </div>
             <div class="input-group">
-                <label for="taskCategory">Task Category</label>
+                <label for="taskCategory">Category</label>
                 <select id="taskCategory" class="input-field">
                     <option value="">Select category</option>
                     <option value="Work">Work</option>
@@ -783,9 +804,9 @@
                 <input type="text" id="taskDueDate" class="input-field" placeholder="yyyy-mm-dd">
                 <div class="calendar-dropdown" id="calendarDropdown">
                     <div class="calendar-header">
-                        <span class="calendar-nav" id="prevMonth"><</span>
-                        <span id="currentMonth">August 2023</span>
-                        <span class="calendar-nav" id="nextMonth">></span>
+                        <span class="calendar-nav" id="prevMonth">&lt;</span>
+                        <span id="currentMonth"></span>
+                        <span class="calendar-nav" id="nextMonth">&gt;</span>
                     </div>
                     <div class="calendar-grid" id="calendarGrid"></div>
                 </div>
@@ -806,11 +827,11 @@
                 <input type="text" id="editTaskTitle" class="input-field" placeholder="Enter task title">
             </div>
             <div class="input-group">
-                <label for="editTaskDetails">Add More Details</label>
+                <label for="editTaskDetails">Details</label>
                 <textarea id="editTaskDetails" class="input-field" rows="4" placeholder="Enter task details"></textarea>
             </div>
             <div class="input-group">
-                <label for="editTaskCategory">Task Category</label>
+                <label for="editTaskCategory">Category</label>
                 <select id="editTaskCategory" class="input-field">
                     <option value="">Select category</option>
                     <option value="Work">Work</option>
@@ -834,9 +855,9 @@
                 <input type="text" id="editTaskDueDate" class="input-field" placeholder="yyyy-mm-dd">
                 <div class="calendar-dropdown" id="editCalendarDropdown">
                     <div class="calendar-header">
-                        <span class="calendar-nav" id="editPrevMonth"><</span>
-                        <span id="editCurrentMonth">August 2023</span>
-                        <span class="calendar-nav" id="editNextMonth">></span>
+                        <span class="calendar-nav" id="editPrevMonth">&lt;</span>
+                        <span id="editCurrentMonth"></span>
+                        <span class="calendar-nav" id="editNextMonth">&gt;</span>
                     </div>
                     <div class="calendar-grid" id="editCalendarGrid"></div>
                 </div>
@@ -869,9 +890,9 @@
                 <input type="text" id="customStartDate" class="input-field" placeholder="yyyy-mm-dd">
                 <div class="calendar-dropdown" id="startCalendarDropdown">
                     <div class="calendar-header">
-                        <span class="calendar-nav" id="startPrevMonth"><</span>
-                        <span id="startCurrentMonth">August 2023</span>
-                        <span class="calendar-nav" id="startNextMonth">></span>
+                        <span class="calendar-nav" id="startPrevMonth">&lt;</span>
+                        <span id="startCurrentMonth"></span>
+                        <span class="calendar-nav" id="startNextMonth">&gt;</span>
                     </div>
                     <div class="calendar-grid" id="startCalendarGrid"></div>
                 </div>
@@ -881,9 +902,9 @@
                 <input type="text" id="customEndDate" class="input-field" placeholder="yyyy-mm-dd">
                 <div class="calendar-dropdown" id="endCalendarDropdown">
                     <div class="calendar-header">
-                        <span class="calendar-nav" id="endPrevMonth"><</span>
-                        <span id="endCurrentMonth">August 2023</span>
-                        <span class="calendar-nav" id="endNextMonth">></span>
+                        <span class="calendar-nav" id="endPrevMonth">&lt;</span>
+                        <span id="endCurrentMonth"></span>
+                        <span class="calendar-nav" id="endNextMonth">&gt;</span>
                     </div>
                     <div class="calendar-grid" id="endCalendarGrid"></div>
                 </div>
@@ -968,7 +989,7 @@
                             </div>
                         </div>
                         <div class="filter-group">
-                            <label class="filter-label" for="categoryFilter">Categories</label>
+                            <label class="filter-label" for="categoryFilter">Category</label>
                             <select class="filter-select" id="categoryFilter">
                                 <option value="">All</option>
                                 <option value="Work">Work</option>
@@ -1067,8 +1088,8 @@
 
             // Task Data
             let tasks = [
-                { id: 1, title: "Complete Project", status: "Pending", category: "Work", priority: "High", dueDate: "2025-04-20" },
-                { id: 2, title: "Groceries", status: "Completed", category: "Shopping", priority: "Medium", dueDate: "2025-04-15" }
+                { id: 1, title: "Complete Project", details: "", status: "Pending", category: "Work", priority: "High", dueDate: "2025-04-20" },
+                { id: 2, title: "Buy Groceries", details: "", status: "Completed", category: "Shopping", priority: "Medium", dueDate: "2025-04-15" }
             ];
 
             // Notifications
@@ -1077,7 +1098,7 @@
             let customStart = null;
             let customEnd = null;
 
-            // Validate Date Format
+            // Validate Date Format (yyyy-mm-dd)
             function validateDateFormat(dateStr) {
                 const regex = /^\d{4}-\d{2}-\d{2}$/;
                 if (!regex.test(dateStr)) return false;
@@ -1091,9 +1112,7 @@
                 popup.className = 'notification-popup';
                 popup.textContent = message;
                 document.body.appendChild(popup);
-                setTimeout(() => {
-                    popup.remove();
-                }, 5000);
+                setTimeout(() => popup.remove(), 5000);
 
                 notifications.push({ id: notifications.length + 1, message, read: false });
                 renderNotifications();
@@ -1108,7 +1127,7 @@
 
             // Render Notifications
             function renderNotifications() {
-                notificationList.innerHTML = notifications.map(note => `
+                notificationList.innerHTML = notifications.slice().reverse().map(note => `
                     <div class="notification-item ${note.read ? '' : 'unread'}" data-id="${note.id}">
                         ${note.message}
                     </div>
@@ -1127,7 +1146,7 @@
                 });
             }
 
-            // Login Validation
+            // Login Handler
             loginBtn.addEventListener('click', function() {
                 const email = emailInput.value.trim();
                 const password = passwordInput.value.trim();
@@ -1147,34 +1166,31 @@
                 updateStats();
             });
 
-            // Event Listeners
-            registerLink.addEventListener('click', function() {
-                registerModal.style.display = 'flex';
-            });
-
-            cancelRegisterBtn.addEventListener('click', function() {
-                registerModal.style.display = 'none';
-            });
-
-            submitRegisterBtn.addEventListener('click', function() {
+            // Register Modal Handlers
+            registerLink.addEventListener('click', () => registerModal.style.display = 'flex');
+            cancelRegisterBtn.addEventListener('click', () => registerModal.style.display = 'none');
+            submitRegisterBtn.addEventListener('click', () => {
                 registerModal.style.display = 'none';
                 alert('Registration successful! Please login.');
             });
 
-            logoutBtn.addEventListener('click', function() {
+            // Logout Handler
+            logoutBtn.addEventListener('click', () => {
                 appContainer.style.display = 'none';
                 document.body.classList.remove('app-view');
                 loginContainer.style.display = 'block';
             });
 
-            themeToggleBtn.addEventListener('click', function() {
+            // Theme Toggle
+            themeToggleBtn.addEventListener('click', () => {
                 document.body.classList.toggle('dark-mode');
                 const icon = themeToggleBtn.querySelector('i');
                 icon.classList.toggle('fa-moon');
                 icon.classList.toggle('fa-sun');
             });
 
-            addTaskBtn.addEventListener('click', function() {
+            // Add Task Modal Handlers
+            addTaskBtn.addEventListener('click', () => {
                 addTaskModal.style.display = 'flex';
                 document.getElementById('taskTitle').value = '';
                 document.getElementById('taskDetails').value = '';
@@ -1183,11 +1199,9 @@
                 document.getElementById('taskDueDate').value = '';
             });
 
-            cancelTaskBtn.addEventListener('click', function() {
-                addTaskModal.style.display = 'none';
-            });
+            cancelTaskBtn.addEventListener('click', () => addTaskModal.style.display = 'none');
 
-            createTaskBtn.addEventListener('click', function() {
+            createTaskBtn.addEventListener('click', () => {
                 const title = document.getElementById('taskTitle').value.trim();
                 const details = document.getElementById('taskDetails').value.trim();
                 const category = document.getElementById('taskCategory').value;
@@ -1208,7 +1222,7 @@
                     id: tasks.length ? Math.max(...tasks.map(t => t.id)) + 1 : 1,
                     title,
                     details,
-                    status: "Pending",
+                    status: 'Pending',
                     category,
                     priority,
                     dueDate: dueDate || new Date().toISOString().split('T')[0]
@@ -1221,11 +1235,11 @@
                 updateStats();
             });
 
-            taskDueDate.addEventListener('click', function() {
+            taskDueDate.addEventListener('click', () => {
                 calendarDropdown.style.display = calendarDropdown.style.display === 'block' ? 'none' : 'block';
             });
 
-            taskDueDate.addEventListener('change', function() {
+            taskDueDate.addEventListener('change', () => {
                 const value = taskDueDate.value;
                 if (value && !validateDateFormat(value)) {
                     alert('Invalid date format. Use yyyy-mm-dd');
@@ -1233,11 +1247,10 @@
                 }
             });
 
-            cancelEditTaskBtn.addEventListener('click', function() {
-                editTaskModal.style.display = 'none';
-            });
+            // Edit Task Modal Handlers
+            cancelEditTaskBtn.addEventListener('click', () => editTaskModal.style.display = 'none');
 
-            saveTaskBtn.addEventListener('click', function() {
+            saveTaskBtn.addEventListener('click', () => {
                 const title = document.getElementById('editTaskTitle').value.trim();
                 const details = document.getElementById('editTaskDetails').value.trim();
                 const category = document.getElementById('editTaskCategory').value;
@@ -1271,11 +1284,11 @@
                 }
             });
 
-            editTaskDueDate.addEventListener('click', function() {
+            editTaskDueDate.addEventListener('click', () => {
                 editCalendarDropdown.style.display = editCalendarDropdown.style.display === 'block' ? 'none' : 'block';
             });
 
-            editTaskDueDate.addEventListener('change', function() {
+            editTaskDueDate.addEventListener('change', () => {
                 const value = editTaskDueDate.value;
                 if (value && !validateDateFormat(value)) {
                     alert('Invalid date format. Use yyyy-mm-dd');
@@ -1283,11 +1296,10 @@
                 }
             });
 
-            cancelDeleteBtn.addEventListener('click', function() {
-                deleteConfirmModal.style.display = 'none';
-            });
+            // Delete Confirmation Handlers
+            cancelDeleteBtn.addEventListener('click', () => deleteConfirmModal.style.display = 'none');
 
-            confirmDeleteBtn.addEventListener('click', function() {
+            confirmDeleteBtn.addEventListener('click', () => {
                 if (currentTaskId) {
                     const task = tasks.find(t => t.id === currentTaskId);
                     tasks = tasks.filter(t => t.id !== currentTaskId);
@@ -1299,11 +1311,10 @@
                 }
             });
 
-            cancelCustomDateBtn.addEventListener('click', function() {
-                customDateModal.style.display = 'none';
-            });
+            // Custom Date Modal Handlers
+            cancelCustomDateBtn.addEventListener('click', () => customDateModal.style.display = 'none');
 
-            applyCustomDateBtn.addEventListener('click', function() {
+            applyCustomDateBtn.addEventListener('click', () => {
                 let start = customStartDate.value.trim();
                 let end = customEndDate.value.trim();
 
@@ -1330,15 +1341,15 @@
                 renderTasks();
             });
 
-            customStartDate.addEventListener('click', function() {
+            customStartDate.addEventListener('click', () => {
                 startCalendarDropdown.style.display = startCalendarDropdown.style.display === 'block' ? 'none' : 'block';
             });
 
-            customEndDate.addEventListener('click', function() {
+            customEndDate.addEventListener('click', () => {
                 endCalendarDropdown.style.display = endCalendarDropdown.style.display === 'block' ? 'none' : 'block';
             });
 
-            customStartDate.addEventListener('change', function() {
+            customStartDate.addEventListener('change', () => {
                 const value = customStartDate.value;
                 if (value && !validateDateFormat(value)) {
                     alert('Invalid date format. Use yyyy-mm-dd');
@@ -1346,7 +1357,7 @@
                 }
             });
 
-            customEndDate.addEventListener('change', function() {
+            customEndDate.addEventListener('change', () => {
                 const value = customEndDate.value;
                 if (value && !validateDateFormat(value)) {
                     alert('Invalid date format. Use yyyy-mm-dd');
@@ -1354,15 +1365,15 @@
                 }
             });
 
-            customStartDateDisplay.addEventListener('click', function() {
+            customStartDateDisplay.addEventListener('click', () => {
                 startCalendarDropdown.style.display = startCalendarDropdown.style.display === 'block' ? 'none' : 'block';
             });
 
-            customEndDateDisplay.addEventListener('click', function() {
+            customEndDateDisplay.addEventListener('click', () => {
                 endCalendarDropdown.style.display = endCalendarDropdown.style.display === 'block' ? 'none' : 'block';
             });
 
-            customStartDateDisplay.addEventListener('change', function() {
+            customStartDateDisplay.addEventListener('change', () => {
                 const value = customStartDateDisplay.value;
                 if (value && !validateDateFormat(value)) {
                     alert('Invalid date format. Use yyyy-mm-dd');
@@ -1374,7 +1385,7 @@
                 }
             });
 
-            customEndDateDisplay.addEventListener('change', function() {
+            customEndDateDisplay.addEventListener('change', () => {
                 const value = customEndDateDisplay.value;
                 if (value && !validateDateFormat(value)) {
                     alert('Invalid date format. Use yyyy-mm-dd');
@@ -1386,22 +1397,25 @@
                 }
             });
 
-            listViewBtn.addEventListener('click', function() {
+            // View Toggle Handlers
+            listViewBtn.addEventListener('click', () => {
                 tasksContainer.style.display = 'block';
                 graphContainer.style.display = 'none';
             });
 
-            graphViewBtn.addEventListener('click', function() {
+            graphViewBtn.addEventListener('click', () => {
                 tasksContainer.style.display = 'none';
                 graphContainer.style.display = 'flex';
                 updateCharts();
             });
 
-            notificationBtn.addEventListener('click', function() {
+            // Notification Toggle
+            notificationBtn.addEventListener('click', () => {
                 notificationList.style.display = notificationList.style.display === 'block' ? 'none' : 'block';
             });
 
-            dateFilter.addEventListener('change', function() {
+            // Filter Handlers
+            dateFilter.addEventListener('change', () => {
                 if (dateFilter.value === 'custom') {
                     customDateModal.style.display = 'flex';
                     customDate.style.display = 'block';
@@ -1415,11 +1429,9 @@
                 }
             });
 
-            applyFiltersBtn.addEventListener('click', function() {
-                renderTasks();
-            });
+            applyFiltersBtn.addEventListener('click', () => renderTasks());
 
-            resetFiltersBtn.addEventListener('click', function() {
+            resetFiltersBtn.addEventListener('click', () => {
                 statusFilter.value = '';
                 dateFilter.value = '';
                 categoryFilter.value = '';
@@ -1432,6 +1444,7 @@
                 renderTasks();
             });
 
+            // Render Tasks
             function renderTasks() {
                 const status = statusFilter.value;
                 const category = categoryFilter.value;
@@ -1460,7 +1473,9 @@
                         } else if (date === 'week') {
                             const weekStart = new Date(today);
                             weekStart.setDate(today.getDate() - today.getDay());
-                            return dueDate >= weekStart && dueDate <= today;
+                            const weekEnd = new Date(weekStart);
+                            weekEnd.setDate(weekStart.getDate() + 6);
+                            return dueDate >= weekStart && dueDate <= weekEnd;
                         } else if (date === 'month') {
                             return dueDate.getMonth() === today.getMonth() && dueDate.getFullYear() === today.getFullYear();
                         }
@@ -1514,23 +1529,24 @@
                         updateStats();
                     });
 
-                    li.querySelector('.edit-btn').addEventListener('click', function() {
+                    li.querySelector('.edit-btn').addEventListener('click', () => {
                         currentTaskId = task.id;
                         document.getElementById('editTaskTitle').value = task.title;
                         document.getElementById('editTaskDetails').value = task.details || '';
-                        document.getElementById('editTaskCategory').value = task.category;
+                        document.getElementById('editTaskCategory').value = task.category || '';
                         document.getElementById('editTaskPriority').value = task.priority;
                         document.getElementById('editTaskDueDate').value = task.dueDate;
                         editTaskModal.style.display = 'flex';
                     });
 
-                    li.querySelector('.delete-btn').addEventListener('click', function() {
+                    li.querySelector('.delete-btn').addEventListener('click', () => {
                         currentTaskId = task.id;
                         deleteConfirmModal.style.display = 'flex';
                     });
                 });
             }
 
+            // Update Stats
             function updateStats() {
                 const total = tasks.length;
                 const completed = tasks.filter(task => task.status === 'Completed').length;
@@ -1540,6 +1556,7 @@
                 document.getElementById('pendingTasks').textContent = pending;
             }
 
+            // Chart Management
             let taskBarGraph, taskDoughnutGraph;
 
             function updateCharts() {
@@ -1563,11 +1580,11 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         scales: {
-                            y: { beginAtZero: true }
+                            y: { beginAtZero: true, ticks: { stepSize: 1 } }
                         },
                         plugins: {
                             legend: { display: false },
-                            title: { display: true, text: 'Task Status (Bar)' }
+                            title: { display: true, text: 'Task Status (Bar)', font: { size: 16 } }
                         }
                     }
                 });
@@ -1589,12 +1606,13 @@
                         maintainAspectRatio: false,
                         plugins: {
                             legend: { position: 'top' },
-                            title: { display: true, text: 'Task Status (Doughnut)' }
+                            title: { display: true, text: 'Task Status (Doughnut)', font: { size: 16 } }
                         }
                     }
                 });
             }
 
+            // Calendar Initialization
             function initCalendar(input, dropdown, grid, prev, next, current) {
                 const today = new Date();
                 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -1631,14 +1649,14 @@
                             dayElement.classList.add('active');
                         }
 
-                        dayElement.addEventListener('click', function() {
+                        dayElement.addEventListener('click', () => {
                             document.querySelectorAll(`#${grid.id} .calendar-day`).forEach(day => day.classList.remove('active'));
                             dayElement.classList.add('active');
                             const month = (currentMonth + 1).toString().padStart(2, '0');
                             const day = i.toString().padStart(2, '0');
                             input.value = `${currentYear}-${month}-${day}`;
                             dropdown.style.display = 'none';
-                            if (input === customStartDate || input === customEndDate) {
+                            if (input === customStartDate || input === customEndDate || input === customStartDateDisplay || input === customEndDateDisplay) {
                                 input.dispatchEvent(new Event('change'));
                             }
                         });
@@ -1649,7 +1667,7 @@
 
                 renderCalendar();
 
-                prev.addEventListener('click', function() {
+                prev.addEventListener('click', () => {
                     currentMonth--;
                     if (currentMonth < 0) {
                         currentMonth = 11;
@@ -1658,7 +1676,7 @@
                     renderCalendar();
                 });
 
-                next.addEventListener('click', function() {
+                next.addEventListener('click', () => {
                     currentMonth++;
                     if (currentMonth > 11) {
                         currentMonth = 0;
@@ -1667,7 +1685,7 @@
                     renderCalendar();
                 });
 
-                document.addEventListener('click', function(event) {
+                document.addEventListener('click', event => {
                     if (!input.contains(event.target) && !dropdown.contains(event.target)) {
                         dropdown.style.display = 'none';
                     }
@@ -1728,7 +1746,8 @@
                 document.getElementById('endCurrentMonth')
             );
 
-            window.addEventListener('click', function(event) {
+            // Modal Close on Overlay Click
+            window.addEventListener('click', event => {
                 if (event.target === registerModal) registerModal.style.display = 'none';
                 if (event.target === addTaskModal) addTaskModal.style.display = 'none';
                 if (event.target === editTaskModal) editTaskModal.style.display = 'none';
@@ -1739,6 +1758,7 @@
                 }
             });
 
+            // Initial Render
             renderTasks();
             updateCharts();
             updateStats();
