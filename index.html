@@ -101,10 +101,19 @@
             overflow-x: hidden; /* Prevent horizontal scroll */
         }
 
+        /* Class added when app view is active */
         body.app-view {
             display: block;
             padding: 0;
         }
+        /* Class added when login view is active */
+        body.login-view {
+            display: flex; /* Use flex to center login container */
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
 
         body.dark-mode {
             background: linear-gradient(135deg, var(--dm-page-bg-start), var(--dm-page-bg-end));
@@ -164,19 +173,19 @@
         }
 
         /* --- Login Page --- */
-        .login-page {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 1rem;
-        }
+        /* login-page class is now on body */
         .login-container {
             padding: 2rem;
             width: 100%;
             max-width: 450px;
             text-align: center;
+            display: none; /* Hidden by default, shown via JS */
         }
+        body.login-view .login-container {
+            display: block; /* Show when body has login-view class */
+            animation: fadeInAnimation 0.5s ease-out; /* Optional fade-in */
+        }
+
         .login-title { font-size: 1.75rem; margin-bottom: 1.5rem; color: inherit; }
         .input-group { margin-bottom: 1.25rem; text-align: left; }
         .input-group label {
@@ -256,7 +265,7 @@
         .btn-block { display: block; width: 100%; }
         .register-link { margin-top: 1.25rem; color: var(--lm-muted-text); font-size: 0.9rem; }
         body.dark-mode .register-link { color: var(--dm-muted-text); }
-        .register-link a { color: var(--lm-primary); text-decoration: none; font-weight: 500; }
+        .register-link a { color: var(--lm-primary); text-decoration: none; font-weight: 500; cursor: pointer; } /* Make link look clickable */
         body.dark-mode .register-link a { color: var(--dm-primary); }
         .register-link a:hover { text-decoration: underline; }
 
@@ -280,6 +289,12 @@
             animation: slideDownAnimation 0.4s ease-out;
             position: relative; /* For close button */
         }
+        /* Specific width for confirmation/registration modals */
+        #confirmationModal .modal-content,
+        #registrationModal .modal-content {
+            max-width: 450px;
+        }
+
         .modal-header {
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 1.5rem; padding-bottom: 1rem;
@@ -307,7 +322,15 @@
         body.dark-mode .modal-footer .btn-secondary { background-color: var(--dm-secondary); color: #111; }
 
         /* --- App Layout & Header --- */
-        .app-container { display: none; width: 100%; min-height: 100vh; }
+        .app-container {
+            display: none; /* Hidden by default, shown via JS */
+            width: 100%;
+            min-height: 100vh;
+        }
+         body.app-view .app-container {
+            display: block; /* Show when body has app-view class */
+        }
+
         header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 0.75rem 1.5rem; position: sticky; top: 0; z-index: 1000;
@@ -791,7 +814,9 @@
 
     </style>
 </head>
-<body class="login-page"> <div class="login-container" id="loginContainer">
+<body class="login-view">
+
+    <div class="login-container" id="loginContainer">
         <h1 class="login-title"><i class="fas fa-check-double"></i> TaskMaster Pro</h1>
         <form id="loginForm">
             <div class="input-group">
@@ -804,8 +829,7 @@
             </div>
             <button type="submit" class="btn btn-primary btn-block">Login</button>
         </form>
-        <p class="register-link">Don't have an account? <a href="#" id="registerLink">Register here</a></p>
-    </div>
+        <p class="register-link">Don't have an account? <a id="registerLink">Register here</a></p> </div>
 
     <div class="app-container" id="appContainer">
         <header>
@@ -1018,8 +1042,7 @@
     </div>
 
     <div id="confirmationModal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
-             <div class="modal-header">
+        <div class="modal-content"> <div class="modal-header">
                 <h3 id="confirmationTitle" class="modal-title">Confirm Action</h3>
                  <button class="modal-close-btn" data-dismiss="modal" aria-label="Close">&times;</button>
             </div>
@@ -1033,15 +1056,48 @@
         </div>
     </div>
 
+    <div id="registrationModal" class="modal">
+        <div class="modal-content"> <div class="modal-header">
+                <h3 class="modal-title">Register New Account</h3>
+                <button class="modal-close-btn" data-dismiss="modal" aria-label="Close">&times;</button>
+            </div>
+            <form id="registrationForm">
+                <div class="modal-body">
+                    <div class="input-group">
+                        <label for="regUsername">Username</label>
+                        <input type="text" id="regUsername" class="input-field" placeholder="Choose a username" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="regPassword">Password</label>
+                        <input type="password" id="regPassword" class="input-field" placeholder="Create a password" required>
+                    </div>
+                     <div class="input-group">
+                        <label for="regConfirmPassword">Confirm Password</label>
+                        <input type="password" id="regConfirmPassword" class="input-field" placeholder="Confirm your password" required>
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--lm-muted-text);">Note: This is a simulation. Passwords are not stored securely.</p>
+                    <body.dark-mode p style="color: var(--dm-muted-text);"></body.dark-mode>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
     <div id="toast-container"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- DOM Elements ---
-            const loginPage = document.querySelector('.login-page');
+            const body = document.body; // Reference to body element
             const loginContainer = document.getElementById('loginContainer');
             const loginForm = document.getElementById('loginForm');
+            const loginUsernameInput = document.getElementById('username'); // Added for login check
+            const loginPasswordInput = document.getElementById('password'); // Added for login check
             const registerLink = document.getElementById('registerLink');
             const appContainer = document.getElementById('appContainer');
             const refreshLogo = document.getElementById('refreshLogo');
@@ -1081,7 +1137,7 @@
             const taskListContainer = document.getElementById('taskListContainer');
             const graphViewContainer = document.getElementById('graphViewContainer');
 
-            // Modal Elements
+            // Task Modal Elements
             const taskModal = document.getElementById('taskModal');
             const modalTitle = document.getElementById('modalTitle');
             const taskForm = document.getElementById('taskForm');
@@ -1096,10 +1152,21 @@
             const newSubtaskInput = document.getElementById('newSubtaskInput');
             const addSubtaskBtnModal = document.getElementById('addSubtaskBtnModal');
             const saveTaskBtn = document.getElementById('saveTaskBtn');
+
+            // Confirmation Modal Elements
             const confirmationModal = document.getElementById('confirmationModal');
             const confirmationTitle = document.getElementById('confirmationTitle');
             const confirmationMessage = document.getElementById('confirmationMessage');
             const confirmActionBtn = document.getElementById('confirmActionBtn');
+
+            // Registration Modal Elements
+            const registrationModal = document.getElementById('registrationModal');
+            const registrationForm = document.getElementById('registrationForm');
+            const regUsernameInput = document.getElementById('regUsername');
+            const regPasswordInput = document.getElementById('regPassword');
+            const regConfirmPasswordInput = document.getElementById('regConfirmPassword');
+
+
             const toastContainer = document.getElementById('toast-container');
 
             // --- State Variables ---
@@ -1114,26 +1181,60 @@
             let lastMidnightCheck = new Date().setHours(0, 0, 0, 0); // For daily reset
 
             // --- Initialization ---
-            loadState(); // Load tasks, theme, timers etc.
             initializeDatePickers();
-            updateTheme(localStorage.getItem('theme') || 'light'); // Apply theme on load
-            renderAll();
-            checkDueDates(); // Initial check
-            startTotalTimer(); // Start updating total time display
+            checkLoginStatus(); // Check if already logged in
+            // loadState(), renderAll(), etc. are called by checkLoginStatus if logged in
+
             setInterval(checkDueDates, 60 * 1000); // Check due dates every minute
 
             // --- Core Functions ---
+
+             /**
+             * Checks login status and sets up the correct view (Login or App).
+             */
+            function checkLoginStatus() {
+                const loggedInUser = localStorage.getItem('loggedInUser');
+                if (loggedInUser) {
+                    // User is logged in, show app view
+                    body.classList.remove('login-view');
+                    body.classList.add('app-view');
+                    loginContainer.style.display = 'none';
+                    appContainer.style.display = 'block';
+                    loadState(); // Load data for the logged-in user
+                    updateTheme(localStorage.getItem('theme') || 'light');
+                    renderAll();
+                    checkDueDates();
+                    startTotalTimer();
+                    addNotification(`Welcome back, ${loggedInUser}!`, 'info', 3000);
+                } else {
+                    // User is not logged in, show login view
+                    body.classList.remove('app-view');
+                    body.classList.add('login-view');
+                    appContainer.style.display = 'none';
+                    loginContainer.style.display = 'block';
+                     updateTheme(localStorage.getItem('theme') || 'light'); // Apply theme even on login page
+                }
+            }
+
 
             /**
              * Loads state from localStorage (tasks, theme, categories, timers).
              */
             function loadState() {
-                const storedTasks = localStorage.getItem('tasks');
+                // Prefix storage keys with username for multi-user simulation
+                const loggedInUser = localStorage.getItem('loggedInUser');
+                if (!loggedInUser) return; // Should not happen if called correctly
+
+                const userPrefix = `user_${loggedInUser}_`;
+
+                const storedTasks = localStorage.getItem(userPrefix + 'tasks');
+                const storedCategories = localStorage.getItem(userPrefix + 'categories');
+                const storedTimers = localStorage.getItem(userPrefix + 'taskTimers');
+                const storedTotalElapsed = localStorage.getItem(userPrefix + 'totalElapsedToday');
+                const storedLastReset = localStorage.getItem(userPrefix + 'lastMidnightCheck');
+                // Theme is global, not user-specific in this setup
                 const storedTheme = localStorage.getItem('theme');
-                const storedCategories = localStorage.getItem('categories');
-                const storedTimers = localStorage.getItem('taskTimers'); // Stores { taskId: { elapsedTime: seconds, timerStartTime: timestamp | null } }
-                const storedTotalElapsed = localStorage.getItem('totalElapsedToday');
-                const storedLastReset = localStorage.getItem('lastMidnightCheck');
+
 
                 tasks = storedTasks ? JSON.parse(storedTasks) : [];
                 categories = storedCategories ? new Set(JSON.parse(storedCategories)) : new Set();
@@ -1146,8 +1247,7 @@
                     console.log("Performing daily timer reset.");
                     totalElapsedToday = 0;
                     lastMidnightCheck = todayMidnight;
-                    localStorage.setItem('totalElapsedToday', '0');
-                    localStorage.setItem('lastMidnightCheck', lastMidnightCheck.toString());
+                    // Don't save here, saveState will handle it later
                 }
 
 
@@ -1159,6 +1259,7 @@
                 }
 
                 // Restore timers
+                taskTimers = {}; // Reset local timer state
                 const savedTimers = storedTimers ? JSON.parse(storedTimers) : {};
                 tasks.forEach(task => {
                     if (!task.elapsedTime) task.elapsedTime = 0; // Ensure elapsedTime exists
@@ -1166,18 +1267,21 @@
                     const savedTimer = savedTimers[task.id];
                     if (savedTimer) {
                         task.elapsedTime = savedTimer.elapsedTime || 0;
-                        // If timer was running when page closed, resume it
+                        // If timer was running when page closed/refreshed, resume it
                         if (savedTimer.timerStartTime) {
                             const now = Date.now();
+                            // Calculate time missed since timer was last known to be running
                             const elapsedSinceStart = Math.floor((now - savedTimer.timerStartTime) / 1000);
-                            task.elapsedTime += elapsedSinceStart; // Add time missed
-                            startTimer(task.id, true); // Resume timer interval without resetting startTime
+                             // Add the missed time to the task's elapsed time BEFORE starting the interval
+                            task.elapsedTime += elapsedSinceStart;
+                            // Start the timer interval again, it will use the updated task.elapsedTime
+                            startTimer(task.id, true, savedTimer.timerStartTime); // Pass original start time
                         }
                     }
                 });
 
-                 // Add sample data if no tasks exist
-                if (tasks.length === 0) {
+                 // Add sample data if no tasks exist FOR THIS USER
+                if (tasks.length === 0 && !storedTasks) { // Only add samples if no tasks were ever stored for this user
                     addSampleTasks();
                 }
 
@@ -1188,30 +1292,49 @@
              * Saves the current state to localStorage.
              */
             function saveState() {
+                 const loggedInUser = localStorage.getItem('loggedInUser');
+                 if (!loggedInUser) return; // Don't save if not logged in
+
+                 const userPrefix = `user_${loggedInUser}_`;
+
                 try {
-                    localStorage.setItem('tasks', JSON.stringify(tasks));
-                    localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-                    localStorage.setItem('categories', JSON.stringify(Array.from(categories)));
+                    localStorage.setItem(userPrefix + 'tasks', JSON.stringify(tasks));
+                    localStorage.setItem(userPrefix + 'categories', JSON.stringify(Array.from(categories)));
 
                     // Save timer state accurately
                     const timersToSave = {};
                     tasks.forEach(task => {
                         let currentElapsedTime = task.elapsedTime || 0;
-                        let currentStartTime = null;
-                        if (taskTimers[task.id] && taskTimers[task.id].startTime) {
-                            // Calculate elapsed time up to now if timer is running
+                        let currentStartTime = null; // Assume paused unless proven otherwise
+
+                        // Check if there's an active timer interval for this task
+                        if (taskTimers[task.id] && taskTimers[task.id].intervalId && taskTimers[task.id].startTime) {
+                             // Timer is running, calculate elapsed time up to now
                             const now = Date.now();
-                            currentElapsedTime += Math.floor((now - taskTimers[task.id].startTime) / 1000);
-                            currentStartTime = taskTimers[task.id].startTime; // Store the actual start time
-                        }
+                            // Time elapsed *during this active interval*
+                            const elapsedInInterval = Math.floor((now - taskTimers[task.id].startTime) / 1000);
+                            // Total time is the base time (task.elapsedTime) + time in this interval
+                            // IMPORTANT: task.elapsedTime should hold the time *before* this interval started
+                            // Let's recalculate based on the initial start time if available
+                            currentElapsedTime = task.elapsedTime + elapsedInInterval; // Add interval time to base time
+                            currentStartTime = taskTimers[task.id].startTime; // Store the actual start time of this interval
+                         } else {
+                            // Timer is paused, just save the last known total elapsed time
+                            currentElapsedTime = task.elapsedTime || 0;
+                            currentStartTime = null;
+                         }
+
                         timersToSave[task.id] = {
                             elapsedTime: currentElapsedTime,
                             timerStartTime: currentStartTime // null if paused, timestamp if running
                         };
                     });
-                    localStorage.setItem('taskTimers', JSON.stringify(timersToSave));
-                    localStorage.setItem('totalElapsedToday', totalElapsedToday.toString());
-                    localStorage.setItem('lastMidnightCheck', lastMidnightCheck.toString());
+                    localStorage.setItem(userPrefix + 'taskTimers', JSON.stringify(timersToSave));
+                    localStorage.setItem(userPrefix + 'totalElapsedToday', totalElapsedToday.toString());
+                    localStorage.setItem(userPrefix + 'lastMidnightCheck', lastMidnightCheck.toString());
+                    // Save theme globally
+                    localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+
 
                 } catch (error) {
                     console.error("Error saving state to localStorage:", error);
@@ -1220,7 +1343,7 @@
             }
 
              /**
-             * Adds sample tasks for demonstration.
+             * Adds sample tasks for demonstration (called only if user has no tasks).
              */
             function addSampleTasks() {
                 const now = new Date();
@@ -1228,6 +1351,7 @@
                 const nextWeek = new Date(now); nextWeek.setDate(now.getDate() + 7);
                 const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
 
+                // Reset tasks array before adding samples
                 tasks = [
                     { id: generateId(), title: "Finalize Project Proposal", description: "Review feedback and submit", priority: "high", category: "Work", dueDate: formatDateTime(now), completed: false, createdAt: Date.now() - 86400000, elapsedTime: 3665 }, // Due today, 1h 1m 5s elapsed
                     { id: generateId(), title: "Schedule Team Meeting", description: "", priority: "medium", category: "Work", dueDate: formatDateTime(tomorrow), completed: false, createdAt: Date.now() - 172800000, elapsedTime: 0 }, // Due tomorrow
@@ -1236,10 +1360,12 @@
                     { id: generateId(), title: "Plan Weekend Trip", description: "Research destinations", priority: "low", category: "Personal", dueDate: formatDateTime(nextWeek), completed: false, createdAt: Date.now(), elapsedTime: 0 }, // Due next week
                     { id: generateId(), title: "Read Chapter 5", description: "Book club reading", priority: "low", category: "Leisure", dueDate: null, completed: true, createdAt: Date.now() - 345600000, completedAt: Date.now() - 86400000, elapsedTime: 7200 }, // Completed yesterday, 2h elapsed
                 ];
+                // Reset categories and repopulate from sample tasks
+                categories = new Set();
                 tasks.forEach(task => {
                     if (task.category) categories.add(task.category);
                 });
-                saveState(); // Save sample tasks
+                saveState(); // Save sample tasks for the new user
             }
 
             /**
@@ -1264,26 +1390,31 @@
                 const filteredTasks = filterAndSortTasks();
                 taskList.innerHTML = ''; // Clear existing list
 
-                if (filteredTasks.length === 0) {
-                    checkEmptyState(); // Show empty message if no tasks match filters
-                    return;
-                }
+                if (filteredTasks.length === 0 && tasks.length > 0) { // Check if filters result in empty, but tasks exist
+                     taskList.innerHTML = '<li class="empty-task-list" style="border: none; padding: 1rem;"><p>No tasks match the current filters.</p></li>';
+                     emptyTaskListMessage.classList.add('hidden'); // Hide the main empty message
+                     return;
+                 } else if (tasks.length === 0) {
+                     checkEmptyState(); // Show the main empty message if no tasks at all
+                     return;
+                 }
+
 
                 filteredTasks.forEach(task => {
                     const taskElement = createTaskElement(task);
                     taskList.appendChild(taskElement);
 
-                     // Re-attach timer interval if it was running
-                     if (taskTimers[task.id] && taskTimers[task.id].intervalId) {
-                         // Timer is supposed to be running, ensure interval is active
-                         // The interval updates the display, so just make sure it exists.
-                         // If loadState already resumed it, this check might be redundant but safe.
-                         if (!taskTimers[task.id].intervalId) { // Check if interval ID is missing (e.g., after refresh)
-                            startTimer(task.id, true); // Resume interval
-                         }
-                     } else {
-                         // Ensure timer display is correct even if paused
-                         updateTimerDisplay(task.id, task.elapsedTime || 0);
+                     // Ensure timer display is correct based on loaded state
+                     updateTimerDisplay(task.id, task.elapsedTime || 0);
+                     updateTimerButton(task.id, taskTimers[task.id]?.intervalId != null);
+
+                     // Re-start interval if it should be running (loadState handles initial resume)
+                     // This ensures intervals are running after filtering/re-rendering
+                     if (taskTimers[task.id] && taskTimers[task.id].startTime && !taskTimers[task.id].intervalId) {
+                         // This scenario should ideally be handled by loadState or pauseTimer correctly setting intervalId to null
+                         // If we reach here, it means the timer *should* be running but the interval isn't set. Resume it.
+                         console.warn(`Resuming interval for task ${task.id} during render.`);
+                         startTimer(task.id, true, taskTimers[task.id].startTime);
                      }
                 });
                 checkEmptyState(); // Hide empty message if tasks exist
@@ -1304,25 +1435,30 @@
                 let dueDateText = 'No due date';
                 let alertHtml = '';
                 if (task.dueDate) {
-                    const dueDate = new Date(task.dueDate);
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0); // Start of today
-                    dueDate.setHours(0, 0, 0, 0); // Start of due date
+                    try {
+                        const dueDate = new Date(task.dueDate);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0); // Start of today
+                        const dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate()); // Date part only
 
-                    const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
-                    const threeDaysFromNow = new Date(today); threeDaysFromNow.setDate(today.getDate() + 3);
+                        const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+                        const threeDaysFromNow = new Date(today); threeDaysFromNow.setDate(today.getDate() + 3);
 
-                    dueDateText = formatFriendlyDate(new Date(task.dueDate)); // Use original date for display
+                        dueDateText = formatFriendlyDate(dueDate); // Use original date for display
 
-                    if (!task.completed && dueDate < today) {
-                        dueDateStatus = 'overdue';
-                        alertHtml = `<span class="task-alert overdue">Overdue</span>`;
-                    } else if (dueDate.getTime() === today.getTime()) {
-                        dueDateStatus = 'today';
-                        alertHtml = `<span class="task-alert upcoming">Due Today</span>`;
-                    } else if (!task.completed && dueDate > today && dueDate < threeDaysFromNow) {
-                         // Upcoming (within 3 days) - subtle notification, not a full alert span maybe
-                         // alertHtml = `<span class="task-alert upcoming">Upcoming</span>`;
+                        if (!task.completed && dueDateOnly < today) {
+                            dueDateStatus = 'overdue';
+                            alertHtml = `<span class="task-alert overdue">Overdue</span>`;
+                        } else if (dueDateOnly.getTime() === today.getTime()) {
+                            dueDateStatus = 'today';
+                            alertHtml = `<span class="task-alert upcoming">Due Today</span>`;
+                        } else if (!task.completed && dueDateOnly > today && dueDateOnly < threeDaysFromNow) {
+                            // Optional: Add upcoming alert visually if needed
+                            // alertHtml = `<span class="task-alert upcoming">Upcoming</span>`;
+                        }
+                    } catch (e) {
+                        console.error("Error parsing due date:", task.dueDate, e);
+                        dueDateText = "Invalid Date";
                     }
                 }
 
@@ -1429,16 +1565,19 @@
 
                     filtered = filtered.filter(task => {
                         if (!task.dueDate) return dueDateFilter === 'no_due_date';
-                        const dueDate = new Date(task.dueDate); dueDate.setHours(0, 0, 0, 0);
+                        try {
+                            const dueDate = new Date(task.dueDate);
+                            const dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate()); // Date part only
 
-                        switch (dueDateFilter) {
-                            case 'overdue': return !task.completed && dueDate < today;
-                            case 'today': return dueDate.getTime() === today.getTime();
-                            case 'tomorrow': return dueDate.getTime() === tomorrow.getTime();
-                            case 'this_week': return dueDate >= today && dueDate <= endOfWeek;
-                            case 'no_due_date': return false; // Already handled above
-                            default: return true;
-                        }
+                            switch (dueDateFilter) {
+                                case 'overdue': return !task.completed && dueDateOnly < today;
+                                case 'today': return dueDateOnly.getTime() === today.getTime();
+                                case 'tomorrow': return dueDateOnly.getTime() === tomorrow.getTime();
+                                case 'this_week': return dueDateOnly >= today && dueDateOnly <= endOfWeek;
+                                case 'no_due_date': return false; // Already handled above
+                                default: return true;
+                            }
+                        } catch (e) { return false; } // Invalid date fails filter
                     });
                 }
 
@@ -1449,9 +1588,13 @@
                 filtered.sort((a, b) => {
                     switch (sortBy) {
                         case 'dueDateAsc':
-                            return (a.dueDate ? new Date(a.dueDate) : Infinity) - (b.dueDate ? new Date(b.dueDate) : Infinity);
+                            const dateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
+                            const dateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+                            return (isNaN(dateA) ? Infinity : dateA) - (isNaN(dateB) ? Infinity : dateB);
                         case 'dueDateDesc':
-                            return (b.dueDate ? new Date(b.dueDate) : -Infinity) - (a.dueDate ? new Date(a.dueDate) : -Infinity);
+                             const dateADesc = a.dueDate ? new Date(a.dueDate).getTime() : -Infinity;
+                             const dateBDesc = b.dueDate ? new Date(b.dueDate).getTime() : -Infinity;
+                            return (isNaN(dateBDesc) ? -Infinity : dateBDesc) - (isNaN(dateADesc) ? -Infinity : dateADesc);
                         case 'priorityDesc':
                             return (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
                         case 'priorityAsc':
@@ -1462,9 +1605,11 @@
                         default:
                             // Default sort: Pending first, then by due date (soonest first), then creation date
                             if (a.completed !== b.completed) return a.completed ? 1 : -1; // Pending before completed
-                            const dueDateA = a.dueDate ? new Date(a.dueDate) : Infinity;
-                            const dueDateB = b.dueDate ? new Date(b.dueDate) : Infinity;
-                            if (dueDateA !== dueDateB) return dueDateA - dueDateB;
+                            const dueDateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
+                            const dueDateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+                            const validDateA = isNaN(dueDateA) ? Infinity : dueDateA;
+                            const validDateB = isNaN(dueDateB) ? Infinity : dueDateB;
+                            if (validDateA !== validDateB) return validDateA - validDateB;
                             return (b.createdAt || 0) - (a.createdAt || 0); // Newest created first if due dates same
                     }
                 });
@@ -1482,8 +1627,11 @@
                 const today = new Date(); today.setHours(0, 0, 0, 0);
                 const dueToday = tasks.filter(task => {
                     if (!task.dueDate || task.completed) return false;
-                    const dueDate = new Date(task.dueDate); dueDate.setHours(0, 0, 0, 0);
-                    return dueDate.getTime() === today.getTime();
+                    try {
+                        const dueDate = new Date(task.dueDate);
+                        const dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+                        return dueDateOnly.getTime() === today.getTime();
+                    } catch (e) { return false; }
                 }).length;
 
                 totalTasksStat.textContent = total;
@@ -1498,21 +1646,28 @@
             function populateCategoryFilter() {
                 const currentCategoryValue = filterCategory.value; // Preserve selection
                 filterCategory.innerHTML = '<option value="all">All Categories</option>'; // Reset
-                categories.forEach(cat => {
+                // Sort categories alphabetically for better UI
+                const sortedCategories = Array.from(categories).sort((a, b) => a.localeCompare(b));
+                sortedCategories.forEach(cat => {
                     const option = document.createElement('option');
                     option.value = cat;
                     option.textContent = cat;
                     filterCategory.appendChild(option);
                 });
-                filterCategory.value = currentCategoryValue; // Restore selection if possible
+                 // Try to restore selection, default to 'all' if category was deleted
+                if (categories.has(currentCategoryValue)) {
+                    filterCategory.value = currentCategoryValue;
+                } else {
+                    filterCategory.value = 'all';
+                }
             }
 
             /**
              * Checks if the task list is empty and shows/hides the message.
              */
             function checkEmptyState() {
-                const hasVisibleTasks = taskList.children.length > 0;
-                emptyTaskListMessage.classList.toggle('hidden', hasVisibleTasks);
+                 // Only show the main empty message if there are absolutely no tasks stored
+                emptyTaskListMessage.classList.toggle('hidden', tasks.length > 0);
             }
 
             /**
@@ -1533,11 +1688,11 @@
                     taskDescriptionInput.value = task.description || '';
                     taskPriorityInput.value = task.priority || 'medium';
                     taskCategoryInput.value = task.category || '';
-                    taskDueDateInput.value = task.dueDate || '';
+                    taskDueDateInput.value = task.dueDate || ''; // Flatpickr expects YYYY-MM-DD HH:MM
                     taskRecurrenceInput.value = task.recurrence || 'none';
                     // Populate subtasks if they exist (basic)
                     // task.subtasks?.forEach(sub => addSubtaskElement(sub.text, sub.completed));
-                    flatpickrInstance.setDate(task.dueDate ? new Date(task.dueDate) : null); // Update date picker
+                    flatpickrInstance.setDate(task.dueDate ? task.dueDate : null, false); // Update date picker without triggering change event
                 } else {
                     modalTitle.textContent = 'Add New Task';
                     taskIdInput.value = '';
@@ -1545,6 +1700,7 @@
                 }
 
                 taskModal.classList.add('show');
+                taskTitleInput.focus(); // Focus title field when opening
             }
 
             /**
@@ -1552,7 +1708,7 @@
              * @param {HTMLElement} modalElement - The modal element to close.
              */
             function closeModal(modalElement) {
-                 if (modalElement) {
+                 if (modalElement && modalElement.classList.contains('show')) {
                     modalElement.classList.remove('show');
                     // Optional: Add fade-out animation class
                     // modalElement.classList.add('fade-out');
@@ -1573,7 +1729,9 @@
                 const description = taskDescriptionInput.value.trim();
                 const priority = taskPriorityInput.value;
                 const category = taskCategoryInput.value.trim();
-                const dueDate = taskDueDateInput.value ? formatDateTime(new Date(taskDueDateInput.value)) : null; // Store consistently
+                // Get date directly from Flatpickr instance to ensure correct format
+                const selectedDates = flatpickrInstance.selectedDates;
+                const dueDate = selectedDates.length > 0 ? formatDateTime(selectedDates[0]) : null;
                 const recurrence = taskRecurrenceInput.value;
 
                 if (!title) {
@@ -1584,17 +1742,21 @@
 
                 if (category) categories.add(category); // Add new category if entered
 
+                 // Find existing task data if editing
+                const existingTask = currentEditTaskId ? tasks.find(t => t.id === id) : null;
+
                 const taskData = {
                     id, title, description, priority, category, dueDate, recurrence,
-                    completed: currentEditTaskId ? tasks.find(t=>t.id===id)?.completed : false, // Preserve completed status on edit
-                    createdAt: currentEditTaskId ? tasks.find(t=>t.id===id)?.createdAt : Date.now(), // Preserve creation date on edit
-                    elapsedTime: currentEditTaskId ? tasks.find(t=>t.id===id)?.elapsedTime || 0 : 0, // Preserve timer
+                    completed: existingTask ? existingTask.completed : false,
+                    createdAt: existingTask ? existingTask.createdAt : Date.now(),
+                    completedAt: existingTask ? existingTask.completedAt : null, // Preserve completion time
+                    elapsedTime: existingTask ? existingTask.elapsedTime || 0 : 0,
                     // subtasks: [] // Add subtask saving logic here
                 };
 
                 if (currentEditTaskId) {
                     // Update existing task
-                    tasks = tasks.map(task => task.id === id ? { ...task, ...taskData } : task);
+                    tasks = tasks.map(task => task.id === id ? taskData : task);
                     addNotification(`Task "${taskData.title}" updated.`, "success");
                 } else {
                     // Add new task
@@ -1776,42 +1938,60 @@
                 }
             }
 
-            /**
+           /**
              * Starts the timer for a task.
              * @param {string} taskId - The ID of the task.
-             * @param {boolean} isResuming - Internal flag to indicate if resuming after load.
+             * @param {boolean} isResuming - Internal flag to indicate if resuming after load/render.
+             * @param {number|null} explicitStartTime - Used when resuming to sync with persisted start time.
              */
-            function startTimer(taskId, isResuming = false) {
+            function startTimer(taskId, isResuming = false, explicitStartTime = null) {
                 const task = tasks.find(t => t.id === taskId);
                 if (!task || task.completed) return; // Don't start timer for completed tasks
 
-                // If already running, do nothing
-                if (taskTimers[taskId] && taskTimers[taskId].intervalId) return;
+                // If already running with an intervalId, do nothing
+                if (taskTimers[taskId]?.intervalId) return;
 
-                // Clear any existing interval just in case (shouldn't be needed)
-                if (taskTimers[taskId]?.intervalId) clearInterval(taskTimers[taskId].intervalId);
+                // Determine the correct start time
+                // If resuming and an explicitStartTime is provided (from localStorage), use that.
+                // Otherwise, use the current time.
+                const startTime = isResuming && explicitStartTime ? explicitStartTime : Date.now();
 
-                const startTime = isResuming && taskTimers[taskId]?.startTime ? taskTimers[taskId].startTime : Date.now();
-                if (!task.elapsedTime) task.elapsedTime = 0; // Ensure property exists
+                // Ensure elapsedTime property exists on the task object
+                if (task.elapsedTime === undefined || task.elapsedTime === null) {
+                     task.elapsedTime = 0;
+                }
+
+                // Store the base elapsed time *before* this interval starts
+                const baseElapsedTime = task.elapsedTime;
+
+                // Clear any potentially orphaned interval ID before setting a new one
+                if (taskTimers[taskId]?.intervalId) {
+                    clearInterval(taskTimers[taskId].intervalId);
+                }
 
                 taskTimers[taskId] = {
-                    startTime: startTime,
+                    startTime: startTime, // Record when this *specific* interval started
                     intervalId: setInterval(() => {
                         const now = Date.now();
-                        const elapsedSinceStart = Math.floor((now - startTime) / 1000);
-                        const totalElapsedForTask = (task.elapsedTime || 0) + elapsedSinceStart;
+                        // Calculate time elapsed *since this interval started*
+                        const elapsedInInterval = Math.floor((now - startTime) / 1000);
+                        // Total elapsed time is the base time + time in this interval
+                        const totalElapsedForTask = baseElapsedTime + elapsedInInterval;
 
                         updateTimerDisplay(taskId, totalElapsedForTask);
 
-                        // Update total daily timer (more complex - see startTotalTimer)
-                        // This interval handles individual task display
-
+                        // Note: We don't update task.elapsedTime here continuously
+                        // It's updated only when pausing or saving state.
                     }, 1000) // Update display every second
                 };
 
                 updateTimerButton(taskId, true); // Update button style
-                if (!isResuming) saveState(); // Save state when manually started
+                if (!isResuming) {
+                    // Only save state immediately if it's a manual start, not a resume on load
+                    saveState();
+                }
             }
+
 
             /**
              * Pauses the timer for a task.
@@ -1822,20 +2002,26 @@
                 if (!timerData || !timerData.intervalId) return; // Not running
 
                 clearInterval(timerData.intervalId);
+                timerData.intervalId = null; // Mark as paused
 
                 const task = tasks.find(t => t.id === taskId);
                 if (task && timerData.startTime) {
                     const now = Date.now();
-                    const elapsedSinceStart = Math.floor((now - timerData.startTime) / 1000);
-                    task.elapsedTime = (task.elapsedTime || 0) + elapsedSinceStart;
+                    // Calculate time elapsed *during the interval that just ended*
+                    const elapsedInInterval = Math.floor((now - timerData.startTime) / 1000);
+                    // Add this interval's time to the task's total elapsed time
+                    task.elapsedTime = (task.elapsedTime || 0) + elapsedInInterval;
                     // Update display one last time with the final accurate time
                     updateTimerDisplay(taskId, task.elapsedTime);
                 }
 
-                delete taskTimers[taskId]; // Remove timer data (or set intervalId to null)
+                // Clear the startTime as the interval is no longer active
+                timerData.startTime = null;
+
                 updateTimerButton(taskId, false); // Update button style
-                saveState(); // Save the accumulated time
+                saveState(); // Save the accumulated time and paused state
             }
+
 
              /**
              * Stops the timer and clears interval (used on delete/complete).
@@ -1845,33 +2031,39 @@
                  const timerData = taskTimers[taskId];
                  if (timerData && timerData.intervalId) {
                      clearInterval(timerData.intervalId);
-                     // Optionally update elapsed time one last time before stopping
+                     // Update elapsed time one last time before stopping
                      const task = tasks.find(t => t.id === taskId);
                      if (task && timerData.startTime) {
                          const now = Date.now();
-                         const elapsedSinceStart = Math.floor((now - timerData.startTime) / 1000);
-                         task.elapsedTime = (task.elapsedTime || 0) + elapsedSinceStart;
+                         const elapsedInInterval = Math.floor((now - timerData.startTime) / 1000);
+                         task.elapsedTime = (task.elapsedTime || 0) + elapsedInInterval;
                          updateTimerDisplay(taskId, task.elapsedTime); // Update display
                      }
                  }
-                 delete taskTimers[taskId]; // Remove timer data
-                 updateTimerButton(taskId, false); // Ensure button is in 'play' state
+                 // Remove timer data completely for this task
+                 delete taskTimers[taskId];
+                 // Ensure button visually resets (renderAll will likely handle this too)
+                 updateTimerButton(taskId, false);
                  // saveState() will be called by the calling function (delete/complete)
              }
 
             /**
-             * Stops all running timers (e.g., before page unload).
+             * Stops all running timers (e.g., before page unload or logout).
              */
             function stopAllTimers() {
-                tasks.forEach(task => {
-                    if (taskTimers[task.id] && taskTimers[task.id].intervalId) {
-                        pauseTimer(task.id); // Pause saves the state
-                    }
-                });
+                console.log("Stopping all timers...");
+                Object.keys(taskTimers).forEach(taskId => {
+                     if (taskTimers[taskId]?.intervalId) {
+                         console.log(`Pausing timer for task ${taskId}`);
+                         pauseTimer(taskId); // Pause saves the state correctly
+                     }
+                 });
                  if (totalTimerInterval) {
                     clearInterval(totalTimerInterval);
                     totalTimerInterval = null;
                  }
+                 // Save state one last time after pausing all
+                 saveState();
             }
 
             /**
@@ -1889,7 +2081,7 @@
              /**
              * Updates the play/pause button style for a task timer.
              * @param {string} taskId - The ID of the task.
-             * @param {boolean} isActive - Whether the timer is currently active.
+             * @param {boolean} isActive - Whether the timer is currently active (has an intervalId).
              */
             function updateTimerButton(taskId, isActive) {
                 const taskElement = taskList.querySelector(`.task-item[data-task-id="${taskId}"]`);
@@ -1921,52 +2113,37 @@
             function startTotalTimer() {
                 if (totalTimerInterval) clearInterval(totalTimerInterval); // Clear existing if any
 
-                // Function to calculate total time from active timers
                 const updateTotalDisplay = () => {
-                     // Check for daily reset
+                    // Check for daily reset
                     const now = new Date();
                     const todayMidnight = new Date(now).setHours(0, 0, 0, 0);
                     if (todayMidnight > lastMidnightCheck) {
                         console.log("Performing daily timer reset during update.");
                         totalElapsedToday = 0;
                         lastMidnightCheck = todayMidnight;
-                        // Reset individual task timers if needed (or just the total)
-                         tasks.forEach(task => {
-                            // Decide if individual task timers should reset daily too
-                            // task.elapsedTime = 0; // Uncomment to reset individual timers daily
-                         });
+                        // Reset individual task timers' base values if needed
+                        // tasks.forEach(task => { task.elapsedTime = 0; });
                         saveState(); // Save the reset state
                     }
 
-
-                    let currentTotalSeconds = totalElapsedToday;
-                    // Add time from currently *running* timers since their last save/pause
-                    Object.keys(taskTimers).forEach(taskId => {
-                        const timerData = taskTimers[taskId];
-                        if (timerData && timerData.startTime && timerData.intervalId) { // Check if actually running
-                            const task = tasks.find(t => t.id === taskId);
-                            if (task) {
-                                // Calculate time elapsed *since the timer started running* in this session
-                                const elapsedSinceStart = Math.floor((Date.now() - timerData.startTime) / 1000);
-                                // We need the base time from task.elapsedTime *before* this session started.
-                                // This logic gets tricky. Let's simplify:
-                                // The total timer shows the sum of *all* task.elapsedTime values + time elapsed in *this session* for running timers.
-
-                                // Re-calculate total based on saved elapsedTime + current running intervals
-                                let calculatedTotal = 0;
-                                tasks.forEach(t => {
-                                    calculatedTotal += (t.elapsedTime || 0);
-                                    const runningTimer = taskTimers[t.id];
-                                    if(runningTimer && runningTimer.startTime && runningTimer.intervalId) {
-                                        calculatedTotal += Math.floor((Date.now() - runningTimer.startTime) / 1000);
-                                    }
-                                });
-                                currentTotalSeconds = calculatedTotal; // Use this recalculated total
-                            }
+                    // Calculate total based on saved base times + currently running intervals
+                    let currentTotalSeconds = 0;
+                    tasks.forEach(t => {
+                        currentTotalSeconds += (t.elapsedTime || 0); // Add base time
+                        const runningTimer = taskTimers[t.id];
+                        // If timer is actively running in this session, add the time since it started
+                        if (runningTimer && runningTimer.startTime && runningTimer.intervalId) {
+                            currentTotalSeconds += Math.floor((Date.now() - runningTimer.startTime) / 1000);
                         }
                     });
 
+                    // Update the display
                     totalTimerValue.textContent = formatTime(currentTotalSeconds);
+
+                    // Update the persisted totalElapsedToday (less frequently perhaps?)
+                    // For simplicity, we update it here, but could be done on pause/save only.
+                    totalElapsedToday = currentTotalSeconds;
+
                 };
 
                 updateTotalDisplay(); // Initial update
@@ -2001,7 +2178,9 @@
                     toast.style.animation = 'fadeOutToast 0.4s ease-in forwards';
                     // Remove element after fade out animation completes
                     setTimeout(() => {
-                        toast.remove();
+                        if (toast.parentNode) { // Check if still attached
+                             toast.remove();
+                        }
                     }, 400); // Match fade out duration
                 }, duration - 400); // Start fade out slightly before duration ends
             }
@@ -2010,6 +2189,8 @@
              * Checks for tasks due soon or overdue and adds notifications.
              */
             function checkDueDates() {
+                 if (!localStorage.getItem('loggedInUser')) return; // Don't check if not logged in
+
                 const now = new Date();
                 const today = new Date(now).setHours(0, 0, 0, 0);
                 const tomorrow = new Date(today); tomorrow.setDate(new Date(today).getDate() + 1);
@@ -2019,35 +2200,33 @@
 
                 tasks.forEach(task => {
                     if (!task.completed && task.dueDate) {
-                        const dueDate = new Date(task.dueDate);
-                        dueDate.setHours(0,0,0,0); // Compare dates only
+                         try {
+                            const dueDate = new Date(task.dueDate);
+                            const dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
 
-                        if (dueDate < today) {
-                            // Overdue (consider notifying only once or less frequently)
-                            // For simplicity, we'll add to list, but UI might filter duplicates
-                            overdueNotifications.push({
-                                id: task.id,
-                                title: task.title,
-                                type: 'error',
-                                message: `Task "${escapeHTML(task.title)}" is overdue!`
-                            });
-                        } else if (dueDate.getTime() === today.getTime()) {
-                            // Due Today
-                             upcomingNotifications.push({
-                                id: task.id,
-                                title: task.title,
-                                type: 'warning',
-                                message: `Task "${escapeHTML(task.title)}" is due today.`
-                            });
-                        } else if (dueDate.getTime() === tomorrow.getTime()) {
-                           // Due Tomorrow
-                            upcomingNotifications.push({
-                                id: task.id,
-                                title: task.title,
-                                type: 'info',
-                                message: `Task "${escapeHTML(task.title)}" is due tomorrow.`
-                           });
-                        }
+                            if (dueDateOnly < today) {
+                                overdueNotifications.push({
+                                    id: task.id,
+                                    title: task.title,
+                                    type: 'error',
+                                    message: `Task "${escapeHTML(task.title)}" is overdue!`
+                                });
+                            } else if (dueDateOnly.getTime() === today.getTime()) {
+                                upcomingNotifications.push({
+                                    id: task.id,
+                                    title: task.title,
+                                    type: 'warning',
+                                    message: `Task "${escapeHTML(task.title)}" is due today.`
+                                });
+                            } else if (dueDateOnly.getTime() === tomorrow.getTime()) {
+                                upcomingNotifications.push({
+                                    id: task.id,
+                                    title: task.title,
+                                    type: 'info',
+                                    message: `Task "${escapeHTML(task.title)}" is due tomorrow.`
+                               });
+                            }
+                        } catch(e) { /* Ignore tasks with invalid dates */ }
                     }
                 });
 
@@ -2090,9 +2269,13 @@
                          if (taskElement) {
                              taskElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                              // Highlight briefly?
-                             taskElement.style.transition = 'background-color 0.1s ease-in-out';
+                             taskElement.style.transition = 'background-color 0.1s ease-in-out, transform 0.1s ease-in-out';
                              taskElement.style.backgroundColor = 'var(--lm-warning)'; // Use appropriate var
-                             setTimeout(() => { taskElement.style.backgroundColor = ''; }, 1000);
+                              taskElement.style.transform = 'scale(1.02)';
+                             setTimeout(() => {
+                                taskElement.style.backgroundColor = '';
+                                taskElement.style.transform = '';
+                             }, 1000);
                          } else {
                              openTaskModal(notif.id); // If task not visible (filtered out)
                          }
@@ -2137,10 +2320,10 @@
                 themeToggleBtn.setAttribute('aria-label', `Switch to ${isDarkMode ? 'light' : 'dark'} mode`);
 
                  // Update Flatpickr theme
-                const flatpickrCalendars = document.querySelectorAll('.flatpickr-calendar');
-                flatpickrCalendars.forEach(cal => {
-                    cal.classList.toggle('dark-mode', isDarkMode);
-                });
+                if (flatpickrInstance && flatpickrInstance.calendarContainer) {
+                     flatpickrInstance.calendarContainer.classList.toggle('dark-mode', isDarkMode);
+                }
+                // Also update any other date pickers if added later
             }
 
             // --- View Switching ---
@@ -2155,21 +2338,18 @@
                  graphViewBtn.classList.toggle('active', !isListView);
                  graphViewBtn.setAttribute('aria-pressed', !isListView);
 
-                 // Add transition classes
-                 taskListContainer.classList.add('view-transition');
-                 graphViewContainer.classList.add('view-transition');
+                 // Add transition classes for smoother visual change
+                 taskListContainer.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                 graphViewContainer.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
 
-                 // Use setTimeout to allow transition effect
-                 setTimeout(() => {
-                    taskListContainer.classList.toggle('view-hidden', !isListView);
-                    graphViewContainer.classList.toggle('view-hidden', isListView);
-                 }, 50); // Small delay to ensure classes are applied
 
-                 // Remove transition class after animation (optional cleanup)
-                 // setTimeout(() => {
-                 //    taskListContainer.classList.remove('view-transition');
-                 //    graphViewContainer.classList.remove('view-transition');
-                 // }, 400); // Match transition duration
+                 if (isListView) {
+                     graphViewContainer.classList.add('view-hidden');
+                     taskListContainer.classList.remove('view-hidden');
+                 } else {
+                     taskListContainer.classList.add('view-hidden');
+                     graphViewContainer.classList.remove('view-hidden');
+                 }
             }
 
 
@@ -2215,18 +2395,23 @@
             }
 
              /**
-             * Formats a Date object into 'YYYY-MM-DD HH:MM' string for storage/display.
+             * Formats a Date object into 'YYYY-MM-DD HH:MM' string for storage/Flatpickr.
              * @param {Date} date - The date object.
-             * @returns {string} - Formatted date-time string.
+             * @returns {string|null} - Formatted date-time string or null.
              */
             function formatDateTime(date) {
-                if (!date || !(date instanceof Date)) return null;
-                 const year = date.getFullYear();
-                 const month = String(date.getMonth() + 1).padStart(2, '0');
-                 const day = String(date.getDate()).padStart(2, '0');
-                 const hours = String(date.getHours()).padStart(2, '0');
-                 const minutes = String(date.getMinutes()).padStart(2, '0');
-                 return `${year}-${month}-${day} ${hours}:${minutes}`;
+                if (!date || !(date instanceof Date) || isNaN(date)) return null;
+                 try {
+                     const year = date.getFullYear();
+                     const month = String(date.getMonth() + 1).padStart(2, '0');
+                     const day = String(date.getDate()).padStart(2, '0');
+                     const hours = String(date.getHours()).padStart(2, '0');
+                     const minutes = String(date.getMinutes()).padStart(2, '0');
+                     return `${year}-${month}-${day} ${hours}:${minutes}`;
+                 } catch (e) {
+                     console.error("Error formatting date:", date, e);
+                     return null;
+                 }
             }
 
             /**
@@ -2235,7 +2420,7 @@
              * @returns {string} - Friendly date string.
              */
             function formatFriendlyDate(date) {
-                if (!date || !(date instanceof Date)) return 'No due date';
+                if (!date || !(date instanceof Date) || isNaN(date)) return 'No due date';
 
                 const now = new Date();
                 const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -2254,7 +2439,7 @@
                     dateString = date.toLocaleDateString(undefined, dateOptions);
                 }
 
-                // Check if time is set (not midnight)
+                // Check if time is set (not midnight 00:00)
                 if (date.getHours() !== 0 || date.getMinutes() !== 0) {
                     return `${dateString}, ${date.toLocaleTimeString(undefined, timeOptions)}`;
                 } else {
@@ -2274,72 +2459,125 @@
                     altInput: true, // Human-readable format
                     altFormat: "M j, Y h:i K", // Display format
                     time_24hr: false,
-                     onChange: function(selectedDates, dateStr, instance) {
-                         // Update the underlying hidden input value if needed,
-                         // though Flatpickr usually handles this with altInput
-                     },
                      onReady: function(selectedDates, dateStr, instance) {
                         // Apply dark mode on init if necessary
                         if (document.body.classList.contains('dark-mode')) {
                              instance.calendarContainer.classList.add('dark-mode');
                         }
                      },
-                      // Add more Flatpickr options as needed
+                     // Ensure theme updates when mode changes
+                     // Note: updateTheme function now handles this
                  });
              }
+
+            // --- Login/Registration Specific Functions ---
+
+            /**
+             * Handles the login form submission.
+             * @param {Event} e - Form submission event.
+             */
+            function handleLogin(e) {
+                e.preventDefault();
+                const username = loginUsernameInput.value.trim();
+                const password = loginPasswordInput.value; // In real app, send to server for verification
+
+                if (!username || !password) {
+                    addNotification("Please enter both username and password.", "warning");
+                    return;
+                }
+
+                // --- Simulation ---
+                // Check if user exists in our simulated storage
+                const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
+                if (registeredUsers[username]) {
+                    // In a real app, you'd verify the password hash here.
+                    // For simulation, just knowing the username exists is enough.
+                    localStorage.setItem('loggedInUser', username);
+                    checkLoginStatus(); // Transition to app view
+                } else {
+                    addNotification("Invalid username or password.", "error");
+                }
+                // --- End Simulation ---
+
+                loginForm.reset(); // Clear form fields
+            }
+
+            /**
+             * Opens the registration modal.
+             */
+            function openRegistrationModal() {
+                registrationForm.reset();
+                registrationModal.classList.add('show');
+                regUsernameInput.focus();
+            }
+
+             /**
+             * Handles the registration form submission.
+             * @param {Event} e - Form submission event.
+             */
+            function handleRegistration(e) {
+                e.preventDefault();
+                const username = regUsernameInput.value.trim();
+                const password = regPasswordInput.value;
+                const confirmPassword = regConfirmPasswordInput.value;
+
+                if (!username || !password || !confirmPassword) {
+                    addNotification("Please fill in all registration fields.", "warning");
+                    return;
+                }
+
+                if (password !== confirmPassword) {
+                    addNotification("Passwords do not match.", "warning");
+                    regConfirmPasswordInput.focus();
+                    return;
+                }
+
+                // --- Simulation ---
+                const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
+
+                if (registeredUsers[username]) {
+                    addNotification("Username already taken. Please choose another.", "warning");
+                    regUsernameInput.focus();
+                    return;
+                }
+
+                // Store the new user (insecurely for simulation)
+                registeredUsers[username] = { registeredAt: Date.now() }; // Store minimal info
+                localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+                // --- End Simulation ---
+
+                addNotification(`User "${username}" registered successfully! Please log in.`, "success");
+                closeModal(registrationModal);
+                loginUsernameInput.value = username; // Pre-fill login form
+                loginPasswordInput.focus();
+            }
 
 
             // --- Event Listeners ---
 
-            // Login/Logout
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                // Basic login simulation
-                const username = document.getElementById('username').value;
-                if (username) { // Simple check
-                    localStorage.setItem('loggedInUser', username);
-                    loginPage.style.display = 'none'; // Hide login page
-                    document.body.classList.remove('login-page');
-                    document.body.classList.add('app-view');
-                    appContainer.style.display = 'block'; // Show app
-                    appContainer.classList.add('fade-in');
-                    renderAll(); // Render app content after login
-                    startTotalTimer();
-                } else {
-                    addNotification("Please enter a username.", "warning");
-                }
-            });
+            // Login/Logout/Register
+            loginForm.addEventListener('submit', handleLogin);
+            registerLink.addEventListener('click', openRegistrationModal); // Changed from href="#"
+            registrationForm.addEventListener('submit', handleRegistration);
 
             logoutBtn.addEventListener('click', () => {
                  stopAllTimers(); // Stop timers before logging out
                  localStorage.removeItem('loggedInUser');
-                 // Optionally clear tasks? Or keep them associated with device?
-                 // localStorage.removeItem('tasks');
-                 // localStorage.removeItem('categories');
-                 // localStorage.removeItem('taskTimers');
-                 // localStorage.removeItem('totalElapsedToday');
+                 // Clear user-specific data? Optional.
+                 // Example: localStorage.removeItem(`user_${username}_tasks`);
 
-                 appContainer.style.display = 'none';
-                 appContainer.classList.remove('fade-in');
-                 document.body.classList.remove('app-view');
-                 document.body.classList.add('login-page');
-                 loginPage.style.display = 'flex'; // Show login page
+                 // Reset state variables that hold user data
+                 tasks = [];
+                 categories = new Set();
+                 selectedTaskIds = new Set();
+                 taskTimers = {};
+                 totalElapsedToday = 0;
+                 if(totalTimerInterval) clearInterval(totalTimerInterval);
+                 totalTimerInterval = null;
+
+                 checkLoginStatus(); // Transition back to login view
                  loginForm.reset();
-                 // Reset state variables if clearing data
-                 // tasks = []; categories = new Set(); selectedTaskIds = new Set(); taskTimers = {}; totalElapsedToday = 0;
             });
-
-             // Check login status on load
-            if (localStorage.getItem('loggedInUser')) {
-                loginPage.style.display = 'none';
-                document.body.classList.remove('login-page');
-                document.body.classList.add('app-view');
-                appContainer.style.display = 'block';
-            } else {
-                 appContainer.style.display = 'none';
-                 document.body.classList.add('login-page');
-                 loginPage.style.display = 'flex';
-            }
 
 
             // Theme Toggle
@@ -2348,24 +2586,24 @@
             // Modals
             addTaskBtn.addEventListener('click', () => openTaskModal());
             taskForm.addEventListener('submit', handleSaveTask);
-            // Close modal buttons
+            // Close modal buttons (now handles all modals)
             document.querySelectorAll('[data-dismiss="modal"]').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const modal = btn.closest('.modal');
                     if (modal) closeModal(modal);
                 });
             });
-            // Close modal on overlay click
+            // Close modal on overlay click (now handles all modals)
             window.addEventListener('click', (e) => {
-                if (e.target.classList.contains('modal') && e.target.style.display === 'flex') {
-                    closeModal(e.target);
-                }
-                // Close notification list if clicking outside
-                 if (!notificationBtn.contains(e.target) && !notificationList.contains(e.target)) {
+                 if (e.target.classList.contains('modal') && e.target.classList.contains('show')) {
+                     closeModal(e.target);
+                 }
+                 // Close notification list if clicking outside
+                 if (notificationList.style.display === 'block' && !notificationBtn.contains(e.target) && !notificationList.contains(e.target)) {
                     notificationList.style.display = 'none';
                  }
             });
-             // Close modal on Escape key
+             // Close modal on Escape key (now handles all modals)
             window.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     document.querySelectorAll('.modal.show').forEach(modal => closeModal(modal));
@@ -2375,14 +2613,16 @@
                     }
                 }
                 // Keyboard Shortcuts (Example)
-                if (e.altKey && e.key === 'n') { // Alt + N for New Task
-                     e.preventDefault();
-                     openTaskModal();
-                }
-                 if (e.altKey && e.key === 't') { // Alt + T for Theme Toggle
-                     e.preventDefault();
-                     toggleTheme();
-                }
+                 if (localStorage.getItem('loggedInUser')) { // Only allow shortcuts if logged in
+                     if (e.altKey && e.key === 'n') { // Alt + N for New Task
+                         e.preventDefault();
+                         openTaskModal();
+                     }
+                     if (e.altKey && e.key === 't') { // Alt + T for Theme Toggle
+                         e.preventDefault();
+                         toggleTheme();
+                     }
+                 }
             });
 
 
@@ -2411,14 +2651,21 @@
 
             // Import/Export
             exportBtn.addEventListener('click', () => {
+                if (!localStorage.getItem('loggedInUser')) return; // Prevent if not logged in
                 try {
-                    const dataStr = JSON.stringify({ tasks, categories: Array.from(categories) }, null, 2);
+                    // Export only tasks and categories for the current user
+                    const dataToExport = {
+                        tasks: tasks,
+                        categories: Array.from(categories)
+                    };
+                    const dataStr = JSON.stringify(dataToExport, null, 2);
                     const dataBlob = new Blob([dataStr], { type: 'application/json' });
                     const url = URL.createObjectURL(dataBlob);
                     const link = document.createElement('a');
                     link.href = url;
                     const timestamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-                    link.download = `tasks_export_${timestamp}.json`;
+                    const username = localStorage.getItem('loggedInUser') || 'user';
+                    link.download = `tasks_${username}_${timestamp}.json`;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -2430,8 +2677,12 @@
                 }
             });
 
-            importBtn.addEventListener('click', () => importFile.click());
+            importBtn.addEventListener('click', () => {
+                 if (!localStorage.getItem('loggedInUser')) return; // Prevent if not logged in
+                 importFile.click()
+            });
             importFile.addEventListener('change', (event) => {
+                if (!localStorage.getItem('loggedInUser')) return; // Prevent if not logged in
                 const file = event.target.files[0];
                 if (!file) return;
 
@@ -2439,23 +2690,24 @@
                 reader.onload = (e) => {
                     try {
                         const importedData = JSON.parse(e.target.result);
+                        // Validate imported structure
                         if (importedData && Array.isArray(importedData.tasks)) {
-                            // Option 1: Replace existing tasks
-                            // tasks = importedData.tasks;
+                            // Option 1: Replace existing tasks for the current user
+                            // tasks = importedData.tasks.map(t => ({ ...t, id: t.id || generateId() })); // Ensure IDs exist
                             // categories = new Set(importedData.categories || []);
 
-                            // Option 2: Merge with existing tasks (simple merge, no duplicate check)
+                            // Option 2: Merge with existing tasks (simple merge, gives new IDs to avoid conflicts)
                             const newTasks = importedData.tasks.map(t => ({ ...t, id: generateId() })); // Give new IDs
                             tasks = [...tasks, ...newTasks];
                             const importedCategories = new Set(importedData.categories || []);
                             importedCategories.forEach(cat => categories.add(cat));
 
 
-                            saveState();
+                            saveState(); // Save merged data for the current user
                             renderAll();
                             addNotification(`Successfully imported ${importedData.tasks.length} tasks.`, 'success');
                         } else {
-                            throw new Error('Invalid file format.');
+                            throw new Error('Invalid file format. Expected { tasks: [], categories?: [] }');
                         }
                     } catch (error) {
                         console.error("Import Error:", error);
@@ -2473,6 +2725,7 @@
 
             // General UI Handlers
             notificationBtn.addEventListener('click', (e) => {
+                if (!localStorage.getItem('loggedInUser')) return; // Prevent if not logged in
                 e.stopPropagation();
                 notificationList.style.display = notificationList.style.display === 'block' ? 'none' : 'block';
                 // Maybe clear count when opened? Or when notifications are clicked?
@@ -2480,12 +2733,18 @@
             });
             refreshLogo.addEventListener('click', (e) => {
                  e.preventDefault(); // Prevent navigation if it's an anchor
+                 if (!localStorage.getItem('loggedInUser')) return; // Prevent if not logged in
                  renderAll();
-                 addNotification('View refreshed.', 'info');
+                 addNotification('View refreshed.', 'info', 2000);
             });
 
             // Stop timers before unloading page
-            window.addEventListener('beforeunload', stopAllTimers);
+            window.addEventListener('beforeunload', () => {
+                // Only stop timers if a user is actually logged in
+                if (localStorage.getItem('loggedInUser')) {
+                    stopAllTimers();
+                }
+            });
 
         }); // End DOMContentLoaded
     </script>
