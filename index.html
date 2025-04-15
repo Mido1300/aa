@@ -1233,6 +1233,8 @@
             const cancelRegisterBtn = document.getElementById('cancelRegisterBtn');
             const submitRegisterBtn = document.getElementById('submitRegisterBtn');
             const loginBtn = document.getElementById('loginBtn');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
             const logoutBtn = document.getElementById('logoutBtn');
             const themeToggleBtn = document.getElementById('themeToggleBtn');
             const addTaskBtn = document.getElementById('addTaskBtn');
@@ -1339,6 +1341,40 @@
                 notificationList.style.display = notificationList.style.display === 'block' ? 'none' : 'block';
             });
 
+            // Login Validation
+            function validateEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+
+            loginBtn.addEventListener('click', function() {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+
+                if (!validateEmail(email)) {
+                    alert('Invalid email format');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    alert('Password must be at least 6 characters');
+                    return;
+                }
+
+                // For demo purposes, assume valid credentials are:
+                // Email: test@example.com, Password: password123
+                if (email === 'test@example.com' && password === 'password123') {
+                    loginContainer.style.display = 'none';
+                    document.body.classList.add('app-view');
+                    appContainer.style.display = 'block';
+                    localStorage.setItem('loggedIn', 'true');
+                    updateCharts();
+                    renderTasks();
+                } else {
+                    alert('Incorrect email or password');
+                }
+            });
+
             // Event Listeners
             registerLink.addEventListener('click', function() {
                 registerModal.style.display = 'flex';
@@ -1353,18 +1389,11 @@
                 alert('Account created successfully! Please login.');
             });
 
-            loginBtn.addEventListener('click', function() {
-                loginContainer.style.display = 'none';
-                document.body.classList.add('app-view');
-                appContainer.style.display = 'block';
-                updateCharts();
-                renderTasks();
-            });
-
             logoutBtn.addEventListener('click', function() {
                 appContainer.style.display = 'none';
                 document.body.classList.remove('app-view');
                 loginContainer.style.display = 'block';
+                localStorage.removeItem('loggedIn');
             });
 
             themeToggleBtn.addEventListener('click', function() {
@@ -1852,7 +1881,7 @@
                     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
                     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-                    for (let i = ceiling fan for bedroom0; i < firstDay; i++) {
+                    for (let i = 0; i < firstDay; i++) {
                         const emptyDay = document.createElement('div');
                         emptyDay.className = 'calendar-day';
                         grid.appendChild(emptyDay);
@@ -1968,14 +1997,6 @@
                 renderTasks();
                 updateCharts();
             }
-
-            loginBtn.addEventListener('click', function() {
-                localStorage.setItem('loggedIn', 'true');
-            });
-
-            logoutBtn.addEventListener('click', function() {
-                localStorage.removeItem('loggedIn');
-            });
         });
     </script>
 </body>
