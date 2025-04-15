@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo Application - Design Preview</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+    }
+
+    body {
+      background-color: #111827;
+      color: #ffffff;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: bold;
+      background: linear-gradient(to right, #8B0000, #B22222);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .theme-toggle {
+      padding: 8px 16px;
+      background-color: #A52A2A;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+    }
+
+    .theme-toggle:hover {
+      background-color: #B22222;
+      transform: translateY(-2px);
+    }
+
+    /* Import/Export Buttons */
+    .actions {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .action-btn {
+      padding: 10px 20px;
+      background-color: #A52A2A;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+    }
+
+    .action-btn:hover {
+      background-color: #B22222;
+      transform: translateY(-2px);
+    }
+
+    /* Filters Section */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 16px;
+      background-color: #1F2937;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      margin-bottom: 24px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .filter-group label {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .filter-group select,
+    .filter-group input {
+      padding: 8px;
+      background-color: #374151;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .filter-group select:focus,
+    .filter-group input:focus {
+      box-shadow: 0 0 0 2px #8B0000;
+    }
+
+    /* Form Section */
+    .todo-form {
+      padding: 24px;
+      background-color: #1F2937;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      padding: 10px;
+      background-color: #374151;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      box-shadow: 0 0 0 2px #8B0000;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .add-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #A52A2A;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+    }
+
+    .add-btn:hover {
+      background-color: #B22222;
+      transform: translateY(-2px);
+    }
+
+    /* Todo List */
+    .todo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .todo-item {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      background-color: #1F2937;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .todo-item.completed {
+      opacity: 0.5;
+    }
+
+    .todo-item:hover {
+      transform: translateY(-2px);
+    }
+
+    .todo-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #8B0000;
+      margin-right: 16px;
+    }
+
+    .todo-content {
+      flex: 1;
+    }
+
+    .todo-content h3 {
+      font-size: 1.125rem;
+      font-weight: 500;
+    }
+
+    .todo-content h3.completed {
+      text-decoration: line-through;
+      color: #9CA3AF;
+    }
+
+    .todo-content p {
+      font-size: 0.875rem;
+      color: #9CA3AF;
+    }
+
+    .priority-high {
+      color: #EF4444;
+    }
+
+    .priority-medium {
+      color: #F59E0B;
+    }
+
+    .priority-low {
+      color: #10B981;
+    }
+
+    .delete-btn {
+      padding: 8px 16px;
+      background-color: #A52A2A;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+    }
+
+    .delete-btn:hover {
+      background-color: #B22222;
+      transform: translateY(-2px);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 640px) {
+      .header {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .filters {
+        flex-direction: column;
+      }
+
+      .todo-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .delete-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Todo Application</h1>
+      <button class="theme-toggle">Switch to Light</button>
+    </div>
+
+    <!-- Import/Export Actions -->
+    <div class="actions">
+      <button class="action-btn">Export Todos</button>
+      <button class="action-btn">Import Todos</button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <div class="filter-group">
+        <label>Status</label>
+        <select>
+          <option>All</option>
+          <option>Active</option>
+          <option>Completed</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Category</label>
+        <input type="text" placeholder="Enter category">
+      </div>
+      <div class="filter-group">
+        <label>Priority</label>
+        <select>
+          <option>All</option>
+          <option>High</option>
+          <option>Medium</option>
+          <option>Low</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Due Date</label>
+        <select>
+          <option>All</option>
+          <option>Today</option>
+          <option>This Week</option>
+          <option>This Month</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Todo Form -->
+    <div class="todo-form">
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" placeholder="Enter task title" required>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea placeholder="Enter task description"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Due Date</label>
+        <input type="date">
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <input type="text" placeholder="Enter category">
+      </div>
+      <div class="form-group">
+        <label>Priority</label>
+        <select>
+          <option>High</option>
+          <option selected>Medium</option>
+          <option>Low</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea placeholder="Enter notes"></textarea>
+      </div>
+      <button class="add-btn">Add Task</button>
+    </div>
+
+    <!-- Todo List -->
+    <div class="todo-list">
+      <div class="todo-item">
+        <input type="checkbox">
+        <div class="todo-content">
+          <h3>Complete project</h3>
+          <p>Finish the todo app design.</p>
+          <p>Due: 2025-04-20</p>
+          <p>Category: Work</p>
+          <p class="priority-high">Priority: High</p>
+          <p>Notes: Focus on responsive design.</p>
+        </div>
+        <button class="delete-btn">Delete</button>
+      </div>
+
+      <div class="todo-item completed">
+        <input type="checkbox" checked>
+        <div class="todo-content">
+          <h3 class="completed">Buy groceries</h3>
+          <p>Category: Personal</p>
+          <p class="priority-low">Priority: Low</p>
+        </div>
+        <button class="delete-btn">Delete</button>
+      </div>
+
+      <div class="todo-item">
+        <input type="checkbox">
+        <div class="todo-content">
+          <h3>Plan meeting</h3>
+          <p>Due: 2025-04-18</p>
+          <p>Category: Work</p>
+          <p class="priority-medium">Priority: Medium</p>
+        </div>
+        <button class="delete-btn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Minimal interactivity for design preview
+    document.querySelector('.add-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Task added! (This is a design preview)');
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.parentElement.style.opacity = '0';
+        setTimeout(() => btn.parentElement.remove(), 300);
+      });
+    });
+
+    document.querySelector('.theme-toggle').addEventListener('click', () => {
+      document.body.style.backgroundColor = 
+        document.body.style.backgroundColor === 'rgb(17, 24, 39)' ? '#ffffff' : '#111827';
+      document.body.style.color = 
+        document.body.style.color === 'rgb(255, 255, 255)' ? '#000000' : '#ffffff';
+    });
+  </script>
+</head>
+</html>
