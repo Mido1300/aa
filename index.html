@@ -115,6 +115,10 @@
             background-color: var(--secondary-color);
         }
 
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+
         .register-link {
             margin-top: 20px;
             color: #666;
@@ -160,6 +164,7 @@
             font-size: 22px;
             margin-bottom: 20px;
             color: #333;
+            text-align: center;
         }
 
         .modal-footer {
@@ -196,6 +201,7 @@
             font-size: 24px;
             font-weight: 700;
             color: var(--primary-color);
+            cursor: pointer;
         }
 
         .header-actions {
@@ -267,11 +273,21 @@
             border-bottom: 1px solid #eee;
             font-size: 14px;
             color: #333;
+            cursor: pointer;
+        }
+
+        .notification-item.unread {
+            background-color: rgba(52, 152, 219, 0.1);
+            font-weight: 500;
         }
 
         .dark-mode .notification-item {
             color: #ccc;
             border-bottom-color: #444;
+        }
+
+        .dark-mode .notification-item.unread {
+            background-color: rgba(52, 152, 219, 0.2);
         }
 
         .notification-item:last-child {
@@ -309,9 +325,13 @@
         }
 
         .stat-card.total {
-            background-color: #3498db;
-            color: white;
+            background-color: #fff;
+            color: #333;
             width: 100%;
+        }
+
+        .dark-mode .stat-card.total {
+            color: #fff;
         }
 
         .stat-card.completed {
@@ -332,8 +352,12 @@
         }
 
         .stat-title {
-            font-size: 16px;
+            font-size: 18px;
             margin-bottom: 10px;
+        }
+
+        .dark-mode .stat-title {
+            color: #fff;
         }
 
         .stat-value {
@@ -456,6 +480,15 @@
         .graph-container {
             min-height: 400px;
             display: none;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .graph-item {
+            flex: 1;
+            max-width: 400px;
         }
 
         .task-list {
@@ -470,11 +503,11 @@
             border-radius: var(--border-radius);
             margin-bottom: 10px;
             box-shadow: var(--box-shadow);
-            background-color: var(--light-component);
+            background-color: #fff;
         }
 
         .dark-mode .task-item {
-            background-color: var(--dark-component);
+            background-color: #fff;
         }
 
         .task-item.completed {
@@ -595,6 +628,9 @@
             border-radius: var(--border-radius);
             padding: 20px;
             box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .dark-mode .insight-card {
@@ -605,17 +641,21 @@
             font-size: 18px;
             margin-bottom: 15px;
             color: #333;
+            text-align: center;
+            width: 100%;
         }
 
         .chart-container {
             height: 250px;
+            width: 80%;
             position: relative;
         }
 
         .task-distribution {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            display: flex;
+            flex-direction: column;
             gap: 15px;
+            width: 100%;
         }
 
         .distribution-item {
@@ -657,6 +697,10 @@
 
             .progress-container {
                 grid-template-columns: 1fr;
+            }
+
+            .graph-container {
+                flex-direction: column;
             }
         }
 
@@ -735,6 +779,17 @@
 
         .dark-mode ::-webkit-scrollbar-thumb {
             background: #666;
+        }
+
+        /* File Upload Centering */
+        #fileUploadContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #fileUpload {
+            width: auto;
         }
     </style>
 </head>
@@ -852,6 +907,104 @@
         </div>
     </div>
 
+    <!-- Edit Task Modal -->
+    <div class="modal" id="editTaskModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Edit Task</h2>
+            <div class="input-group">
+                <label for="editTaskTitle">Task Title *</label>
+                <input type="text" id="editTaskTitle" class="input-field" placeholder="Enter task title">
+            </div>
+            <div class="input-group">
+                <label for="editTaskDetails">Add More Details</label>
+                <textarea id="editTaskDetails" class="input-field" rows="4" placeholder="Enter task details"></textarea>
+            </div>
+            <div class="input-group">
+                <label for="editTaskCategory">Task Category</label>
+                <select id="editTaskCategory" class="input-field">
+                    <option value="">Select category</option>
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Health">Health</option>
+                    <option value="Education">Education</option>
+                    <option value="Finance">Finance</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="editTaskPriority">Priority</label>
+                <select id="editTaskPriority" class="input-field">
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="editTaskDueDate">Due Date</label>
+                <input type="text" id="editTaskDueDate" class="input-field" placeholder="Select due date" readonly>
+                <div class="calendar-dropdown" id="editCalendarDropdown">
+                    <div class="calendar-header">
+                        <span class="calendar-nav" id="editPrevMonth">&lt;</span>
+                        <span id="editCurrentMonth">August 2023</span>
+                        <span class="calendar-nav" id="editNextMonth">&gt;</span>
+                    </div>
+                    <div class="calendar-grid" id="editCalendarGrid"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancelEditTaskBtn">Cancel</button>
+                <button class="btn btn-green" id="saveTaskBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteConfirmModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Confirm Deletion</h2>
+            <p>Are you sure you want to delete this task?</p>
+            <div class="modal-footer">
+                <button class="btn" id="cancelDeleteBtn">No</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">Yes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Date Modal -->
+    <div class="modal" id="customDateModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Select Date Range</h2>
+            <div class="input-group">
+                <label for="customStartDate">Start Date</label>
+                <input type="text" id="customStartDate" class="input-field" placeholder="Select start date" readonly>
+                <div class="calendar-dropdown" id="startCalendarDropdown">
+                    <div class="calendar-header">
+                        <span class="calendar-nav" id="startPrevMonth">&lt;</span>
+                        <span id="startCurrentMonth">August 2023</span>
+                        <span class="calendar-nav" id="startNextMonth">&gt;</span>
+                    </div>
+                    <div class="calendar-grid" id="startCalendarGrid"></div>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="customEndDate">End Date</label>
+                <input type="text" id="customEndDate" class="input-field" placeholder="Select end date" readonly>
+                <div class="calendar-dropdown" id="endCalendarDropdown">
+                    <div class="calendar-header">
+                        <span class="calendar-nav" id="endPrevMonth">&lt;</span>
+                        <span id="endCurrentMonth">August 2023</span>
+                        <span class="calendar-nav" id="endNextMonth">&gt;</span>
+                    </div>
+                    <div class="calendar-grid" id="endCalendarGrid"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancelCustomDateBtn">Cancel</button>
+                <button class="btn btn-green" id="applyCustomDateBtn">Apply</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Export Modal -->
     <div class="modal" id="exportModal">
         <div class="modal-content">
@@ -884,8 +1037,8 @@
                 </div>
             </div>
             <div class="input-group" id="fileUploadContainer">
-                <label for="fileUpload" style="text-align: center;">Select File</label>
-                <input type="file" id="fileUpload" class="input-field" style="margin: 0 auto; display: block;">
+                <label for="fileUpload">Select File</label>
+                <input type="file" id="fileUpload" class="input-field">
             </div>
             <div class="input-group" id="urlInputContainer" style="display: none;">
                 <label for="urlInput">Enter URL</label>
@@ -901,16 +1054,16 @@
     <!-- Main App View -->
     <div class="app-container" id="appContainer">
         <header>
-            <div class="logo">To-Do App</div>
+            <div class="logo" id="refreshLogo">To-Do App</div>
             <div class="header-actions">
                 <button class="icon-btn notification-badge" id="notificationBtn">
                     <i class="fas fa-bell"></i>
                     <span class="badge" id="notificationCount">3</span>
                 </button>
                 <div class="notification-list" id="notificationList">
-                    <div class="notification-item">Task "Complete Project" is overdue!</div>
-                    <div class="notification-item">New task assigned to you!</div>
-                    <div class="notification-item">Task "Groceries" marked as completed.</div>
+                    <div class="notification-item unread">Task "Complete Project" is overdue!</div>
+                    <div class="notification-item unread">New task assigned to you!</div>
+                    <div class="notification-item unread">Task "Groceries" marked as completed.</div>
                 </div>
                 <button class="icon-btn" id="themeToggleBtn">
                     <i class="fas fa-moon"></i>
@@ -988,8 +1141,8 @@
                             <option value="custom">Custom</option>
                         </select>
                         <div class="custom-date" id="customDate">
-                            <input type="date" id="customStartDate" class="input-field">
-                            <input type="date" id="customEndDate" class="input-field">
+                            <input type="date" id="customStartDateDisplay" class="input-field" disabled>
+                            <input type="date" id="customEndDateDisplay" class="input-field" disabled>
                         </div>
                     </div>
                     <div class="filter-group">
@@ -1029,168 +1182,16 @@
             </div>
 
             <div class="tasks-container" id="tasksContainer">
-                <ul class="task-list" id="taskList">
-                    <li class="task-item pending" data-status="Pending" data-category="Work" data-priority="High" data-date="2023-05-10">
-                        <div class="task-info">
-                            <div class="task-title">Complete Project Documentation</div>
-                            <div class="task-details">
-                                <div class="task-detail">
-                                    <i class="fas fa-calendar"></i> Due: May 10, 2023
-                                </div>
-                                <div class="task-detail">
-                                    <i class="fas fa-tag"></i> Work
-                                </div>
-                                <span class="tag tag-high">High Priority</span>
-                            </div>
-                        </div>
-                        <div class="task-actions">
-                            <label class="toggle-switch">
-                                <input type="checkbox" class="status-toggle">
-                                <span class="slider"></span>
-                            </label>
-                            <button class="icon-btn">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="icon-btn">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </li>
-                    <li class="task-item completed" data-status="Completed" data-category="Shopping" data-priority="Medium" data-date="2023-05-08">
-                        <div class="task-info">
-                            <div class="task-title">Purchase Groceries</div>
-                            <div class="task-details">
-                                <div class="task-detail">
-                                    <i class="fas fa-calendar"></i> Due: May 8, 2023
-                                </div>
-                                <div class="task-detail">
-                                    <i class="fas fa-tag"></i> Shopping
-                                </div>
-                                <span class="tag tag-medium">Medium Priority</span>
-                            </div>
-                        </div>
-                        <div class="task-actions">
-                            <label class="toggle-switch">
-                                <input type="checkbox" class="status-toggle" checked>
-                                <span class="slider"></span>
-                            </label>
-                            <button class="icon-btn">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="icon-btn">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </li>
-                    <li class="task-item pending" data-status="Pending" data-category="Health" data-priority="Low" data-date="2023-05-15">
-                        <div class="task-info">
-                            <div class="task-title">Schedule Dentist Appointment</div>
-                            <div class="task-details">
-                                <div class="task-detail">
-                                    <i class="fas fa-calendar"></i> Due: May 15, 2023
-                                </div>
-                                <div class="task-detail">
-                                    <i class="fas fa-tag"></i> Health
-                                </div>
-                                <span class="tag tag-low">Low Priority</span>
-                            </div>
-                        </div>
-                        <div class="task-actions">
-                            <label class="toggle-switch">
-                                <input type="checkbox" class="status-toggle">
-                                <span class="slider"></span>
-                            </label>
-                            <button class="icon-btn">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="icon-btn">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </li>
-                    <li class="task-item pending" data-status="Pending" data-category="Education" data-priority="Medium" data-date="2023-05-12">
-                        <div class="task-info">
-                            <div class="task-title">Finish Online Course Module</div>
-                            <div class="task-details">
-                                <div class="task-detail">
-                                    <i class="fas fa-calendar"></i> Due: May 12, 2023
-                                </div>
-                                <div class="task-detail">
-                                    <i class="fas fa-tag"></i> Education
-                                </div>
-                                <span class="tag tag-medium">Medium Priority</span>
-                            </div>
-                        </div>
-                        <div class="task-actions">
-                            <label class="toggle-switch">
-                                <input type="checkbox" class="status-toggle">
-                                <span class="slider"></span>
-                            </label>
-                            <button class="icon-btn">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="icon-btn">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </li>
-                    <li class="task-item completed" data-status="Completed" data-category="Finance" data-priority="High" data-date="2023-05-07">
-                        <div class="task-info">
-                            <div class="task-title">Pay Utility Bills</div>
-                            <div class="task-details">
-                                <div class="task-detail">
-                                    <i class="fas fa-calendar"></i> Due: May 7, 2023
-                                </div>
-                                <div class="task-detail">
-                                    <i class="fas fa-tag"></i> Finance
-                                </div>
-                                <span class="tag tag-high">High Priority</span>
-                            </div>
-                        </div>
-                        <div class="task-actions">
-                            <label class="toggle-switch">
-                                <input type="checkbox" class="status-toggle" checked>
-                                <span class="slider"></span>
-                            </label>
-                            <button class="icon-btn">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="icon-btn">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </li>
-                    <li class="task-item pending" data-status="Pending" data-category="Personal" data-priority="Low" data-date="2023-05-20">
-                        <div class="task-info">
-                            <div class="task-title">Plan Weekend Trip</div>
-                            <div class="task-details">
-                                <div class="task-detail">
-                                    <i class="fas fa-calendar"></i> Due: May 20, 2023
-                                </div>
-                                <div class="task-detail">
-                                    <i class="fas fa-tag"></i> Personal
-                                </div>
-                                <span class="tag tag-low">Low Priority</span>
-                            </div>
-                        </div>
-                        <div class="task-actions">
-                            <label class="toggle-switch">
-                                <input type="checkbox" class="status-toggle">
-                                <span class="slider"></span>
-                            </label>
-                            <button class="icon-btn">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="icon-btn">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </li>
-                </ul>
+                <ul class="task-list" id="taskList"></ul>
             </div>
 
             <div class="graph-container" id="graphContainer">
-                <canvas id="taskGraph"></canvas>
+                <div class="graph-item">
+                    <canvas id="taskBarGraph"></canvas>
+                </div>
+                <div class="graph-item">
+                    <canvas id="taskDoughnutGraph"></canvas>
+                </div>
             </div>
 
             <div class="insights-container">
@@ -1240,6 +1241,21 @@
             const createTaskBtn = document.getElementById('createTaskBtn');
             const taskDueDate = document.getElementById('taskDueDate');
             const calendarDropdown = document.getElementById('calendarDropdown');
+            const editTaskModal = document.getElementById('editTaskModal');
+            const cancelEditTaskBtn = document.getElementById('cancelEditTaskBtn');
+            const saveTaskBtn = document.getElementById('saveTaskBtn');
+            const editTaskDueDate = document.getElementById('editTaskDueDate');
+            const editCalendarDropdown = document.getElementById('editCalendarDropdown');
+            const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+            const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            const customDateModal = document.getElementById('customDateModal');
+            const cancelCustomDateBtn = document.getElementById('cancelCustomDateBtn');
+            const applyCustomDateBtn = document.getElementById('applyCustomDateBtn');
+            const customStartDate = document.getElementById('customStartDate');
+            const customEndDate = document.getElementById('customEndDate');
+            const startCalendarDropdown = document.getElementById('startCalendarDropdown');
+            const endCalendarDropdown = document.getElementById('endCalendarDropdown');
             const listViewBtn = document.getElementById('listViewBtn');
             const graphViewBtn = document.getElementById('graphViewBtn');
             const tasksContainer = document.getElementById('tasksContainer');
@@ -1267,30 +1283,57 @@
             const resetFiltersBtn = document.getElementById('resetFiltersBtn');
             const customDate = document.getElementById('customDate');
             const taskList = document.getElementById('taskList');
+            const refreshLogo = document.getElementById('refreshLogo');
 
             // Task Data
             let tasks = [
-                { id: 1, title: "Complete Project Documentation", status: "Pending", category: "Work", priority: "High", dueDate: "2023-05-10" },
-                { id: 2, title: "Purchase Groceries", status: "Completed", category: "Shopping", priority: "Medium", dueDate: "2023-05-08" },
-                { id: 3, title: "Schedule Dentist Appointment", status: "Pending", category: "Health", priority: "Low", dueDate: "2023-05-15" },
-                { id: 4, title: "Finish Online Course Module", status: "Pending", category: "Education", priority: "Medium", dueDate: "2023-05-12" },
-                { id: 5, title: "Pay Utility Bills", status: "Completed", category: "Finance", priority: "High", dueDate: "2023-05-07" },
-                { id: 6, title: "Plan Weekend Trip", status: "Pending", category: "Personal", priority: "Low", dueDate: "2023-05-20" }
+                { id: 1, title: "Complete Project Documentation", details: "", status: "Pending", category: "Work", priority: "High", dueDate: "2023-05-10" },
+                { id: 2, title: "Purchase Groceries", details: "", status: "Completed", category: "Shopping", priority: "Medium", dueDate: "2023-05-08" },
+                { id: 3, title: "Schedule Dentist Appointment", details: "", status: "Pending", category: "Health", priority: "Low", dueDate: "2023-05-15" },
+                { id: 4, title: "Finish Online Course Module", details: "", status: "Pending", category: "Education", priority: "Medium", dueDate: "2023-05-12" },
+                { id: 5, title: "Pay Utility Bills", details: "", status: "Completed", category: "Finance", priority: "High", dueDate: "2023-05-07" },
+                { id: 6, title: "Plan Weekend Trip", details: "", status: "Pending", category: "Personal", priority: "Low", dueDate: "2023-05-20" }
             ];
 
             // Notifications
             let notifications = [
-                "Task 'Complete Project' is overdue!",
-                "New task assigned to you!",
-                "Task 'Groceries' marked as completed."
+                { id: 1, message: "Task 'Complete Project' is overdue!", read: false },
+                { id: 2, message: "New task assigned to you!", read: false },
+                { id: 3, message: "Task 'Groceries' marked as completed.", read: false }
             ];
+
+            let currentTaskId = null;
+            let customStart = null;
+            let customEnd = null;
 
             // Update Notification Count
             function updateNotificationCount() {
-                notificationCount.textContent = notifications.length;
+                const unreadCount = notifications.filter(n => !n.read).length;
+                notificationCount.textContent = unreadCount;
+                notificationCount.style.display = unreadCount > 0 ? 'flex' : 'none';
             }
 
-            updateNotificationCount();
+            function renderNotifications() {
+                notificationList.innerHTML = notifications.map(note => `
+                    <div class="notification-item ${note.read ? '' : 'unread'}" data-id="${note.id}">
+                        ${note.message}
+                    </div>
+                `).join('');
+                updateNotificationCount();
+
+                document.querySelectorAll('.notification-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const id = parseInt(this.dataset.id);
+                        const notification = notifications.find(n => n.id === id);
+                        if (notification) {
+                            notification.read = true;
+                            renderNotifications();
+                        }
+                    });
+                });
+            }
+
+            renderNotifications();
 
             notificationBtn.addEventListener('click', function() {
                 notificationList.style.display = notificationList.style.display === 'block' ? 'none' : 'block';
@@ -1315,6 +1358,7 @@
                 document.body.classList.add('app-view');
                 appContainer.style.display = 'block';
                 updateCharts();
+                renderTasks();
             });
 
             logoutBtn.addEventListener('click', function() {
@@ -1332,6 +1376,11 @@
 
             addTaskBtn.addEventListener('click', function() {
                 addTaskModal.style.display = 'flex';
+                document.getElementById('taskTitle').value = '';
+                document.getElementById('taskDetails').value = '';
+                document.getElementById('taskCategory').value = '';
+                document.getElementById('taskPriority').value = 'Medium';
+                document.getElementById('taskDueDate').value = '';
             });
 
             cancelTaskBtn.addEventListener('click', function() {
@@ -1340,13 +1389,15 @@
 
             createTaskBtn.addEventListener('click', function() {
                 const title = document.getElementById('taskTitle').value;
+                const details = document.getElementById('taskDetails').value;
                 const category = document.getElementById('taskCategory').value;
                 const priority = document.getElementById('taskPriority').value;
                 const dueDate = document.getElementById('taskDueDate').value;
                 if (title) {
                     const newTask = {
-                        id: tasks.length + 1,
+                        id: tasks.length ? Math.max(...tasks.map(t => t.id)) + 1 : 1,
                         title,
+                        details,
                         status: "Pending",
                         category,
                         priority,
@@ -1355,15 +1406,88 @@
                     tasks.push(newTask);
                     renderTasks();
                     addTaskModal.style.display = 'none';
-                    notifications.push(`New task "${title}" created!`);
+                    notifications.push({ id: notifications.length + 1, message: `New task "${title}" created!`, read: false });
                     renderNotifications();
                     updateCharts();
+                    updateStats();
                     alert('Task created successfully!');
                 }
             });
 
             taskDueDate.addEventListener('click', function() {
                 calendarDropdown.style.display = calendarDropdown.style.display === 'block' ? 'none' : 'block';
+            });
+
+            cancelEditTaskBtn.addEventListener('click', function() {
+                editTaskModal.style.display = 'none';
+            });
+
+            saveTaskBtn.addEventListener('click', function() {
+                const title = document.getElementById('editTaskTitle').value;
+                const details = document.getElementById('editTaskDetails').value;
+                const category = document.getElementById('editTaskCategory').value;
+                const priority = document.getElementById('editTaskPriority').value;
+                const dueDate = document.getElementById('editTaskDueDate').value;
+                if (title && currentTaskId) {
+                    const task = tasks.find(t => t.id === currentTaskId);
+                    if (task) {
+                        task.title = title;
+                        task.details = details;
+                        task.category = category;
+                        task.priority = priority;
+                        task.dueDate = dueDate;
+                        renderTasks();
+                        editTaskModal.style.display = 'none';
+                        notifications.push({ id: notifications.length + 1, message: `Task "${title}" updated!`, read: false });
+                        renderNotifications();
+                        updateCharts();
+                        updateStats();
+                        alert('Task updated successfully!');
+                    }
+                }
+            });
+
+            editTaskDueDate.addEventListener('click', function() {
+                editCalendarDropdown.style.display = editCalendarDropdown.style.display === 'block' ? 'none' : 'block';
+            });
+
+            cancelDeleteBtn.addEventListener('click', function() {
+                deleteConfirmModal.style.display = 'none';
+            });
+
+            confirmDeleteBtn.addEventListener('click', function() {
+                if (currentTaskId) {
+                    const task = tasks.find(t => t.id === currentTaskId);
+                    tasks = tasks.filter(t => t.id !== currentTaskId);
+                    renderTasks();
+                    deleteConfirmModal.style.display = 'none';
+                    notifications.push({ id: notifications.length + 1, message: `Task "${task.title}" deleted!`, read: false });
+                    renderNotifications();
+                    updateCharts();
+                    updateStats();
+                    alert('Task deleted successfully!');
+                }
+            });
+
+            cancelCustomDateBtn.addEventListener('click', function() {
+                customDateModal.style.display = 'none';
+            });
+
+            applyCustomDateBtn.addEventListener('click', function() {
+                customStart = customStartDate.value;
+                customEnd = customEndDate.value;
+                document.getElementById('customStartDateDisplay').value = customStart;
+                document.getElementById('customEndDateDisplay').value = customEnd;
+                customDateModal.style.display = 'none';
+                renderTasks();
+            });
+
+            customStartDate.addEventListener('click', function() {
+                startCalendarDropdown.style.display = startCalendarDropdown.style.display === 'block' ? 'none' : 'block';
+            });
+
+            customEndDate.addEventListener('click', function() {
+                endCalendarDropdown.style.display = endCalendarDropdown.style.display === 'block' ? 'none' : 'block';
             });
 
             listViewBtn.addEventListener('click', function() {
@@ -1373,7 +1497,7 @@
 
             graphViewBtn.addEventListener('click', function() {
                 tasksContainer.style.display = 'none';
-                graphContainer.style.display = 'block';
+                graphContainer.style.display = 'flex';
                 updateCharts();
             });
 
@@ -1439,7 +1563,7 @@
             });
 
             importFileBtn.addEventListener('click', function() {
-                fileUploadContainer.style.display = 'block';
+                fileUploadContainer.style.display = 'flex';
                 urlInputContainer.style.display = 'none';
             });
 
@@ -1448,12 +1572,19 @@
                 urlInputContainer.style.display = 'block';
             });
 
-            // Custom Date Filter
             dateFilter.addEventListener('change', function() {
-                customDate.style.display = dateFilter.value === 'custom' ? 'block' : 'none';
+                if (dateFilter.value === 'custom') {
+                    customDateModal.style.display = 'flex';
+                    customDate.style.display = 'block';
+                } else {
+                    customDate.style.display = 'none';
+                    customStart = null;
+                    customEnd = null;
+                    document.getElementById('customStartDateDisplay').value = '';
+                    document.getElementById('customEndDateDisplay').value = '';
+                }
             });
 
-            // Apply Filters
             applyFiltersBtn.addEventListener('click', function() {
                 renderTasks();
             });
@@ -1464,10 +1595,20 @@
                 categoryFilter.value = '';
                 priorityFilter.value = '';
                 customDate.style.display = 'none';
+                customStart = null;
+                customEnd = null;
+                document.getElementById('customStartDateDisplay').value = '';
+                document.getElementById('customEndDateDisplay').value = '';
                 renderTasks();
             });
 
-            // Render Tasks
+            refreshLogo.addEventListener('click', function() {
+                renderTasks();
+                updateCharts();
+                updateStats();
+                renderNotifications();
+            });
+
             function renderTasks() {
                 const status = statusFilter.value;
                 const category = categoryFilter.value;
@@ -1502,21 +1643,18 @@
                         }
                         return true;
                     });
-                } else if (date === 'custom') {
-                    const startDate = document.getElementById('customStartDate').value;
-                    const endDate = document.getElementById('customEndDate').value;
-                    if (startDate && endDate) {
-                        filteredTasks = filteredTasks.filter(task => {
-                            const dueDate = new Date(task.dueDate);
-                            return dueDate >= new Date(startDate) && dueDate <= new Date(endDate);
-                        });
-                    }
+                } else if (date === 'custom' && customStart && customEnd) {
+                    filteredTasks = filteredTasks.filter(task => {
+                        const dueDate = new Date(task.dueDate);
+                        return dueDate >= new Date(customStart) && dueDate <= new Date(customEnd);
+                    });
                 }
 
                 taskList.innerHTML = '';
                 filteredTasks.forEach(task => {
                     const li = document.createElement('li');
                     li.className = `task-item ${task.status.toLowerCase()}`;
+                    li.dataset.id = task.id;
                     li.dataset.status = task.status;
                     li.dataset.category = task.category;
                     li.dataset.priority = task.priority;
@@ -1529,7 +1667,7 @@
                                     <i class="fas fa-calendar"></i> Due: ${task.dueDate}
                                 </div>
                                 <div class="task-detail">
-                                    <i class="fas fa-tag"></i> ${task.category}
+                                    <i class="fas fa-tag"></i> ${task.category || 'None'}
                                 </div>
                                 <span class="tag tag-${task.priority.toLowerCase()}">${task.priority} Priority</span>
                             </div>
@@ -1539,10 +1677,10 @@
                                 <input type="checkbox" class="status-toggle" ${task.status === 'Completed' ? 'checked' : ''}>
                                 <span class="slider"></span>
                             </label>
-                            <button class="icon-btn">
+                            <button class="icon-btn edit-btn">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="icon-btn">
+                            <button class="icon-btn delete-btn">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -1553,17 +1691,31 @@
                         task.status = this.checked ? 'Completed' : 'Pending';
                         li.className = `task-item ${task.status.toLowerCase()}`;
                         li.dataset.status = task.status;
-                        notifications.push(`Task "${task.title}" marked as ${task.status.toLowerCase()}.`);
+                        notifications.push({ id: notifications.length + 1, message: `Task "${task.title}" marked as ${task.status.toLowerCase()}.`, read: false });
                         renderNotifications();
                         updateCharts();
                         updateStats();
+                    });
+
+                    li.querySelector('.edit-btn').addEventListener('click', function() {
+                        currentTaskId = task.id;
+                        document.getElementById('editTaskTitle').value = task.title;
+                        document.getElementById('editTaskDetails').value = task.details;
+                        document.getElementById('editTaskCategory').value = task.category;
+                        document.getElementById('editTaskPriority').value = task.priority;
+                        document.getElementById('editTaskDueDate').value = task.dueDate;
+                        editTaskModal.style.display = 'flex';
+                    });
+
+                    li.querySelector('.delete-btn').addEventListener('click', function() {
+                        currentTaskId = task.id;
+                        deleteConfirmModal.style.display = 'flex';
                     });
                 });
 
                 updateStats();
             }
 
-            // Update Stats
             function updateStats() {
                 const total = tasks.length;
                 const completed = tasks.filter(task => task.status === 'Completed').length;
@@ -1580,21 +1732,14 @@
                 document.querySelectorAll('.distribution-count')[2].textContent = lowPriority;
             }
 
-            // Render Notifications
-            function renderNotifications() {
-                notificationList.innerHTML = notifications.map(note => `<div class="notification-item">${note}</div>`).join('');
-                updateNotificationCount();
-            }
-
-            // Charts
-            let taskGraph, completionChart;
+            let taskBarGraph, taskDoughnutGraph, completionChart;
 
             function updateCharts() {
                 const completed = tasks.filter(task => task.status === 'Completed').length;
                 const pending = tasks.filter(task => task.status === 'Pending').length;
 
-                if (taskGraph) taskGraph.destroy();
-                taskGraph = new Chart(document.getElementById('taskGraph'), {
+                if (taskBarGraph) taskBarGraph.destroy();
+                taskBarGraph = new Chart(document.getElementById('taskBarGraph'), {
                     type: 'bar',
                     data: {
                         labels: ['Completed', 'Pending'],
@@ -1607,17 +1752,27 @@
                         }]
                     },
                     options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
                         scales: {
                             y: {
                                 beginAtZero: true,
                                 ticks: { stepSize: 1 }
                             }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            title: {
+                                display: true,
+                                text: 'Task Status (Bar)',
+                                font: { size: 16 }
+                            }
                         }
                     }
                 });
 
-                if (completionChart) completionChart.destroy();
-                completionChart = new Chart(document.getElementById('completionChart'), {
+                if (taskDoughnutGraph) taskDoughnutGraph.destroy();
+                taskDoughnutGraph = new Chart(document.getElementById('taskDoughnutGraph'), {
                     type: 'doughnut',
                     data: {
                         labels: ['Completed', 'Pending'],
@@ -1630,44 +1785,77 @@
                     },
                     options: {
                         responsive: true,
+                        maintainAspectRatio: false,
                         plugins: {
-                            legend: { position: 'top' }
+                            legend: { position: 'top' },
+                            title: {
+                                display: true,
+                                text: 'Task Status (Doughnut)',
+                                font: { size: 16 }
+                            }
+                        }
+                    }
+                });
+
+                if (completionChart) completionChart.destroy();
+                completionChart = new Chart(document.getElementById('completionChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Completed', 'Pending'],
+                        datasets: [{
+                            label: 'Tasks',
+                            data: [completed, pending],
+                            backgroundColor: ['#2ecc71', '#ccc'],
+                            borderColor: ['#27ae60', '#999'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1 }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            title: {
+                                display: true,
+                                text: 'Task Completion Rate',
+                                font: { size: 16 }
+                            }
                         }
                     }
                 });
             }
 
-            // Initialize Calendar
-            function initCalendar() {
+            function initCalendar(input, dropdown, grid, prev, next, current, selectCallback) {
                 const today = new Date();
                 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                const currentMonthElement = document.getElementById('currentMonth');
-                const calendarGrid = document.getElementById('calendarGrid');
-                const prevMonthBtn = document.getElementById('prevMonth');
-                const nextMonthBtn = document.getElementById('nextMonth');
-
                 let currentMonth = today.getMonth();
                 let currentYear = today.getFullYear();
 
                 function renderCalendar() {
-                    currentMonthElement.textContent = `${monthNames[currentMonth]} ${currentYear}`;
-                    calendarGrid.innerHTML = '';
+                    current.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+                    grid.innerHTML = '';
 
                     const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
                     dayNames.forEach(day => {
                         const dayHeader = document.createElement('div');
                         dayHeader.className = 'calendar-day';
                         dayHeader.textContent = day;
-                        calendarGrid.appendChild(dayHeader);
+                        grid.appendChild(dayHeader);
                     });
 
                     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
                     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-                    for (let i = 0; i < firstDay; i++) {
+                    for (let i = ceiling fan for bedroom0; i < firstDay; i++) {
                         const emptyDay = document.createElement('div');
                         emptyDay.className = 'calendar-day';
-                        calendarGrid.appendChild(emptyDay);
+                        grid.appendChild(emptyDay);
                     }
 
                     for (let i = 1; i <= daysInMonth; i++) {
@@ -1680,19 +1868,20 @@
                         }
 
                         dayElement.addEventListener('click', function() {
-                            document.querySelectorAll('.calendar-day').forEach(day => day.classList.remove('active'));
+                            document.querySelectorAll(`#${grid.id} .calendar-day`).forEach(day => day.classList.remove('active'));
                             dayElement.classList.add('active');
-                            taskDueDate.value = `${currentMonth + 1}/${i}/${currentYear}`;
-                            calendarDropdown.style.display = 'none';
+                            input.value = `${currentMonth + 1}/${i}/${currentYear}`;
+                            dropdown.style.display = 'none';
+                            if (selectCallback) selectCallback();
                         });
 
-                        calendarGrid.appendChild(dayElement);
+                        grid.appendChild(dayElement);
                     }
                 }
 
                 renderCalendar();
 
-                prevMonthBtn.addEventListener('click', function() {
+                prev.addEventListener('click', function() {
                     currentMonth--;
                     if (currentMonth < 0) {
                         currentMonth = 11;
@@ -1701,7 +1890,7 @@
                     renderCalendar();
                 });
 
-                nextMonthBtn.addEventListener('click', function() {
+                next.addEventListener('click', function() {
                     currentMonth++;
                     if (currentMonth > 11) {
                         currentMonth = 0;
@@ -1711,16 +1900,60 @@
                 });
 
                 document.addEventListener('click', function(event) {
-                    if (!taskDueDate.contains(event.target) && !calendarDropdown.contains(event.target)) {
-                        calendarDropdown.style.display = 'none';
+                    if (!input.contains(event.target) && !dropdown.contains(event.target)) {
+                        dropdown.style.display = 'none';
                     }
                 });
             }
 
-            // Close modals when clicking outside
+            initCalendar(
+                taskDueDate,
+                calendarDropdown,
+                document.getElementById('calendarGrid'),
+                document.getElementById('prevMonth'),
+                document.getElementById('nextMonth'),
+                document.getElementById('currentMonth')
+            );
+
+            initCalendar(
+                editTaskDueDate,
+                editCalendarDropdown,
+                document.getElementById('editCalendarGrid'),
+                document.getElementById('editPrevMonth'),
+                document.getElementById('editNextMonth'),
+                document.getElementById('editCurrentMonth')
+            );
+
+            initCalendar(
+                customStartDate,
+                startCalendarDropdown,
+                document.getElementById('startCalendarGrid'),
+                document.getElementById('startPrevMonth'),
+                document.getElementById('startNextMonth'),
+                document.getElementById('startCurrentMonth'),
+                () => {
+                    if (customEndDate.value) renderTasks();
+                }
+            );
+
+            initCalendar(
+                customEndDate,
+                endCalendarDropdown,
+                document.getElementById('endCalendarGrid'),
+                document.getElementById('endPrevMonth'),
+                document.getElementById('endNextMonth'),
+                document.getElementById('endCurrentMonth'),
+                () => {
+                    if (customStartDate.value) renderTasks();
+                }
+            );
+
             window.addEventListener('click', function(event) {
                 if (event.target === registerModal) registerModal.style.display = 'none';
                 if (event.target === addTaskModal) addTaskModal.style.display = 'none';
+                if (event.target === editTaskModal) editTaskModal.style.display = 'none';
+                if (event.target === deleteConfirmModal) deleteConfirmModal.style.display = 'none';
+                if (event.target === customDateModal) customDateModal.style.display = 'none';
                 if (event.target === exportModal) exportModal.style.display = 'none';
                 if (event.target === importModal) importModal.style.display = 'none';
                 if (!notificationBtn.contains(event.target) && !notificationList.contains(event.target)) {
@@ -1728,10 +1961,21 @@
                 }
             });
 
-            // Initialize
-            initCalendar();
-            renderTasks();
-            updateCharts();
+            if (localStorage.getItem('loggedIn') === 'true') {
+                loginContainer.style.display = 'none';
+                document.body.classList.add('app-view');
+                appContainer.style.display = 'block';
+                renderTasks();
+                updateCharts();
+            }
+
+            loginBtn.addEventListener('click', function() {
+                localStorage.setItem('loggedIn', 'true');
+            });
+
+            logoutBtn.addEventListener('click', function() {
+                localStorage.removeItem('loggedIn');
+            });
         });
     </script>
 </body>
