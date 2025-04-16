@@ -3,2248 +3,2031 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced To-Do App</title>
-    <meta name="theme-color" content="#6a040f"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>ProTask - Task Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         :root {
-            /* --- Light Mode (Restored from Original) --- */
-            --lm-page-bg-start: #6a040f; /* Dark Red */
-            --lm-page-bg-end: #9d0208;   /* Slightly Lighter Red */
-            --lm-component-bg: #ffffff; /* WHITE component background */
-            --lm-text: #212529;     /* DARK text */
-            --lm-muted-text: #6c757d; /* Grayish text */
-            --lm-border: #dee2e6;   /* Light gray border */
-            --lm-input-bg: #f8f9fa;  /* Very light gray input bg */
-            --lm-input-border: #ced4da; /* Standard input border */
-            --lm-shadow-color: rgba(0, 0, 0, 0.1); /* Lighter shadow */
-            /* Accents kept from original */
-            --lm-primary-accent: #6a040f; /* Dark Red for accents */
-            --lm-secondary-accent: #9d0208; /* Slightly Lighter Red */
-            --lm-hover-bg: #f1f3f5;  /* Light hover */
-            --lm-completed-text: #495057;
-            --lm-completed-bg: #e9ecef;
+            /* Light Mode Colors */
+            --lm-bg: #f8f9fa;
+            --lm-text: #212529;
+            --lm-muted-text: #6c757d;
+            --lm-component-bg: #ffffff;
+            --lm-shadow-color: rgba(0, 0, 0, 0.1);
+            --lm-primary: #0b5ed7;
+            --lm-success: #28a745;
+            --lm-warning: #ffc107;
+            --lm-danger: #dc3545;
+            --lm-input-bg: #f1f3f5;
+            --lm-task-selected-bg: rgba(0, 123, 255, 0.1);
+            --lm-multi-select-bg: rgba(0, 123, 255, 0.1);
+            --lm-multi-select-border: var(--lm-primary);
+            --lm-alert-expired-bg: rgba(220, 53, 69, 0.1);
+            --lm-alert-expired-text: var(--lm-danger);
+            --lm-alert-upcoming-bg: rgba(255, 193, 7, 0.1);
+            --lm-alert-upcoming-text: var(--lm-warning);
+            --border-radius: 8px;
+            --animation-duration: 0.3s;
 
-            /* --- Dark Mode (Restored/Adapted from Original) --- */
-            --dm-page-bg-start: #1a1a1a; /* Very Dark Gray/Black */
-            --dm-page-bg-end: #2c2c2c;   /* Dark Gray */
-            --dm-component-bg: #343a40; /* Dark component background */
-            --dm-text: #f8f9fa;     /* LIGHT text */
-            --dm-muted-text: #adb5bd; /* Lighter grayish text */
-            --dm-border: #495057;   /* Darker gray border */
-            --dm-input-bg: #495057;  /* Dark input bg */
-            --dm-input-border: #6c757d; /* Medium gray input border */
-            --dm-shadow-color: rgba(255, 255, 255, 0.05); /* Subtle light shadow */
-             /* Accents adapted for dark mode visibility from original palette idea*/
-            --dm-primary-accent: #e85d04; /* Orange accent for dark mode */
-            --dm-secondary-accent: #f48c06; /* Lighter Orange */
-            --dm-hover-bg: #495057;  /* Darker hover */
-            --dm-completed-text: #adb5bd;
-            --dm-completed-bg: #495057;
-
-             /* --- NEW Variables (Consistent Colors) --- */
-             /* Use standard alert colors, slightly adapted for themes */
-            --lm-due-overdue: #dc3545; /* Red */
-            --lm-due-soon: #ffc107;    /* Yellow */
-            --lm-due-ok: #28a745;      /* Green */
-            --lm-timer-active: #007bff; /* Blue for active timer */
-
-            --dm-due-overdue: #f76f7c; /* Lighter Red */
-            --dm-due-soon: #ffd966;    /* Lighter Yellow */
-            --dm-due-ok: #64c97a;      /* Lighter Green */
-            --dm-timer-active: #5cadff; /* Lighter Blue */
-
-
-            /* --- Default to Light Mode --- */
-            --page-bg-start: var(--lm-page-bg-start);
-            --page-bg-end: var(--lm-page-bg-end);
-            --component-bg: var(--lm-component-bg);
-            --text-color: var(--lm-text);
-            --muted-text-color: var(--lm-muted-text);
-            --border-color: var(--lm-border);
-            --input-bg: var(--lm-input-bg);
-            --input-border: var(--lm-input-border);
-            --shadow-color: var(--lm-shadow-color);
-            --primary-accent: var(--lm-primary-accent);
-            --secondary-accent: var(--lm-secondary-accent);
-            --hover-bg: var(--lm-hover-bg);
-            --completed-text: var(--lm-completed-text);
-            --completed-bg: var(--lm-completed-bg);
-            --due-overdue: var(--lm-due-overdue);
-            --due-soon: var(--lm-due-soon);
-            --due-ok: var(--lm-due-ok);
-            --timer-active: var(--lm-timer-active);
+            /* Dark Mode Colors */
+            --dm-bg: #121212;
+            --dm-text: #e0e0e0;
+            --dm-muted-text: #b0b0b0;
+            --dm-component-bg: #1e1e1e;
+            --dm-shadow-color: rgba(0, 0, 0, 0.5);
+            --dm-primary: #58a6ff;
+            --dm-success: #56d364;
+            --dm-warning: #ffca28;
+            --dm-danger: #f87171;
+            --dm-input-bg: #2d2d2d;
+            --dm-task-selected-bg: rgba(88, 166, 255, 0.2);
+            --dm-multi-select-bg: rgba(88, 166, 255, 0.2);
+            --dm-multi-select-border: var(--dm-primary);
+            --dm-alert-expired-bg: rgba(248, 113, 113, 0.15);
+            --dm-alert-expired-text: var(--dm-danger);
+            --dm-alert-upcoming-bg: rgba(255, 202, 40, 0.15);
+            --dm-alert-upcoming-text: var(--dm-warning);
         }
 
-        html.dark-mode {
-            --page-bg-start: var(--dm-page-bg-start);
-            --page-bg-end: var(--dm-page-bg-end);
-            --component-bg: var(--dm-component-bg);
-            --text-color: var(--dm-text);
-            --muted-text-color: var(--dm-muted-text);
-            --border-color: var(--dm-border);
-            --input-bg: var(--dm-input-bg);
-            --input-border: var(--dm-input-border);
-            --shadow-color: var(--dm-shadow-color);
-            --primary-accent: var(--dm-primary-accent);
-            --secondary-accent: var(--dm-secondary-accent);
-            --hover-bg: var(--dm-hover-bg);
-            --completed-text: var(--dm-completed-text);
-            --completed-bg: var(--dm-completed-bg);
-            --due-overdue: var(--dm-due-overdue);
-            --due-soon: var(--dm-due-soon);
-            --due-ok: var(--dm-due-ok);
-            --timer-active: var(--dm-timer-active);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* General Styles */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Restored Original Background */
-            background: linear-gradient(135deg, var(--page-bg-start), var(--page-bg-end));
-            color: var(--text-color); /* Text color contrasts with component bg */
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--lm-bg);
+            color: var(--lm-text);
             line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start; /* Align to top */
-            padding: 20px;
-            transition: background 0.3s ease, color 0.3s ease;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        .container {
-            background: var(--component-bg); /* White/Dark Gray */
-            padding: 25px 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px var(--shadow-color);
-            width: 100%;
-            max-width: 800px;
-            transition: background 0.3s ease, box-shadow 0.3s ease;
-            margin-top: 20px;
-            color: var(--text-color); /* Ensure text inside container has correct color */
+        body.dark-mode {
+            background-color: var(--dm-bg);
+            color: var(--dm-text);
         }
 
-        /* Header */
-        .header {
+        header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            padding: 1rem 2rem;
+            background-color: var(--lm-component-bg);
+            box-shadow: 0 2px 4px var(--lm-shadow-color);
         }
-        .header h1 {
-            color: var(--primary-accent); /* Use primary accent for title */
-            font-size: 1.8em;
-            margin: 0;
+
+        body.dark-mode header {
+            background-color: var(--dm-component-bg);
+            box-shadow: 0 2px 4px var(--dm-shadow-color);
         }
-        .header-controls {
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .header-actions {
             display: flex;
             align-items: center;
-            gap: 15px; /* Space between icons */
+            gap: 1rem;
         }
-         /* Icons should use muted text color by default */
-        .control-icon, .theme-switcher, #notificationBtn {
+
+        .time-tracker-display {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--lm-muted-text);
+            padding: 0.5rem;
+        }
+
+        body.dark-mode .time-tracker-display {
+            color: var(--dm-muted-text);
+        }
+
+        #globalTimeTracker {
+            background-color: var(--lm-input-bg);
+            border-radius: var(--border-radius);
+            padding: 0.5rem 1rem;
+        }
+
+        body.dark-mode #globalTimeTracker {
+            background-color: var(--dm-input-bg);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-green {
+            background-color: var(--lm-success);
+            color: #fff;
+        }
+
+        body.dark-mode .btn-green {
+            background-color: var(--dm-success);
+        }
+
+        .btn-danger {
+            background-color: var(--lm-danger);
+            color: #fff;
+        }
+
+        body.dark-mode .btn-danger {
+            background-color: var(--dm-danger);
+        }
+
+        .icon-btn {
             background: none;
             border: none;
-            color: var(--muted-text-color);
-            font-size: 1.2em;
             cursor: pointer;
-            transition: color 0.2s ease;
-            padding: 5px;
-            position: relative; /* For notification count */
-        }
-        .control-icon:hover, .theme-switcher:hover, #notificationBtn:hover {
-            color: var(--primary-accent); /* Use primary accent for hover */
+            font-size: 1.2rem;
+            color: var(--lm-muted-text);
+            padding: 0.5rem;
+            border-radius: var(--border-radius);
+            transition: color 0.2s, background-color 0.2s;
         }
 
-        /* Active Timer Display in Header */
-        #active-timer-display {
-            font-size: 0.9em;
-            color: var(--timer-active); /* Use specific timer color */
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        body.dark-mode .icon-btn {
+            color: var(--dm-muted-text);
+        }
+
+        .icon-btn:hover {
+            background-color: var(--lm-input-bg);
+            color: var(--lm-text);
+        }
+
+        body.dark-mode .icon-btn:hover {
+            background-color: var(--dm-input-bg);
+            color: var(--dm-text);
+        }
+
+        .notification-badge {
+            position: relative;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--lm-danger);
+            color: #fff;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
             font-weight: bold;
-        }
-        #active-timer-display .fa-stopwatch {
-             margin-right: 3px;
-        }
-        #active-timer-display span {
-            min-width: 60px; /* Ensure space for time */
-            display: inline-block;
-            text-align: right;
+            display: none;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Summary Stats */
-        .summary-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+        body.dark-mode .badge {
+            background-color: var(--dm-danger);
         }
-        .stat-card {
-            /* Use input background for cards to make them distinct */
-            background-color: var(--input-bg);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
+
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 5rem auto;
+            padding: 2rem;
+            background-color: var(--lm-component-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px var(--lm-shadow-color);
+        }
+
+        body.dark-mode .login-container {
+            background-color: var(--dm-component-bg);
+            box-shadow: 0 4px 12px var(--dm-shadow-color);
+        }
+
+        .login-container h2 {
+            margin-bottom: 1.5rem;
             text-align: center;
-            box-shadow: 0 2px 5px var(--shadow-color);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            color: var(--text-color); /* Ensure text inside card is readable */
-        }
-        .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 10px var(--shadow-color);
-        }
-        .stat-card h3 {
-            font-size: 0.9em;
-            color: var(--muted-text-color); /* Muted for title */
-            margin-bottom: 8px;
-            font-weight: normal;
-        }
-        .stat-card p {
-            font-size: 1.6em;
-            font-weight: bold;
-            color: var(--primary-accent); /* Use primary accent for number */
         }
 
-        /* Input Area */
-        .input-area {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap; /* Wrap on smaller screens */
-        }
-        .input-area input[type="text"],
-        .input-area input[type="text"].flatpickr-input {
-            flex-grow: 1;
-            padding: 10px 15px;
-            border: 1px solid var(--input-border);
-            border-radius: 5px;
-            background-color: var(--input-bg);
-            color: var(--text-color);
-            font-size: 1em;
-            transition: border-color 0.2s ease, background-color 0.2s ease;
-            min-width: 150px; /* Min width for inputs */
-        }
-         .input-area input[type="text"]:focus,
-         .input-area input[type="text"].flatpickr-input:focus {
-            outline: none;
-            border-color: var(--primary-accent);
-            /* Create a subtle focus ring using the primary accent */
-            box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-accent) 20%, transparent);
-        }
-        .input-area input[type="text"]#taskDueDate {
-           flex-grow: 0; /* Don't let date input grow too much */
-           width: 150px; /* Fixed width for date */
+        .form-group {
+            margin-bottom: 1rem;
         }
 
-        /* Buttons (General) */
-        .btn {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.2s ease, transform 0.1s ease;
-            display: inline-flex; /* Align icon and text */
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #dee2e6;
+            border-radius: var(--border-radius);
+            background-color: var(--lm-input-bg);
+            color: var(--lm-text);
+            font-size: 0.9rem;
+        }
+
+        body.dark-mode input[type="email"],
+        body.dark-mode input[type="password"],
+        body.dark-mode input[type="text"],
+        body.dark-mode textarea,
+        body.dark-mode select {
+            border-color: #444;
+            background-color: var(--dm-input-bg);
+            color: var(--dm-text);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
             align-items: center;
-            gap: 8px; /* Space between icon and text */
-        }
-        .btn:active {
-            transform: scale(0.98);
+            z-index: 1000;
         }
 
-        /* Primary Button (Uses Accent Colors) */
-        .btn-primary {
-            background-color: var(--primary-accent);
-            color: white; /* Assume white text contrasts well with accents */
-        }
-        .btn-primary:hover {
-            background-color: var(--secondary-accent);
-        }
-
-        /* Secondary Button (Outline Style) */
-        .btn-secondary {
-            background-color: var(--component-bg); /* Use component bg */
-            color: var(--primary-accent);
-            border: 1px solid var(--primary-accent);
-        }
-        .btn-secondary:hover {
-             /* Use subtle hover background */
-            background-color: color-mix(in srgb, var(--primary-accent) 10%, var(--component-bg));
+        .modal-content {
+            background-color: var(--lm-component-bg);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px var(--lm-shadow-color);
         }
 
-        /* Task Actions Area (Add/Import/Export) - Moved */
-        .task-actions-area {
+        body.dark-mode .modal-content {
+            background-color: var(--dm-component-bg);
+            box-shadow: 0 4px 12px var(--dm-shadow-color);
+        }
+
+        .modal-header {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
         }
 
-        /* Tasks Section */
-        .tasks-section {
-            margin-top: 15px;
+        .modal-header h3 {
+            margin: 0;
         }
-        .tasks-section h2 {
-            margin-bottom: 15px;
-            color: var(--text-color); /* Use standard text color */
+
+        .modal-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: var(--lm-component-bg);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px var(--lm-shadow-color);
+            text-align: center;
+        }
+
+        body.dark-mode .stat-card {
+            background-color: var(--dm-component-bg);
+            box-shadow: 0 2px 8px var(--dm-shadow-color);
+        }
+
+        .stat-card.total {
+            border-left: 4px solid var(--lm-primary);
+        }
+
+        .stat-card.completed {
+            border-left: 4px solid var(--lm-success);
+        }
+
+        .stat-card.pending {
+            border-left: 4px solid var(--lm-warning);
+        }
+
+        body.dark-mode .stat-card.total {
+            border-left-color: var(--dm-primary);
+        }
+
+        body.dark-mode .stat-card.completed {
+            border-left-color: var(--dm-success);
+        }
+
+        body.dark-mode .stat-card.pending {
+            border-left-color: var(--dm-warning);
+        }
+
+        .stat-title {
+            font-size: 0.9rem;
+            color: var(--lm-muted-text);
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark-mode .stat-title {
+            color: var(--dm-muted-text);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .progress-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-item {
+            background-color: var(--lm-component-bg);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px var(--lm-shadow-color);
+            text-align: center;
+        }
+
+        body.dark-mode .progress-item {
+            background-color: var(--dm-component-bg);
+            box-shadow: 0 2px 8px var(--dm-shadow-color);
+        }
+
+        .progress-title {
+            font-size: 0.9rem;
+            color: var(--lm-muted-text);
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark-mode .progress-title {
+            color: var(--dm-muted-text);
+        }
+
+        .progress-value {
+            font-size: 1.4rem;
             font-weight: 600;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
+            color: var(--lm-primary);
         }
 
-        #taskList {
+        body.dark-mode .progress-value {
+            color: var(--dm-primary);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .action-buttons-left,
+        .action-buttons-right {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .multi-select-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            background-color: var(--lm-multi-select-bg);
+            border: 1px solid var(--lm-multi-select-border);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px var(--lm-shadow-color);
+            animation: slideDown var(--animation-duration) ease-out;
+        }
+
+        body.dark-mode .multi-select-bar {
+            background-color: var(--dm-multi-select-bg);
+            border-color: var(--dm-multi-select-border);
+            box-shadow: 0 4px 12px var(--dm-shadow-color);
+        }
+
+        .selected-count {
+            font-weight: 600;
+            color: var(--lm-text);
+        }
+
+        body.dark-mode .selected-count {
+            color: var(--dm-text);
+        }
+
+        .multi-select-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .todo-section {
+            background-color: var(--lm-component-bg);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px var(--lm-shadow-color);
+            margin-bottom: 2rem;
+        }
+
+        body.dark-mode .todo-section {
+            background-color: var(--dm-component-bg);
+            box-shadow: 0 4px 12px var(--dm-shadow-color);
+        }
+
+        .todo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .todo-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.9rem;
+            color: var(--lm-muted-text);
+        }
+
+        body.dark-mode .filter-group label {
+            color: var(--dm-muted-text);
+        }
+
+        .tasks-container,
+        .graph-container {
+            transition: opacity var(--animation-duration) ease, transform var(--animation-duration) ease;
+        }
+
+        .tasks-container.hidden,
+        .graph-container.hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            display: none;
+        }
+
+        .tasks-container.visible,
+        .graph-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .task-list {
             list-style: none;
-            padding: 0;
-            max-height: 400px; /* Limit height and allow scrolling */
-            overflow-y: auto; /* Add scrollbar when needed */
-            /* Custom Scrollbar - use accent */
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary-accent) var(--input-bg);
-        }
-        #taskList::-webkit-scrollbar {
-            width: 8px;
-        }
-        #taskList::-webkit-scrollbar-track {
-            background: var(--input-bg);
-            border-radius: 4px;
-        }
-        #taskList::-webkit-scrollbar-thumb {
-            background-color: var(--primary-accent);
-            border-radius: 4px;
-            border: 2px solid var(--input-bg);
         }
 
         .task-item {
-            /* Use component background for task items */
-            background-color: var(--component-bg);
-            border: 1px solid var(--border-color);
-            padding: 10px 15px;
-            margin-bottom: 10px;
-            border-radius: 6px;
             display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: background-color 0.3s ease, opacity 0.3s ease, border-color 0.3s ease;
-            position: relative; /* For positioning notes */
-            cursor: grab; /* Indicate draggable */
-            color: var(--text-color); /* Ensure text has correct color */
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 1rem;
+            border-left: 4px solid transparent;
+            background-color: var(--lm-component-bg);
+            margin-bottom: 0.5rem;
+            border-radius: var(--border-radius);
+            transition: background-color 0.2s, border-left-color 0.2s;
+            animation: fadeInTask var(--animation-duration) ease-out;
         }
-        .task-item:hover {
-            /* Use the general hover background */
-            background-color: var(--hover-bg);
+
+        body.dark-mode .task-item {
+            background-color: var(--dm-component-bg);
         }
+
+        .task-item.completed {
+            border-left-color: var(--lm-success);
+        }
+
+        .task-item.pending {
+            border-left-color: var(--lm-warning);
+        }
+
+        body.dark-mode .task-item.completed {
+            border-left-color: var(--dm-success);
+        }
+
+        body.dark-mode .task-item.pending {
+            border-left-color: var(--dm-warning);
+        }
+
+        .task-item.selected {
+            background-color: var(--lm-task-selected-bg);
+        }
+
+        body.dark-mode .task-item.selected {
+            background-color: var(--dm-task-selected-bg);
+        }
+
         .task-item.dragging {
             opacity: 0.5;
-            background: var(--secondary-accent);
-            cursor: grabbing;
-        }
-        .task-item.completed {
-            /* Use specific completed background/text colors */
-            background-color: var(--completed-bg);
-            border-color: transparent; /* Remove border for completed */
-            color: var(--completed-text);
-        }
-        .task-item.completed .task-text {
-            text-decoration: line-through;
-            color: var(--completed-text); /* Ensure text color matches */
+            background-color: var(--lm-task-selected-bg);
+            transform: scale(0.98);
         }
 
-        .task-item input[type="checkbox"] {
-            margin-right: 5px; /* Spacing between checkbox and text */
-            cursor: pointer;
-            accent-color: var(--primary-accent); /* Color the checkbox */
-            width: 18px; height: 18px; /* Make checkbox slightly larger */
-            flex-shrink: 0; /* Prevent checkbox shrinking */
+        body.dark-mode .task-item.dragging {
+            background-color: var(--dm-task-selected-bg);
         }
 
-        .task-content {
-            flex-grow: 1;
+        .task-item.drag-over {
+            border-left-width: 8px;
+            border-left-color: var(--lm-primary);
+        }
+
+        body.dark-mode .task-item.drag-over {
+            border-left-color: var(--dm-primary);
+        }
+
+        @keyframes fadeInTask {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .task-item-main {
+            flex: 1;
             display: flex;
-            flex-direction: column; /* Stack text and meta info */
-            overflow: hidden; /* Prevent content overflow */
+            align-items: flex-start;
+            gap: 0.75rem;
         }
-        .task-text {
-            /* Inherit color from task-item */
-            font-size: 1em;
-            word-break: break-word; /* Prevent long text overflow */
-            transition: color 0.3s ease;
-        }
-        .task-meta {
+
+        .task-checkbox-container {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 0.8em;
-            color: var(--muted-text-color); /* Use muted color for meta */
-            margin-top: 4px; /* Space between text and meta */
-            flex-wrap: wrap; /* Allow meta items to wrap */
         }
-        .due-date-indicator {
+
+        .task-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+
+        .task-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .task-detail {
+            font-size: 0.85rem;
+            color: var(--lm-muted-text);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        body.dark-mode .task-detail {
+            color: var(--dm-muted-text);
+        }
+
+        .task-description,
+        .task-notes {
+            font-size: 0.85rem;
+            color: var(--lm-muted-text);
+            margin-top: 0.3rem;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        body.dark-mode .task-description,
+        body.dark-mode .task-notes {
+            color: var(--dm-muted-text);
+        }
+
+        .task-notes {
+            max-height: 60px;
+            overflow-y: auto;
+        }
+
+        .due-date-alert {
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 500;
-        }
-        /* Use specific due date variables */
-        .due-date-indicator.overdue { color: var(--due-overdue); }
-        .due-date-indicator.soon { color: var(--due-soon); }
-        .due-date-indicator.ok { color: var(--due-ok); }
-        .due-date-indicator .fa-calendar-alt,
-        .due-date-indicator .fa-clock,
-        .due-date-indicator .fa-exclamation-circle {
-            margin-right: 3px;
+            gap: 0.3rem;
+            line-height: 1.2;
         }
 
-        .task-notes-preview {
-           font-style: italic;
-           display: inline-flex; /* Use flex for alignment */
-           align-items: center;
-           gap: 4px;
+        .alert-expired {
+            background-color: var(--lm-alert-expired-bg);
+            color: var(--lm-alert-expired-text);
+            border: 1px solid var(--lm-alert-expired-text);
         }
-        .task-notes-preview .fa-sticky-note {
-            margin-left: 0; /* Removed margin, use gap */
+
+        .alert-upcoming {
+            background-color: var(--lm-alert-upcoming-bg);
+            color: var(--lm-alert-upcoming-text);
+            border: 1px solid var(--lm-alert-upcoming-text);
+        }
+
+        .alert-ontime {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--lm-success);
+            border: 1px solid var(--lm-success);
+        }
+
+        body.dark-mode .alert-expired {
+            background-color: var(--dm-alert-expired-bg);
+            color: var(--dm-alert-expired-text);
+            border-color: var(--dm-alert-expired-text);
+        }
+
+        body.dark-mode .alert-upcoming {
+            background-color: var(--dm-alert-upcoming-bg);
+            color: var(--dm-alert-upcoming-text);
+            border-color: var(--dm-alert-upcoming-text);
+        }
+
+        body.dark-mode .alert-ontime {
+            background-color: rgba(86, 211, 100, 0.15);
+            color: var(--dm-success);
+            border-color: var(--dm-success);
+        }
+
+        .time-tracked-display {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .tag {
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .tag-high {
+            background-color: rgba(11, 94, 215, 0.1);
+            color: var(--lm-primary);
+            border: 1px solid var(--lm-primary);
+        }
+
+        .tag-medium {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--lm-warning);
+            border: 1px solid var(--lm-warning);
+        }
+
+        .tag-low {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: var(--lm-muted-text);
+            border: 1px solid var(--lm-muted-text);
+        }
+
+        body.dark-mode .tag-high {
+            background-color: rgba(88, 166, 255, 0.15);
+            color: var(--dm-primary);
+            border-color: var(--dm-primary);
+        }
+
+        body.dark-mode .tag-medium {
+            background-color: rgba(255, 202, 40, 0.15);
+            color: var(--dm-warning);
+            border-color: var(--dm-warning);
+        }
+
+        body.dark-mode .tag-low {
+            background-color: rgba(176, 176, 176, 0.15);
+            color: var(--dm-muted-text);
+            border-color: var(--dm-muted-text);
+        }
+
+        .subtasks-container {
+            margin-top: 0.5rem;
+            padding-left: 1rem;
+        }
+
+        .subtask-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--lm-muted-text);
+            margin-bottom: 0.3rem;
+        }
+
+        body.dark-mode .subtask-item {
+            color: var(--dm-muted-text);
+        }
+
+        .subtask-item.completed {
+            text-decoration: line-through;
+            color: var(--lm-success);
+        }
+
+        body.dark-mode .subtask-item.completed {
+            color: var(--dm-success);
+        }
+
+        .subtask-checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
         }
 
         .task-actions {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-left: auto; /* Push actions to the right */
-            flex-shrink: 0; /* Prevent actions from shrinking */
+            gap: 0.5rem;
         }
-        .task-actions button {
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 34px;
+            height: 20px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.2s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: 0.2s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--lm-success);
+        }
+
+        body.dark-mode input:checked + .slider {
+            background-color: var(--dm-success);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(14px);
+        }
+
+        .timer-btn.active {
+            color: var(--lm-primary);
+        }
+
+        body.dark-mode .timer-btn.active {
+            color: var(--dm-primary);
+        }
+
+        .no-tasks {
+            text-align: center;
+            color: var(--lm-muted-text);
+            padding: 1rem;
+        }
+
+        body.dark-mode .no-tasks {
+            color: var(--dm-muted-text);
+        }
+
+        .graph-container {
+            background-color: var(--lm-component-bg);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px var(--lm-shadow-color);
+        }
+
+        body.dark-mode .graph-container {
+            background-color: var(--dm-component-bg);
+            box-shadow: 0 4px 12px var(--dm-shadow-color);
+        }
+
+        .chart-wrapper {
+            margin-bottom: 2rem;
+        }
+
+        canvas {
+            max-width: 100%;
+        }
+
+        .subtask-editor {
+            list-style: none;
+            margin-top: 0.5rem;
+        }
+
+        .subtask-editor-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtask-editor-item input[type="text"] {
+            flex: 1;
+        }
+
+        .remove-subtask-btn {
             background: none;
             border: none;
-            color: var(--muted-text-color); /* Muted color for action icons */
+            color: var(--lm-danger);
             cursor: pointer;
-            font-size: 1em; /* Slightly larger icons */
-            padding: 4px;
-            transition: color 0.2s ease;
-        }
-        .task-actions button:hover {
-            color: var(--primary-accent); /* Use primary accent for hover */
-        }
-        .task-actions .timer-btn.active .fa-play { display: none; }
-        .task-actions .timer-btn:not(.active) .fa-pause { display: none; }
-        /* Use specific timer color for active state */
-        .task-actions .timer-btn.active { color: var(--timer-active); }
-
-        .task-timer {
-            font-size: 0.8em;
-            color: var(--muted-text-color); /* Muted color for timer display */
-            min-width: 50px; /* Ensure space for timer */
-            text-align: right;
+            font-size: 0.9rem;
         }
 
-        /* Task Notes Section (Hidden by default) */
-        .task-notes-section {
-            /* Style notes section consistently */
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 10px;
-            margin-top: 8px;
-            font-size: 0.9em;
-            display: none; /* Hidden by default */
-            width: 100%; /* Take full width below the task content */
-            color: var(--text-color); /* Ensure text is readable */
-        }
-        .task-notes-section textarea {
-            width: 100%;
-            min-height: 60px;
-            border: 1px solid var(--input-border);
-            border-radius: 4px;
-            padding: 8px;
-            font-family: inherit;
-            font-size: 0.95em;
-            background-color: var(--component-bg); /* Use component bg for contrast */
-            color: var(--text-color);
-            resize: vertical; /* Allow vertical resize */
-        }
-        .task-notes-section textarea:focus {
-            outline: none;
-            border-color: var(--primary-accent);
-        }
-        /* Adjust indentation if inside task item */
-        .task-item .task-notes-section {
-             margin-left: 30px; /* Indent relative to checkbox (adjust if needed) */
-             width: calc(100% - 30px); /* Adjust width */
+        body.dark-mode .remove-subtask-btn {
+            color: var(--dm-danger);
         }
 
-
-        /* Multi-Select Action Bar */
-        #multi-select-bar {
-            position: fixed;
-            bottom: -100px; /* Start off-screen */
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 40px); /* Responsive width */
-            max-width: 600px;
-            /* Use primary accent for bar background */
-            background-color: var(--primary-accent);
-            color: white; /* Assume white text contrasts well */
-            padding: 15px 20px;
-            border-radius: 8px 8px 0 0; /* Rounded top corners */
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            transition: bottom 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Bounce effect */
-        }
-        #multi-select-bar.visible {
-            bottom: 0;
-        }
-        #multi-select-info {
-            font-size: 0.95em;
-        }
-        #multi-select-actions button {
-            /* Style buttons on the bar */
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 10px;
-            transition: background-color 0.2s ease;
-        }
-        #multi-select-actions button:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-        #multi-select-actions button .fas { margin-right: 5px; }
-
-        /* Notifications */
-        #notificationBtn .notification-count {
+        .notification-list {
             position: absolute;
-            top: 0;
+            top: 100%;
             right: 0;
-            background-color: var(--due-overdue); /* Use alert color */
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 0.7em;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            transform: translate(40%, -40%);
-        }
-        #notificationList {
-            position: absolute;
-            top: 100%; /* Position below the button */
-            right: 0;
-            /* Use component bg for dropdown */
-            background-color: var(--component-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            box-shadow: 0 4px 12px var(--shadow-color);
             width: 300px;
             max-height: 400px;
             overflow-y: auto;
-            z-index: 110; /* Above multi-select bar */
-            display: none; /* Hidden by default */
-            color: var(--text-color); /* Ensure text readable */
-        }
-        .notification-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.9em;
-            opacity: 1;
-            transition: opacity 0.5s ease;
-        }
-        .notification-item:last-child { border-bottom: none; }
-        .notification-item.read { opacity: 0.6; font-style: italic; }
-        /* Use consistent alert colors for notification types */
-        .notification-item.info { border-left: 4px solid var(--timer-active); } /* Blue for info */
-        .notification-item.success { border-left: 4px solid var(--due-ok); } /* Green */
-        .notification-item.warning { border-left: 4px solid var(--due-soon); } /* Yellow */
-        .notification-item.error { border-left: 4px solid var(--due-overdue); } /* Red */
-        .notification-timestamp {
-            font-size: 0.8em;
-            color: var(--muted-text-color); /* Muted for timestamp */
-            display: block;
-            margin-top: 4px;
-        }
-        .notification-empty {
-            padding: 20px;
-            text-align: center;
-            color: var(--muted-text-color);
+            background-color: var(--lm-component-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px var(--lm-shadow-color);
+            display: none;
+            z-index: 1000;
         }
 
-        /* Undo Notification */
-        #undo-container {
+        body.dark-mode .notification-list {
+            background-color: var(--dm-component-bg);
+            box-shadow: 0 4px 12px var(--dm-shadow-color);
+        }
+
+        .notification-list.active {
+            display: block;
+        }
+
+        .notification-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #dee2e6;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        body.dark-mode .notification-item {
+            border-bottom-color: #444;
+        }
+
+        .notification-item:hover {
+            background-color: var(--lm-input-bg);
+        }
+
+        body.dark-mode .notification-item:hover {
+            background-color: var(--dm-input-bg);
+        }
+
+        .notification-item.unread {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+
+        body.dark-mode .notification-item.unread {
+            background-color: rgba(88, 166, 255, 0.1);
+        }
+
+        .notification-list-empty {
+            padding: 1rem;
+            text-align: center;
+            color: var(--lm-muted-text);
+        }
+
+        body.dark-mode .notification-list-empty {
+            color: var(--dm-muted-text);
+        }
+
+        .notification-popup-container {
             position: fixed;
             bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            /* Dark background for contrast */
-            background-color: #333;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            display: none; /* Hidden by default */
-            align-items: center;
-            gap: 15px;
-            z-index: 120; /* Above other elements */
-            opacity: 0;
-            transition: opacity 0.3s ease, bottom 0.3s ease;
-        }
-        #undo-container.visible {
+            right: 20px;
+            z-index: 2000;
             display: flex;
-            opacity: 1;
-        }
-        #undo-message {
-            font-size: 0.95em;
-        }
-        #undo-button {
-            background: none;
-            border: none;
-            /* Use a bright color for undo button */
-            color: var(--dm-due-soon); /* Lighter yellow works well on dark bg */
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-size: 0.9em;
-        }
-        #undo-button:hover {
-             text-decoration: underline;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-end;
         }
 
-        /* Modals (Shared Styles) */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.6); /* Dim background */
-            align-items: center; /* Vertically center */
-            justify-content: center; /* Horizontally center */
+        .notification-popup {
+            background-color: var(--lm-component-bg);
+            color: var(--lm-text);
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px var(--lm-shadow-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            max-width: 300px;
+            animation: slideInRight 0.3s ease-out, fadeOut 0.3s ease-out 4.7s forwards;
         }
-        .modal-content {
-            /* Use component background for modal */
-            background-color: var(--component-bg);
-            margin: auto;
-            padding: 25px 30px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            position: relative;
-            color: var(--text-color); /* Ensure readable text */
+
+        body.dark-mode .notification-popup {
+            background-color: var(--dm-component-bg);
+            color: var(--dm-text);
+            box-shadow: 0 4px 12px var(--dm-shadow-color);
         }
-        .modal-close {
-            color: var(--muted-text-color); /* Muted close button */
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 1.8em;
-            font-weight: bold;
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; }
+        }
+
+        .undo-link {
+            color: var(--lm-primary);
+            text-decoration: underline;
             cursor: pointer;
         }
-        .modal-close:hover,
-        .modal-close:focus {
-            color: var(--primary-accent); /* Use accent on hover */
-            text-decoration: none;
-        }
-        .modal h2 {
-            margin-top: 0;
-            margin-bottom: 20px;
-            color: var(--primary-accent); /* Use accent for modal title */
+
+        body.dark-mode .undo-link {
+            color: var(--dm-primary);
         }
 
-        /* Import Modal Specifics */
-        #importFileLabel {
-            display: block;
-             /* Style label like a secondary button */
-            background-color: var(--component-bg);
-            color: var(--primary-accent);
-            border: 1px solid var(--primary-accent);
-            padding: 10px 15px;
-            border-radius: 5px;
-            text-align: center;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: background-color 0.2s ease;
-        }
-        #importFileLabel:hover {
-            background-color: color-mix(in srgb, var(--primary-accent) 10%, var(--component-bg));
-        }
-        /* #importFileModal is hidden via JS logic */
-        #importFileName {
-            margin-top: 10px;
-            font-style: italic;
-            color: var(--muted-text-color);
-            font-size: 0.9em;
-        }
-
-        /* Flatpickr theme adjustments (Consistent with overall theme) */
-        .flatpickr-calendar {
-            background: var(--component-bg);
-            border-color: var(--border-color);
-            box-shadow: 0 3px 10px var(--shadow-color);
-            color: var(--text-color); /* Base text color */
-        }
-        .flatpickr-day { color: var(--text-color); }
-        .flatpickr-day:hover { background: var(--hover-bg); border-color: var(--hover-bg); }
-        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange,
-        .flatpickr-day.selected:hover {
-            background: var(--primary-accent);
-            border-color: var(--primary-accent);
-            color: white; /* Assume white text contrasts */
-        }
-        .flatpickr-day.today { border-color: var(--primary-accent); color: var(--primary-accent); }
-        .flatpickr-day.disabled, .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay {
-            color: var(--muted-text-color);
-            opacity: 0.6;
-        }
-        .flatpickr-weekday { color: var(--primary-accent); font-weight: bold; }
-        .flatpickr-current-month .flatpickr-monthDropdown-months, .flatpickr-current-month .numInputWrapper {
-            color: var(--text-color);
-            font-weight: bold;
-        }
-        .flatpickr-current-month input.cur-year { color: var(--text-color); font-weight: bold; }
-        .flatpickr-months .flatpickr-prev-month, .flatpickr-months .flatpickr-next-month {
-            fill: var(--primary-accent); /* Use fill for SVG arrows */
-            color: var(--primary-accent); /* Fallback color */
-        }
-         .flatpickr-months .flatpickr-prev-month:hover svg,
-         .flatpickr-months .flatpickr-next-month:hover svg {
-             fill: var(--secondary-accent);
-        }
-        .flatpickr-time { border-top: 1px solid var(--border-color); }
-        .numInputWrapper .numInput, .flatpickr-time input, .flatpickr-time .flatpickr-am-pm {
-            color: var(--text-color);
-            background: var(--input-bg); /* Use input background */
-            border: 1px solid var(--input-border); /* Add border */
-        }
-         .numInputWrapper .numInput:focus, .flatpickr-time input:focus {
-            border-color: var(--primary-accent);
-         }
-        .flatpickr-time .numInputWrapper span:hover { background: var(--hover-bg); } /* Up/down arrows */
-
-
-        /* Responsive Design */
         @media (max-width: 768px) {
-            body { padding: 15px; }
-            .container { padding: 20px; }
-            .header { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .header-controls { margin-top: 10px; width: 100%; justify-content: flex-end; } /* Align controls right */
-            #active-timer-display { flex-grow: 1; /* Allow timer display to take space */ }
-            .summary-stats { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
-            .input-area { flex-direction: column; }
-            .input-area input[type="text"]#taskDueDate { width: 100%; }
-            .task-actions-area { justify-content: center; } /* Center buttons on small screens */
-            .task-item { flex-wrap: wrap; padding: 12px; } /* Allow wrapping inside task item */
-            .task-content { width: 100%; margin-bottom: 8px; order: 1; } /* Content first */
-             .task-item input[type="checkbox"] { order: 0; /* Checkbox before content */ margin-bottom: 8px; }
-            .task-actions { width: 100%; justify-content: flex-end; /* Align actions to right */ margin-left: 0; margin-top: 8px; order: 2; } /* Actions last */
-            .task-item .task-notes-section { margin-left: 0; width: 100%; order: 3; } /* Notes full width */
-            #multi-select-bar { width: calc(100% - 20px); flex-direction: column; gap: 10px; text-align: center; }
-        }
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
 
-        @media (max-width: 480px) {
-            body { padding: 10px; }
-            .container { padding: 15px; }
-            .header h1 { font-size: 1.6em; }
-            .summary-stats { grid-template-columns: 1fr 1fr; } /* Force 2 columns */
-            .btn { font-size: 0.9em; padding: 8px 12px; }
-            .task-item { font-size: 0.95em; }
-            .task-meta { font-size: 0.75em; gap: 6px;}
-            .task-actions button { font-size: 0.9em; }
-            #active-timer-display { font-size: 0.8em; }
-            #active-timer-display span { min-width: 50px;}
-            #multi-select-bar { padding: 10px 15px; }
-            #multi-select-actions button { padding: 6px 10px; margin-left: 5px; }
-            #undo-container { width: calc(100% - 30px); }
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .main-container {
+                padding: 0 0.5rem;
+            }
+
+            .stats-container,
+            .progress-container {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .action-buttons-left,
+            .action-buttons-right {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .filter-group select,
+            .filter-group input {
+                width: 100%;
+            }
+
+            .task-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .task-item-main {
+                flex-direction: column;
+            }
+
+            .task-actions {
+                justify-content: flex-end;
+                margin-top: 0.5rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>My To-Do List</h1>
-            <div class="header-controls">
-                 <div id="active-timer-display" style="display: none;">
-                    <i class="fas fa-stopwatch"></i>
-                    <span id="active-timer-task-name"></span>:
-                    <span id="active-timer-time">00:00</span>
-                </div>
-                <button id="refreshLogo" class="control-icon" title="Refresh View"><i class="fas fa-sync-alt"></i></button>
-                <button id="notificationBtn" class="control-icon" title="Notifications">
+    <div id="loginContainer" class="login-container">
+        <h2>Login to ProTask</h2>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
+        <button class="btn btn-green" id="loginBtn" style="width: 100%;">Login</button>
+        <p style="text-align: center; margin-top: 1rem;">
+            Don't have an account? <a href="#" id="registerLink">Register</a>
+        </p>
+    </div>
+
+    <div id="appContainer" style="display: none;">
+        <header>
+            <div class="logo" id="refreshLogo" title="Refresh View">ProTask</div>
+            <div class="header-actions">
+                <button class="icon-btn notification-badge" id="notificationBtn" title="Notifications">
                     <i class="fas fa-bell"></i>
-                    <span class="notification-count" style="display: none;">0</span>
+                    <span class="badge" id="notificationCount">0</span>
                 </button>
-                <div id="notificationList" style="display: none;">
-                    <div class="notification-empty">No new notifications.</div>
+                <div class="time-tracker-display" id="globalTimeTracker">
+                    <i class="fas fa-stopwatch"></i> <span id="totalTimeTracked">00:00</span>
                 </div>
-                <button class="theme-switcher control-icon" title="Toggle Theme">
-                    <i class="fas fa-moon"></i> <i class="fas fa-sun" style="display: none;"></i> </button>
+                <button class="icon-btn" id="themeToggleBtn" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="btn" id="logoutBtn">Logout</button>
+            </div>
+        </header>
+
+        <div class="notification-list" id="notificationList"></div>
+
+        <div class="notification-popup-container" id="notification-popup-container"></div>
+
+        <div class="main-container">
+            <div class="stats-container">
+                <div class="stat-card total">
+                    <div class="stat-title">Total Tasks</div>
+                    <div class="stat-value" id="totalTasks">0</div>
                 </div>
-        </div>
-
-        <div class="summary-stats">
-            <div class="stat-card">
-                <h3>Today</h3>
-                <p id="stat-today">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>This Week</h3>
-                <p id="stat-week">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>This Month</h3>
-                <p id="stat-month">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Overall Due</h3>
-                <p id="stat-overall">0</p>
-            </div>
-             <div class="stat-card">
-                <h3>Completed</h3>
-                <p id="stat-completed">0</p>
-            </div>
-        </div>
-
-         <div class="input-area">
-            <input type="text" id="taskInput" placeholder="Add a new task...">
-            <input type="text" id="taskDueDate" placeholder="Due Date (Optional)">
-            <button id="addTaskBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Add Task</button>
-        </div>
-
-        <div class="task-actions-area">
-             <button id="exportBtn" class="btn btn-secondary"><i class="fas fa-file-export"></i> Export Tasks</button>
-            <div id="importBtnContainer">
-                 <button id="importBtnTrigger" class="btn btn-secondary"><i class="fas fa-file-import"></i> Import Tasks</button>
+                <div class="stat-card completed">
+                    <div class="stat-title">Completed</div>
+                    <div class="stat-value" id="completedTasks">0</div>
                 </div>
-        </div>
+                <div class="stat-card pending">
+                    <div class="stat-title">Pending</div>
+                    <div class="stat-value" id="pendingTasks">0</div>
+                </div>
+            </div>
 
+            <div class="progress-container">
+                <div class="progress-item">
+                    <div class="progress-title">Today</div>
+                    <div class="progress-value" id="progressToday">0%</div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-title">This Week</div>
+                    <div class="progress-value" id="progressWeek">0%</div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-title">This Month</div>
+                    <div class="progress-value" id="progressMonth">0%</div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-title">Overall</div>
+                    <div class="progress-value" id="progressOverall">0%</div>
+                </div>
+            </div>
 
-        <div class="tasks-section">
-            <h2>Tasks</h2>
-            <ul id="taskList">
-                </ul>
+            <div class="action-buttons">
+                <div class="action-buttons-left">
+                    <button class="btn btn-green" id="addTaskBtn">
+                        <i class="fas fa-plus"></i> Add Task
+                    </button>
+                </div>
+                <div class="action-buttons-right">
+                    <button class="btn" id="exportBtn">
+                        <i class="fas fa-file-export"></i> Export
+                    </button>
+                    <button class="btn" id="importBtn">
+                        <i class="fas fa-file-import"></i> Import
+                    </button>
+                </div>
+            </div>
+
+            <div class="multi-select-bar" id="multiSelectBar" style="display: none;">
+                <span class="selected-count" id="selectedTasksCount">0 tasks selected</span>
+                <div class="multi-select-actions">
+                    <button class="btn btn-green" id="markCompleteSelectedBtn">
+                        <i class="fas fa-check"></i> Mark as Complete
+                    </button>
+                    <button class="btn btn-danger" id="deleteSelectedBtn">
+                        <i class="fas fa-trash-alt"></i> Delete Selected
+                    </button>
+                </div>
+            </div>
+
+            <div class="todo-section">
+                <div class="todo-header">
+                    <h2>Tasks</h2>
+                    <div class="view-toggle">
+                        <button class="btn" id="listViewBtn"><i class="fas fa-list"></i> List</button>
+                        <button class="btn" id="graphViewBtn"><i class="fas fa-chart-bar"></i> Graph</button>
+                    </div>
+                </div>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="statusFilter">Status:</label>
+                        <select id="statusFilter">
+                            <option value="all">All</option>
+                            <option value="completed">Completed</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="dateFilter">Date:</label>
+                        <select id="dateFilter">
+                            <option value="all">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" id="customDateFilterGroup" style="display: none;">
+                        <input type="text" id="customStartDate" placeholder="Start Date">
+                        <input type="text" id="customEndDate" placeholder="End Date">
+                    </div>
+                    <div class="filter-group">
+                        <label for="categoryFilter">Category:</label>
+                        <select id="categoryFilter">
+                            <option value="all">All</option>
+                            <option value="Work">Work</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="priorityFilter">Priority:</label>
+                        <select id="priorityFilter">
+                            <option value="all">All</option>
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="sortTasks">Sort By:</label>
+                        <select id="sortTasks">
+                            <option value="dateCreated-desc">Date Created (Newest)</option>
+                            <option value="dateCreated-asc">Date Created (Oldest)</option>
+                            <option value="dueDate-asc">Due Date (Earliest)</option>
+                            <option value="dueDate-desc">Due Date (Latest)</option>
+                            <option value="priority-desc">Priority (High to Low)</option>
+                            <option value="priority-asc">Priority (Low to High)</option>
+                            <option value="title-asc">Title (A-Z)</option>
+                            <option value="title-desc">Title (Z-A)</option>
+                        </select>
+                    </div>
+                    <button class="btn" id="resetFiltersBtn"><i class="fas fa-undo"></i> Reset</button>
+                </div>
+                <div class="tasks-container visible" id="tasksContainer">
+                    <ul class="task-list" id="taskList"></ul>
+                </div>
+            </div>
+
+            <div class="graph-container hidden" id="graphContainer">
+                <div class="chart-wrapper">
+                    <canvas id="taskStatusChart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="taskPriorityChart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="completionChart"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="multi-select-bar">
-        <span id="multi-select-info">0 items selected</span>
-        <div id="multi-select-actions">
-            <button id="multi-complete-btn"><i class="fas fa-check-double"></i> Complete</button>
-            <button id="multi-delete-btn"><i class="fas fa-trash-alt"></i> Delete</button>
-        </div>
-    </div>
-
-     <div id="undo-container">
-        <span id="undo-message">Task deleted</span>
-        <button id="undo-button">UNDO</button>
-    </div>
-
-    <div id="importModal" class="modal">
+    <!-- Modals -->
+    <div class="modal" id="registerModal">
         <div class="modal-content">
-            <span class="modal-close" onclick="closeModal(document.getElementById('importModal'))">&times;</span>
-            <h2>Import Tasks from JSON</h2>
-            <p>Select a JSON file containing tasks. This will replace your current tasks.</p>
-             <label for="importFileModal" id="importFileLabel" class="btn btn-secondary">
-                <i class="fas fa-upload"></i> Choose File
-            </label>
-            <input type="file" id="importFileModal" accept=".json" style="display: none;">
-            <div id="importFileName">No file chosen</div>
+            <div class="modal-header">
+                <h3>Register</h3>
+                <button class="icon-btn" id="cancelRegisterBtn"><i class="fas fa-times"></i></button>
             </div>
+            <div class="form-group">
+                <label for="registerEmail">Email</label>
+                <input type="email" id="registerEmail" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="registerPassword">Password</label>
+                <input type="password" id="registerPassword" placeholder="Enter your password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+            </div>
+            <div class="modal-actions">
+                <button class="btn" id="submitRegisterBtn">Register</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="addTaskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Task</h3>
+                <button class="icon-btn" id="cancelTaskBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="form-group">
+                <label for="taskTitle">Title</label>
+                <input type="text" id="taskTitle" placeholder="Task title" required>
+            </div>
+            <div class="form-group">
+                <label for="taskDueDate">Due Date</label>
+                <input type="text" id="taskDueDate" placeholder="YYYY-MM-DD">
+            </div>
+            <div class="form-group">
+                <label for="taskCategory">Category</label>
+                <select id="taskCategory">
+                    <option value="">Select Category</option>
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Others">Others</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="taskPriority">Priority</label>
+                <select id="taskPriority">
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="taskDetails">Description</label>
+                <textarea id="taskDetails" placeholder="Task description" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="taskNotes">Notes</label>
+                <textarea id="taskNotes" placeholder="Additional notes" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Subtasks</label>
+                <ul class="subtask-editor" id="subtaskListEditorAdd"></ul>
+                <button class="btn" id="addSubtaskBtnAdd"><i class="fas fa-plus"></i> Add Subtask</button>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-green" id="createTaskBtn">Create Task</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="editTaskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Task</h3>
+                <button class="icon-btn" id="cancelEditTaskBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <input type="hidden" id="editTaskId">
+            <div class="form-group">
+                <label for="editTaskTitle">Title</label>
+                <input type="text" id="editTaskTitle" placeholder="Task title" required>
+            </div>
+            <div class="form-group">
+                <label for="editTaskDueDate">Due Date</label>
+                <input type="text" id="editTaskDueDate" placeholder="YYYY-MM-DD">
+            </div>
+            <div class="form-group">
+                <label for="editTaskCategory">Category</label>
+                <select id="editTaskCategory">
+                    <option value="">Select Category</option>
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Others">Others</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editTaskPriority">Priority</label>
+                <select id="editTaskPriority">
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editTaskDetails">Description</label>
+                <textarea id="editTaskDetails" placeholder="Task description" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="editTaskNotes">Notes</label>
+                <textarea id="editTaskNotes" placeholder="Additional notes" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Subtasks</label>
+                <ul class="subtask-editor" id="subtaskListEditorEdit"></ul>
+                <button class="btn" id="addSubtaskBtnEdit"><i class="fas fa-plus"></i> Add Subtask</button>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-green" id="saveTaskBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="deleteConfirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Deletion</h3>
+                <button class="icon-btn" id="cancelDeleteBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <p>Are you sure you want to delete the task "<span id="deleteTaskTitle"></span>"?</p>
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="deleteSelectedConfirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Deletion</h3>
+                <button class="icon-btn" id="cancelDeleteSelectedBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <p>Are you sure you want to delete <span id="deleteSelectedCount"></span> selected tasks?</p>
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="confirmDeleteSelectedBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Export Tasks</h3>
+                <button class="icon-btn" id="cancelExportBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <p>Export all your tasks as a JSON file?</p>
+            <div class="modal-actions">
+                <button class="btn btn-green" id="confirmExportBtn">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="importModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Import Tasks</h3>
+                <button class="icon-btn" id="cancelImportBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="form-group">
+                <label for="fileUpload">Select JSON File</label>
+                <input type="file" id="fileUpload" accept=".json">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-green" id="confirmImportBtn" disabled>Import</button>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
-        // --- All JavaScript from the previous enhanced version goes here ---
-        // (The JS logic remains the same, implementing all features:
-        // localStorage, drag-drop, multi-select, undo, notes, timer,
-        // due dates, notifications, import/export, stats, theme switch)
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- DOM Elements ---
-            const taskInput = document.getElementById('taskInput');
-            const taskDueDateInput = document.getElementById('taskDueDate');
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const loginContainer = document.getElementById('loginContainer');
+            const appContainer = document.getElementById('appContainer');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const registerModal = document.getElementById('registerModal');
+            const registerLink = document.getElementById('registerLink');
+            const cancelRegisterBtn = document.getElementById('cancelRegisterBtn');
+            const submitRegisterBtn = document.getElementById('submitRegisterBtn');
+            const addTaskModal = document.getElementById('addTaskModal');
             const addTaskBtn = document.getElementById('addTaskBtn');
-            const taskList = document.getElementById('taskList');
-            const themeSwitcher = document.querySelector('.theme-switcher');
+            const cancelTaskBtn = document.getElementById('cancelTaskBtn');
+            const createTaskBtn = document.getElementById('createTaskBtn');
+            const taskDueDateInput = document.getElementById('taskDueDate');
+            const editTaskModal = document.getElementById('editTaskModal');
+            const editTaskIdInput = document.getElementById('editTaskId');
+            const cancelEditTaskBtn = document.getElementById('cancelEditTaskBtn');
+            const saveTaskBtn = document.getElementById('saveTaskBtn');
+            const editTaskDueDateInput = document.getElementById('editTaskDueDate');
+            const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+            const deleteTaskTitle = document.getElementById('deleteTaskTitle');
+            const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            const deleteSelectedConfirmModal = document.getElementById('deleteSelectedConfirmModal');
+            const deleteSelectedCount = document.getElementById('deleteSelectedCount');
+            const cancelDeleteSelectedBtn = document.getElementById('cancelDeleteSelectedBtn');
+            const confirmDeleteSelectedBtn = document.getElementById('confirmDeleteSelectedBtn');
+            const exportModal = document.getElementById('exportModal');
             const exportBtn = document.getElementById('exportBtn');
-            const importBtnTrigger = document.getElementById('importBtnTrigger'); // Button to open modal
-            const importFileModalInput = document.getElementById('importFileModal'); // Input inside modal
+            const cancelExportBtn = document.getElementById('cancelExportBtn');
+            const confirmExportBtn = document.getElementById('confirmExportBtn');
             const importModal = document.getElementById('importModal');
-            const importFileName = document.getElementById('importFileName');
+            const importBtn = document.getElementById('importBtn');
+            const cancelImportBtn = document.getElementById('cancelImportBtn');
+            const confirmImportBtn = document.getElementById('confirmImportBtn');
+            const fileUploadInput = document.getElementById('fileUpload');
             const notificationBtn = document.getElementById('notificationBtn');
             const notificationList = document.getElementById('notificationList');
-            const notificationCount = notificationBtn.querySelector('.notification-count');
+            const notificationCountBadge = document.getElementById('notificationCount');
+            const notificationPopupContainer = document.getElementById('notification-popup-container');
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
             const refreshLogo = document.getElementById('refreshLogo');
-            const statToday = document.getElementById('stat-today');
-            const statWeek = document.getElementById('stat-week');
-            const statMonth = document.getElementById('stat-month');
-            const statOverall = document.getElementById('stat-overall');
-            const statCompleted = document.getElementById('stat-completed');
-            const multiSelectBar = document.getElementById('multi-select-bar');
-            const multiSelectInfo = document.getElementById('multi-select-info');
-            const multiCompleteBtn = document.getElementById('multi-complete-btn');
-            const multiDeleteBtn = document.getElementById('multi-delete-btn');
-            const undoContainer = document.getElementById('undo-container');
-            const undoMessage = document.getElementById('undo-message');
-            const undoButton = document.getElementById('undo-button');
-            const activeTimerDisplay = document.getElementById('active-timer-display');
-            const activeTimerTaskName = document.getElementById('active-timer-task-name');
-            const activeTimerTime = document.getElementById('active-timer-time');
+            const totalTasksStat = document.getElementById('totalTasks');
+            const completedTasksStat = document.getElementById('completedTasks');
+            const pendingTasksStat = document.getElementById('pendingTasks');
+            const progressToday = document.getElementById('progressToday');
+            const progressWeek = document.getElementById('progressWeek');
+            const progressMonth = document.getElementById('progressMonth');
+            const progressOverall = document.getElementById('progressOverall');
+            const tasksContainer = document.getElementById('tasksContainer');
+            const taskList = document.getElementById('taskList');
+            const graphContainer = document.getElementById('graphContainer');
+            const listViewBtn = document.getElementById('listViewBtn');
+            const graphViewBtn = document.getElementById('graphViewBtn');
+            const statusFilter = document.getElementById('statusFilter');
+            const dateFilter = document.getElementById('dateFilter');
+            const categoryFilter = document.getElementById('categoryFilter');
+            const priorityFilter = document.getElementById('priorityFilter');
+            const customDateFilterGroup = document.getElementById('customDateFilterGroup');
+            const customStartDateInput = document.getElementById('customStartDate');
+            const customEndDateInput = document.getElementById('customEndDate');
+            const sortTasksSelect = document.getElementById('sortTasks');
+            const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+            const subtaskListEditorAdd = document.getElementById('subtaskListEditorAdd');
+            const addSubtaskBtnAdd = document.getElementById('addSubtaskBtnAdd');
+            const subtaskListEditorEdit = document.getElementById('subtaskListEditorEdit');
+            const addSubtaskBtnEdit = document.getElementById('addSubtaskBtnEdit');
+            const multiSelectBar = document.getElementById('multiSelectBar');
+            const selectedTasksCount = document.getElementById('selectedTasksCount');
+            const markCompleteSelectedBtn = document.getElementById('markCompleteSelectedBtn');
+            const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+            const globalTimeTracker = document.getElementById('totalTimeTracked');
 
-            // --- State Variables ---
+            // Data
             let tasks = [];
             let notifications = [];
-            let lastAction = null; // For undo functionality { type: 'delete'/'complete', tasks: [...] }
-            let undoTimeout = null;
-            let activeTimerInterval = null;
-            let activeTaskId = null; // ID of the task whose timer is running
-            let draggingElement = null; // For drag and drop
+            let currentUser = null;
+            let currentTaskIdToDelete = null;
+            let activeTimers = {};
+            let flatpickrInstances = {};
+            let taskStatusChart, taskPriorityChart, completionChart;
+            let undoStack = [];
 
-            // --- Initialization ---
-            loadTheme();
-            loadTasks();
-            loadNotifications();
-            initializeFlatpickr();
-            renderAll(); // Initial render of tasks and stats
+            const UPCOMING_THRESHOLD_DAYS = 2;
+            const priorityMap = { 'High': 3, 'Medium': 2, 'Low': 1 };
 
-            // --- Theme Switching ---
-            function applyTheme(theme) {
-                if (theme === 'dark') {
-                    document.documentElement.classList.add('dark-mode');
-                    themeSwitcher.querySelector('.fa-moon').style.display = 'none';
-                    themeSwitcher.querySelector('.fa-sun').style.display = 'inline';
-                } else {
-                    document.documentElement.classList.remove('dark-mode');
-                    themeSwitcher.querySelector('.fa-moon').style.display = 'inline';
-                    themeSwitcher.querySelector('.fa-sun').style.display = 'none';
-                }
-                localStorage.setItem('theme', theme);
-                // Re-initialize Flatpickr to apply theme changes potentially
-                // This might not be strictly necessary if CSS variables handle it
-                // initializeFlatpickr();
+            // Initialization
+            initializeApp();
+            registerServiceWorker();
+
+            function initializeApp() {
+                loadUser();
+                loadTasks();
+                loadNotifications();
+                applyTheme(localStorage.getItem('theme') === 'dark');
+                initializeFlatpickr();
+                renderAll();
+                checkDueDateNotifications();
+                initializeTimeTrackers();
             }
 
-            function loadTheme() {
-                const savedTheme = localStorage.getItem('theme');
-                // Determine default theme based on user preference or fallback to light
-                const defaultTheme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && !savedTheme) ? 'dark' : (savedTheme || 'light');
-                applyTheme(defaultTheme);
-            }
-
-            themeSwitcher.addEventListener('click', () => {
-                const currentTheme = document.documentElement.classList.contains('dark-mode') ? 'dark' : 'light';
-                applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
-                 // Re-render might be needed if styles change significantly enough
-                 // renderAll();
-            });
-
-            // --- Date Picker ---
-            function initializeFlatpickr() {
-                flatpickr(taskDueDateInput, {
-                    dateFormat: "Y-m-d", // Standard date format
-                    altInput: true, // Human-readable format
-                    altFormat: "M j, Y", // e.g., Apr 17, 2025
-                    allowInput: true, // Allow manual typing
-                    // Theme handled by CSS variables mostly
-                });
-            }
-
-            // --- Task Management ---
-            function generateId() {
-                return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-            }
-
-            function addTask() {
-                const taskText = taskInput.value.trim();
-                 // Get date from Flatpickr instance
-                 const selectedDate = taskDueDateInput._flatpickr.selectedDates[0];
-                const taskDueDate = selectedDate ? new Date(selectedDate).toISOString() : null; // Store as ISO string
-
-                if (taskText === '') {
-                    addNotification('Task cannot be empty.', 'warning');
-                    return;
-                }
-
-                const newTask = {
-                    id: generateId(),
-                    text: taskText,
-                    completed: false,
-                    createdAt: new Date().toISOString(),
-                    dueDate: taskDueDate,
-                    notes: '',
-                    timeTracked: 0, // Seconds tracked today
-                    timerStartTime: null, // Timestamp when timer started
-                    lastResetDate: getGMTDateString(new Date()) // Store GMT date string for daily reset check
-                };
-
-                tasks.unshift(newTask); // Add to the beginning of the array
-                taskInput.value = '';
-                taskDueDateInput._flatpickr.clear(); // Clear date picker
-                saveAndRender();
-                addNotification(`Task "${truncateText(taskText, 20)}" added.`, 'success');
-            }
-
-            function toggleComplete(taskId) {
-                const taskIndex = tasks.findIndex(t => t.id === taskId);
-                if (taskIndex > -1) {
-                    const task = tasks[taskIndex];
-                    const wasCompleted = task.completed; // Store original state
-                    task.completed = !task.completed;
-                    if (task.completed && activeTaskId === taskId) {
-                        pauseTimer(taskId, false); // Pause timer if task is completed
-                    }
-                    saveAndRender();
-                    // Store task state *before* the change for undo
-                     lastAction = { type: 'complete', tasks: [{ ...task, completed: wasCompleted, originalIndex: taskIndex }] };
-                    showUndo(`${task.completed ? 'Completed' : 'Marked incomplete'}: "${truncateText(task.text, 20)}"`);
-                }
-            }
-
-            function deleteTask(taskId) {
-                const taskIndex = tasks.findIndex(t => t.id === taskId);
-                if (taskIndex > -1) {
-                    const deletedTask = { ...tasks[taskIndex], originalIndex: taskIndex }; // Store original index
-                     if (activeTaskId === taskId) {
-                        stopTimer(); // Stop timer if active task is deleted
-                    }
-                    tasks.splice(taskIndex, 1);
-                    saveAndRender();
-                    lastAction = { type: 'delete', tasks: [deletedTask] }; // Save for undo
-                    showUndo(`Task "${truncateText(deletedTask.text, 20)}" deleted.`);
-                }
-            }
-
-             function updateTaskNotes(taskId, notes) {
-                const taskIndex = tasks.findIndex(t => t.id === taskId);
-                if (taskIndex > -1) {
-                     // Only save and notify if notes actually changed
-                     if (tasks[taskIndex].notes !== notes) {
-                        tasks[taskIndex].notes = notes;
-                        saveTasks(); // Save silently without full re-render
-                        // Maybe update a notes indicator icon if needed
-                        const taskElement = document.querySelector(`.task-item[data-id="${taskId}"]`);
-                        if (taskElement) {
-                             const notesIndicator = taskElement.querySelector('.task-notes-preview');
-                             if (notesIndicator) updateNotesIndicator(notesIndicator, notes);
-                        }
-                        addNotification(`Notes updated for "${truncateText(tasks[taskIndex].text, 20)}"`, 'info');
-                     }
-                }
-            }
-
-            // --- Multi-Select Functions ---
-             function updateMultiSelectBar() {
-                const selectedTasks = tasks.filter(task => task.selected);
-                const count = selectedTasks.length;
-
-                if (count > 0) {
-                    multiSelectInfo.textContent = `${count} item${count > 1 ? 's' : ''} selected`;
-                    multiSelectBar.classList.add('visible');
-                } else {
-                    multiSelectBar.classList.remove('visible');
-                }
-            }
-
-            function handleCheckboxChange(taskId, isChecked) {
-                const taskIndex = tasks.findIndex(t => t.id === taskId);
-                if (taskIndex > -1) {
-                    tasks[taskIndex].selected = isChecked;
-                    // Note: We don't save 'selected' to localStorage as it's transient UI state
-                }
-                updateMultiSelectBar();
-            }
-
-             function multiDelete() {
-                const selectedIndices = tasks.reduce((acc, task, index) => {
-                    if (task.selected) acc.push(index);
-                    return acc;
-                }, []);
-
-                if (selectedIndices.length === 0) return;
-
-                const deletedTasksForUndo = [];
-                 // Iterate backwards to avoid index shifting issues during splice
-                 for (let i = selectedIndices.length - 1; i >= 0; i--) {
-                     const index = selectedIndices[i];
-                     const taskToDelete = tasks[index];
-                     if (taskToDelete.id === activeTaskId) stopTimer(); // Stop timer if active task is deleted
-                     // Store with original index for potential undo
-                     deletedTasksForUndo.push({ ...taskToDelete, originalIndex: index });
-                     tasks.splice(index, 1); // Remove from array
-                 }
-
-                 // Sort undo tasks by original index for correct re-insertion
-                deletedTasksForUndo.sort((a, b) => a.originalIndex - b.originalIndex);
-                lastAction = { type: 'delete', tasks: deletedTasksForUndo };
-                showUndo(`${deletedTasksForUndo.length} task${deletedTasksForUndo.length > 1 ? 's' : ''} deleted.`);
-
-                saveAndRender(); // Will clear selections and hide bar
-            }
-
-            function multiComplete() {
-                 const tasksToCompleteIndices = tasks.reduce((acc, task, index) => {
-                     if (task.selected && !task.completed) acc.push(index);
-                     return acc;
-                 }, []);
-
-                 if (tasksToCompleteIndices.length === 0) {
-                     // If only already completed items were selected, just deselect them
-                      let deselected = false;
-                     tasks.forEach(task => {
-                         if (task.selected) {
-                            task.selected = false;
-                            deselected = true;
-                         }
+            function registerServiceWorker() {
+                if ('serviceWorker' in navigator) {
+                    window.addEventListener('load', () => {
+                        navigator.serviceWorker.register('/sw.js').catch(error => {
+                            console.error('Service Worker registration failed:', error);
                         });
-                    if (deselected) renderAll(); // Re-render to clear checks
-                     return;
-                 }
-
-
-                const completedTasksForUndo = [];
-                tasksToCompleteIndices.forEach(index => {
-                    const task = tasks[index];
-                    // Store original state for undo
-                     completedTasksForUndo.push({ ...task, completed: false, originalIndex: index });
-                    task.completed = true;
-                     if (task.id === activeTaskId) pauseTimer(task.id, false); // Pause timer
-                     task.selected = false; // Deselect after action
-                });
-
-                 // Also deselect any selected items that were already complete
-                 tasks.forEach(task => { if (task.selected) task.selected = false; });
-
-                lastAction = { type: 'complete', tasks: completedTasksForUndo };
-                showUndo(`${completedTasksForUndo.length} task${completedTasksForUndo.length > 1 ? 's' : ''} marked complete.`);
-
-                saveAndRender(); // Will clear selections and hide bar
-            }
-
-            // --- Drag and Drop Functions ---
-             function handleDragStart(e) {
-                draggingElement = e.target; // The task-item li
-                e.dataTransfer.effectAllowed = 'move';
-                e.dataTransfer.setData('text/plain', draggingElement.dataset.id); // Store ID
-                // Add styling slightly later to ensure it takes effect
-                setTimeout(() => {
-                    if(draggingElement) draggingElement.classList.add('dragging');
-                }, 0);
-            }
-
-            function handleDragEnd(e) {
-                if (draggingElement) {
-                    draggingElement.classList.remove('dragging');
-                }
-                draggingElement = null;
-                // Clean up any visual indicators
-                taskList.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-            }
-
-            function handleDragOver(e) {
-                e.preventDefault(); // Necessary to allow dropping
-                const targetItem = e.target.closest('.task-item');
-
-                if (targetItem && targetItem !== draggingElement) {
-                    e.dataTransfer.dropEffect = 'move';
-                    // Add visual cue (e.g., border) - Debounce if needed for performance
-                    taskList.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-                    targetItem.classList.add('drag-over');
-                } else {
-                    // Optional: Indicate invalid drop target or default behavior
-                    e.dataTransfer.dropEffect = 'none';
-                     taskList.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-                }
-            }
-
-             function handleDrop(e) {
-                 e.preventDefault();
-                 if (!draggingElement) return;
-
-                 const droppedOnElement = e.target.closest('.task-item');
-                 taskList.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')); // Clean up indicator
-
-                 const draggedId = draggingElement.dataset.id;
-                 // Dropped directly on another task item
-                 if (droppedOnElement && droppedOnElement !== draggingElement) {
-                     const targetId = droppedOnElement.dataset.id;
-                     const draggedIndex = tasks.findIndex(t => t.id === draggedId);
-                     const targetIndex = tasks.findIndex(t => t.id === targetId);
-
-                     if (draggedIndex > -1 && targetIndex > -1) {
-                         // Remove dragged task and insert before target task
-                         const [draggedTask] = tasks.splice(draggedIndex, 1);
-                         tasks.splice(targetIndex, 0, draggedTask);
-                         saveAndRender();
-                         addNotification(`Task "${truncateText(draggedTask.text, 20)}" reordered.`, 'info');
-                     }
-                 }
-                 // Allow dropping at the end (if not dropped on another item) - More complex logic could refine this
-                 // else if (!droppedOnElement) {
-                 //    const draggedIndex = tasks.findIndex(t => t.id === draggedId);
-                 //    if (draggedIndex > -1) {
-                 //       const [draggedTask] = tasks.splice(draggedIndex, 1);
-                 //       tasks.push(draggedTask); // Append to end
-                 //       saveAndRender();
-                 //       addNotification(`Task "${truncateText(draggedTask.text, 20)}" moved to end.`, 'info');
-                 //    }
-                 // }
-
-                 // Ensure draggingElement is cleared even if drop is invalid
-                 draggingElement.classList.remove('dragging');
-                 draggingElement = null;
-            }
-
-
-            // --- Time Tracking ---
-             // Helper to get YYYY-MM-DD in GMT
-            function getGMTDateString(date) {
-                return date.toISOString().split('T')[0];
-            }
-
-            function formatTime(seconds) {
-                const mins = Math.floor(seconds / 60);
-                const secs = Math.floor(seconds % 60);
-                return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-            }
-
-            function checkTimerReset(task) {
-                 const todayGMT = getGMTDateString(new Date());
-                  // Check if lastResetDate exists and if it's different from today GMT
-                 if (task.lastResetDate && task.lastResetDate !== todayGMT) {
-                     task.timeTracked = 0; // Reset tracked time
-                     task.timerStartTime = null; // Ensure timer is not running across reset
-                     task.lastResetDate = todayGMT; // Update reset date
-                     return true; // Indicate reset happened
-                 } else if (!task.lastResetDate) {
-                     // If lastResetDate doesn't exist (e.g., old tasks), initialize it
-                     task.lastResetDate = todayGMT;
-                     // Optionally decide if timeTracked should be reset here too
-                     // task.timeTracked = 0;
-                 }
-                 return false;
-            }
-
-             function startTimer(taskId) {
-                if (activeTaskId && activeTaskId !== taskId) {
-                     // Pause the currently active timer before starting a new one
-                    pauseTimer(activeTaskId, true); // Pause and save immediately
-                }
-
-                 stopTimerInterval(); // Clear any existing interval
-
-                const taskIndex = tasks.findIndex(t => t.id === taskId);
-                if (taskIndex > -1 && !tasks[taskIndex].completed) {
-                    const task = tasks[taskIndex];
-                    const wasReset = checkTimerReset(task); // Reset if it's a new day
-                    if (wasReset) {
-                        // If timer reset, update UI immediately before starting
-                        updateTimerUI(taskId, task.timeTracked);
-                    }
-
-
-                    task.timerStartTime = Date.now(); // Record start time
-                    activeTaskId = taskId;
-
-                    // Update UI immediately
-                    updateTimerUI(taskId, task.timeTracked); // Show current tracked time
-                    toggleTimerButtonActive(taskId, true);
-                    updateActiveTimerDisplay(task.text, task.timeTracked);
-
-
-                    // Start interval
-                    activeTimerInterval = setInterval(() => {
-                         // Check if task still exists and timer should be running
-                         const currentTask = tasks.find(t => t.id === activeTaskId);
-                         if (!currentTask || !currentTask.timerStartTime || currentTask.completed) {
-                             stopTimer(); // Stop if task gone, completed, or start time cleared
-                             return;
-                         }
-
-                        const now = Date.now();
-                        const elapsedSinceStart = (now - currentTask.timerStartTime) / 1000; // Seconds
-                        const totalTime = currentTask.timeTracked + elapsedSinceStart;
-
-                         updateTimerUI(activeTaskId, totalTime);
-                        updateActiveTimerDisplay(currentTask.text, totalTime); // Update header display too
-
-                    }, 1000);
-
-                    saveTasks(); // Save the new timerStartTime
-                }
-            }
-
-             function pauseTimer(taskId, shouldSave = true) {
-                 if (activeTaskId !== taskId && taskId) {
-                     // If trying to pause a timer that isn't the active one,
-                     // maybe just update its state if it had a startTime erroneously set?
-                     const taskIndex = tasks.findIndex(t => t.id === taskId);
-                     if (taskIndex > -1 && tasks[taskIndex].timerStartTime) {
-                         tasks[taskIndex].timerStartTime = null; // Clear erroneous start time
-                         toggleTimerButtonActive(taskId, false);
-                         if (shouldSave) saveTasks();
-                     }
-                     return; // Don't proceed if it's not the active timer
-                 }
-
-                 stopTimerInterval(); // Clear interval regardless
-
-                 const taskIndex = tasks.findIndex(t => t.id === taskId);
-                 if (taskIndex > -1 && tasks[taskIndex].timerStartTime) {
-                     const task = tasks[taskIndex];
-                     const endTime = Date.now();
-                     const elapsed = (endTime - task.timerStartTime) / 1000; // Seconds
-                     task.timeTracked += Math.max(0, elapsed); // Ensure non-negative time add
-                     task.timerStartTime = null; // Clear start time
-
-                     updateTimerUI(taskId, task.timeTracked); // Update display with final tracked time
-                     toggleTimerButtonActive(taskId, false);
-
-                     if (activeTaskId === taskId) {
-                         activeTaskId = null; // Clear active ID
-                         updateActiveTimerDisplay('', 0); // Hide header display
-                     }
-
-                    if (shouldSave) saveTasks();
-                 } else if (activeTaskId === taskId) {
-                     // If pausing the active timer but it wasn't found or running (edge case)
-                     stopTimer(); // Use stopTimer to clear active state fully
-                 }
-            }
-
-             // Stops the currently active timer interval and clears related state
-             function stopTimer() {
-                 const currentlyActive = activeTaskId; // Store ID before clearing
-                 stopTimerInterval();
-                 activeTaskId = null;
-                 activeTimerDisplay.style.display = 'none'; // Hide header display
-
-                 // Ensure the button for the previously active task is visually deactivated
-                 if (currentlyActive) {
-                     toggleTimerButtonActive(currentlyActive, false);
-                 }
-             }
-
-            // Stops ONLY the interval, not the task state
-             function stopTimerInterval() {
-                 if (activeTimerInterval) {
-                     clearInterval(activeTimerInterval);
-                     activeTimerInterval = null;
-                 }
-             }
-
-            // Stop all timers (e.g., before page unload) - ensure final times are saved
-            function stopAllTimers() {
-                 if (activeTaskId) {
-                     pauseTimer(activeTaskId, true); // Pause and save the active timer
-                 }
-            }
-
-
-            // --- Undo Functionality ---
-             function showUndo(message) {
-                 if (!lastAction || !lastAction.tasks || lastAction.tasks.length === 0) return; // No valid action to undo
-
-                 undoMessage.textContent = message;
-                 undoContainer.classList.add('visible');
-
-                 // Clear previous timeout if exists
-                 if (undoTimeout) clearTimeout(undoTimeout);
-
-                 // Auto-hide after a delay
-                 undoTimeout = setTimeout(() => {
-                     undoContainer.classList.remove('visible');
-                     lastAction = null; // Clear undo action after timeout
-                 }, 6000); // 6 seconds to undo
-            }
-
-            function performUndo() {
-                 if (!lastAction || !lastAction.tasks || lastAction.tasks.length === 0) return;
-
-                 if (lastAction.type === 'delete') {
-                     // Re-insert deleted tasks at their original indices
-                     lastAction.tasks.forEach(taskToRestore => {
-                        // Clean up transient state before re-inserting
-                        delete taskToRestore.originalIndex;
-                        taskToRestore.selected = false;
-                        checkTimerReset(taskToRestore); // Check reset on restore
-                        taskToRestore.timerStartTime = null; // Ensure timer isn't running
-                        tasks.splice(taskToRestore.originalIndex, 0, taskToRestore);
-                     });
-                     addNotification(`${lastAction.tasks.length} task${lastAction.tasks.length > 1 ? 's' : ''} restored.`, 'success');
-                 } else if (lastAction.type === 'complete') {
-                    // Revert completion status based on stored original state
-                     lastAction.tasks.forEach(undoInfo => {
-                        const taskIndex = tasks.findIndex(t => t.id === undoInfo.id);
-                         if (taskIndex > -1) {
-                             tasks[taskIndex].completed = undoInfo.completed; // Revert to state saved in lastAction
-                         } else {
-                             // Task might have been deleted after completion, try re-inserting? (More complex)
-                             console.warn("Undo failed: Original task not found for completion revert.");
-                         }
                     });
-                    addNotification(`${lastAction.tasks.length} task completion${lastAction.tasks.length > 1 ? 's' : ''} reverted.`, 'success');
-                 }
-
-                 lastAction = null; // Clear action after undo
-                 if (undoTimeout) clearTimeout(undoTimeout); // Hide undo bar immediately
-                 undoContainer.classList.remove('visible');
-                 saveAndRender();
-            }
-
-
-            // --- Notifications ---
-            function addNotification(message, type = 'info', duration = 5000) {
-                 const newNotification = {
-                     id: generateId(),
-                     message: message,
-                     type: type, // 'info', 'success', 'warning', 'error'
-                     timestamp: new Date().toISOString(),
-                     read: false
-                 };
-                 notifications.unshift(newNotification); // Add to top
-                 // Limit number of notifications stored
-                 if (notifications.length > 50) {
-                     notifications.pop(); // Remove oldest
-                 }
-                 saveNotifications();
-                 renderNotifications(); // Update display
-
-                 // Example: Auto-dismiss visual element (optional)
-                 // const notificationElement = document.querySelector(`.notification-item[data-id="${newNotification.id}"]`);
-                 // if (notificationElement) {
-                 //      setTimeout(() => {
-                 //          notificationElement.style.opacity = '0';
-                 //          setTimeout(() => {
-                 //              notificationElement.remove();
-                 //              updateNotificationCountVisual(); // Just update badge visually
-                 //          }, 500);
-                 //      }, duration);
-                 // }
-            }
-
-            function markNotificationsRead() {
-                let changed = false;
-                notifications.forEach(n => {
-                    if (!n.read) {
-                         n.read = true;
-                         changed = true;
-                    }
-                });
-                 if (changed) {
-                    saveNotifications();
-                    renderNotifications(); // Re-render to update visual state (e.g., styling)
-                 }
-            }
-
-             function updateNotificationCountVisual() {
-                 const unreadCount = notifications.filter(n => !n.read).length;
-                 if (unreadCount > 0) {
-                     notificationCount.textContent = unreadCount;
-                     notificationCount.style.display = 'flex';
-                 } else {
-                     notificationCount.style.display = 'none';
-                 }
-             }
-
-             function checkDueDatesForNotifications() {
-                const now = new Date();
-                const todayStart = new Date(now).setHours(0, 0, 0, 0);
-                const twoDaysFromNow = new Date(todayStart + 2 * 24 * 60 * 60 * 1000);
-                const oneHourAgo = new Date(now.getTime() - 1 * 60 * 60 * 1000); // Throttle: 1 hour
-
-                 let notified = false;
-                tasks.forEach(task => {
-                    if (task.dueDate && !task.completed) {
-                        const dueDate = new Date(task.dueDate);
-                        dueDate.setHours(0,0,0,0); // Compare date part only
-
-                         // Check if notification already exists for this task recently (within last hour)
-                         const hasRecentNotification = notifications.some(n =>
-                             n.message.includes(`Task "${truncateText(task.text, 15)}"`) &&
-                             (n.type === 'warning' || n.type === 'error') &&
-                             new Date(n.timestamp) > oneHourAgo
-                         );
-
-                        if (!hasRecentNotification) {
-                            if (dueDate < todayStart) {
-                                addNotification(`Task "${truncateText(task.text, 15)}" is overdue!`, 'error');
-                                notified = true;
-                            } else if (dueDate < twoDaysFromNow) {
-                                // Due today or tomorrow
-                                addNotification(`Task "${truncateText(task.text, 15)}" is due soon (${formatDate(dueDate)}).`, 'warning');
-                                notified = true;
-                            }
-                        }
-                    }
-                });
-                // Note: This check ideally runs periodically. Here it runs on load and render.
-            }
-
-
-            // --- Rendering ---
-             function renderAll() {
-                renderTasks();
-                updateStats();
-                renderNotifications(); // Includes visual count update
-                 checkDueDatesForNotifications(); // Check for notifications on render
-                 updateMultiSelectBar(); // Ensure bar is hidden initially or reflects state
-                 // Update active timer display if needed on full re-render
-                 if (activeTaskId) {
-                     const activeTask = tasks.find(t => t.id === activeTaskId);
-                     if (activeTask && activeTask.timerStartTime) {
-                         const currentTime = activeTask.timeTracked + (Date.now() - activeTask.timerStartTime) / 1000;
-                         updateActiveTimerDisplay(activeTask.text, currentTime);
-                         // Ensure the timer interval is running if needed
-                         if (!activeTimerInterval) {
-                             startTimer(activeTaskId); // Restart interval logic
-                         }
-                     } else {
-                          // Task gone or timerStartTime cleared, stop fully
-                         stopTimer();
-                     }
-                 } else {
-                     stopTimer(); // Ensure header timer is off if no task is active
-                 }
-             }
-
-             function renderTasks() {
-                taskList.innerHTML = ''; // Clear existing list
-                 if (tasks.length === 0) {
-                    taskList.innerHTML = '<li style="text-align: center; color: var(--muted-text-color); padding: 20px;">No tasks yet!</li>';
-                    updateMultiSelectBar(); // Ensure bar is hidden when list is empty
-                    return;
-                 }
-
-                 const fragment = document.createDocumentFragment();
-                tasks.forEach(task => {
-                    // Reset timer if it's a new day GMT when rendering
-                    const wasReset = checkTimerReset(task);
-                    const taskElement = createTaskElement(task);
-                    if (wasReset) {
-                         // Update timer display on element if reset occurred
-                         const timerDisplay = taskElement.querySelector('.task-timer');
-                         if(timerDisplay) timerDisplay.textContent = formatTime(task.timeTracked);
-                    }
-                    fragment.appendChild(taskElement);
-                });
-                 taskList.appendChild(fragment);
-                 updateMultiSelectBar(); // Ensure bar is updated after render
-            }
-
-             function createTaskElement(task) {
-                const li = document.createElement('li');
-                li.className = `task-item ${task.completed ? 'completed' : ''}`;
-                li.dataset.id = task.id;
-                li.draggable = true; // Make draggable
-
-                // --- Checkbox ---
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.checked = task.selected || false; // Reflect transient selected state
-                checkbox.title = "Select task";
-                checkbox.addEventListener('change', (e) => handleCheckboxChange(task.id, e.target.checked));
-                // Stop propagation to prevent triggering other handlers on checkbox click
-                 checkbox.addEventListener('click', e => e.stopPropagation());
-                 checkbox.addEventListener('mousedown', e => e.stopPropagation()); // Also prevent drag start
-                li.appendChild(checkbox);
-
-                // --- Task Content (Text + Meta) ---
-                const contentDiv = document.createElement('div');
-                contentDiv.className = 'task-content';
-
-                const textSpan = document.createElement('span');
-                textSpan.className = 'task-text';
-                textSpan.textContent = task.text;
-                contentDiv.appendChild(textSpan);
-
-                // --- Meta Info (Due Date, Notes Indicator) ---
-                const metaDiv = document.createElement('div');
-                metaDiv.className = 'task-meta';
-
-                // Due Date Indicator
-                if (task.dueDate) {
-                    const dueDateSpan = document.createElement('span');
-                    dueDateSpan.className = 'due-date-indicator';
-                    const dueDate = new Date(task.dueDate);
-                    const now = new Date();
-                     // Normalize dates to compare date part only
-                    const dueDateStart = new Date(dueDate).setHours(0, 0, 0, 0);
-                    const todayStart = new Date(now).setHours(0, 0, 0, 0);
-                    const twoDaysFromStart = todayStart + 2 * 24 * 60 * 60 * 1000;
-
-                    let iconClass = 'fa-calendar-alt';
-                    let alertClass = 'ok'; // Default green
-                    if (dueDateStart < todayStart) {
-                        alertClass = 'overdue'; // Red
-                        iconClass = 'fa-exclamation-circle';
-                    } else if (dueDateStart < twoDaysFromStart) {
-                         // Due today or tomorrow
-                        alertClass = 'soon'; // Yellow
-                        iconClass = 'fa-clock';
-                    }
-                    dueDateSpan.classList.add(alertClass);
-                    dueDateSpan.innerHTML = `<i class="fas ${iconClass}"></i> ${formatDate(dueDate)}`;
-                    metaDiv.appendChild(dueDateSpan);
                 }
-
-                 // Notes Indicator
-                const notesIndicator = document.createElement('span');
-                 notesIndicator.className = 'task-notes-preview';
-                 updateNotesIndicator(notesIndicator, task.notes); // Helper to set icon/text
-                 if (task.notes && task.notes.trim()) { // Only add if there are notes
-                     metaDiv.appendChild(notesIndicator);
-                 }
-
-
-                contentDiv.appendChild(metaDiv);
-                li.appendChild(contentDiv);
-
-
-                // --- Task Actions (Complete, Edit, Delete, Timer, Notes) ---
-                const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'task-actions';
-
-                 // Timer Display
-                const timerDisplay = document.createElement('span');
-                timerDisplay.className = 'task-timer';
-                 // Display current time if timer is active, otherwise stored time
-                let displayTime = task.timeTracked;
-                 if (task.id === activeTaskId && task.timerStartTime) {
-                     displayTime += (Date.now() - task.timerStartTime) / 1000;
-                 }
-                 timerDisplay.textContent = formatTime(displayTime);
-                actionsDiv.appendChild(timerDisplay);
-
-
-                 // Timer Button (Play/Pause)
-                 const timerBtn = document.createElement('button');
-                 timerBtn.className = `timer-btn control-icon ${task.id === activeTaskId ? 'active' : ''}`;
-                 timerBtn.title = task.id === activeTaskId ? 'Pause Timer' : 'Start Timer';
-                 timerBtn.innerHTML = '<i class="fas fa-play"></i><i class="fas fa-pause"></i>';
-                 if (task.completed) timerBtn.disabled = true; // Disable timer for completed tasks
-                 timerBtn.addEventListener('click', (e) => {
-                     e.stopPropagation(); // Prevent triggering other clicks
-                     if (timerBtn.classList.contains('active')) {
-                         pauseTimer(task.id);
-                     } else {
-                         startTimer(task.id);
-                     }
-                 });
-                 actionsDiv.appendChild(timerBtn);
-
-
-                // Notes Toggle Button
-                const notesBtn = document.createElement('button');
-                notesBtn.className = 'notes-btn control-icon';
-                notesBtn.title = 'View/Edit Notes';
-                notesBtn.innerHTML = '<i class="fas fa-sticky-note"></i>';
-                notesBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    toggleNotesSection(li, task);
-                });
-                actionsDiv.appendChild(notesBtn);
-
-                // Complete Button
-                const completeBtn = document.createElement('button');
-                completeBtn.className = 'complete-btn control-icon';
-                completeBtn.title = task.completed ? 'Mark as Incomplete' : 'Mark as Complete';
-                completeBtn.innerHTML = `<i class="fas ${task.completed ? 'fa-undo-alt' : 'fa-check'}"></i>`;
-                completeBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleComplete(task.id); });
-                actionsDiv.appendChild(completeBtn);
-
-                // Delete Button
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'delete-btn control-icon';
-                deleteBtn.title = 'Delete Task';
-                deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-                deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); deleteTask(task.id); });
-                actionsDiv.appendChild(deleteBtn);
-
-                li.appendChild(actionsDiv);
-
-                 // --- Notes Section (Hidden initially) ---
-                 const notesSection = document.createElement('div');
-                 notesSection.className = 'task-notes-section';
-                 // Pre-fill textarea, handle click inside textarea to prevent closing
-                 notesSection.innerHTML = `<textarea placeholder="Add notes here..." >${task.notes || ''}</textarea>`;
-                 const textarea = notesSection.querySelector('textarea');
-                  // Use 'change' instead of 'blur' for potentially better mobile experience & explicit save
-                 textarea.addEventListener('change', () => {
-                     updateTaskNotes(task.id, textarea.value.trim());
-                 });
-                  textarea.addEventListener('input', () => { // Optional: Live update indicator while typing
-                     // Debounce this if performance becomes an issue
-                     updateNotesIndicator(notesIndicator, textarea.value.trim());
-                 });
-                 // Prevent clicks inside the notes section from propagating and potentially closing it
-                 notesSection.addEventListener('click', e => e.stopPropagation());
-                 li.appendChild(notesSection);
-
-
-                // --- Event Listeners for Drag & Drop ---
-                li.addEventListener('dragstart', handleDragStart);
-                li.addEventListener('dragend', handleDragEnd);
-                li.addEventListener('dragover', handleDragOver);
-                 // Add listener to the list container for drop events to handle dropping in empty areas or between items accurately
-                // Using dragleave on the item itself can be tricky
-                li.addEventListener('dragleave', (e) => {
-                    const targetItem = e.target.closest('.task-item');
-                    if(targetItem) targetItem.classList.remove('drag-over');
-                 });
-                 li.addEventListener('drop', handleDrop);
-
-                return li;
             }
 
-             function updateNotesIndicator(indicatorElement, notes) {
-                 if (notes && notes.trim() !== '') {
-                     indicatorElement.innerHTML = `<i class="fas fa-sticky-note"></i> Has Notes`;
-                     // Ensure it's displayed if it was hidden
-                     if (indicatorElement.parentNode === null && metaDiv) { // Check if detached
-                         const metaDiv = indicatorElement.closest('.task-meta');
-                         if(metaDiv) metaDiv.appendChild(indicatorElement); // Re-append if needed
-                     }
-                 } else {
-                      // Remove the element completely if no notes
-                      if (indicatorElement.parentNode) {
-                          indicatorElement.parentNode.removeChild(indicatorElement);
-                      }
-                 }
-             }
-
-             function toggleNotesSection(taskElement, task) {
-                 const notesSection = taskElement.querySelector('.task-notes-section');
-                 const notesBtn = taskElement.querySelector('.notes-btn');
-                 if (notesSection) {
-                     const isVisible = notesSection.style.display === 'block';
-                     // Close all other open notes sections first
-                     document.querySelectorAll('.task-item .task-notes-section').forEach(ns => {
-                         if (ns !== notesSection) ns.style.display = 'none';
-                     });
-                      document.querySelectorAll('.task-item .notes-btn.active').forEach(nb => {
-                         if (nb !== notesBtn) nb.classList.remove('active');
-                     });
-
-                     // Toggle the current one
-                     notesSection.style.display = isVisible ? 'none' : 'block';
-                     notesBtn.classList.toggle('active', !isVisible);
-                     if (!isVisible) {
-                         notesSection.querySelector('textarea').focus(); // Focus textarea when shown
-                     }
-                 }
-             }
-
-
-             // Update Timer UI on the task item itself
-            function updateTimerUI(taskId, totalSeconds) {
-                const taskElement = document.querySelector(`.task-item[data-id="${taskId}"]`);
-                 if (taskElement) {
-                     const timerDisplay = taskElement.querySelector('.task-timer');
-                     if (timerDisplay) {
-                         timerDisplay.textContent = formatTime(totalSeconds);
-                     }
-                 }
-             }
-             // Update Active Timer display in the header
-             function updateActiveTimerDisplay(taskName, totalSeconds) {
-                 if (activeTaskId) {
-                     activeTimerTaskName.textContent = truncateText(taskName, 25); // Show truncated name
-                     activeTimerTime.textContent = formatTime(totalSeconds);
-                     activeTimerDisplay.style.display = 'flex'; // Ensure it's visible
-                 } else {
-                     activeTimerDisplay.style.display = 'none'; // Hide if no timer active
-                     activeTimerTaskName.textContent = '';
-                     activeTimerTime.textContent = '00:00';
-                 }
-             }
-
-            function toggleTimerButtonActive(taskId, isActive) {
-                 const taskElement = document.querySelector(`.task-item[data-id="${taskId}"]`);
-                 if (taskElement) {
-                     const timerBtn = taskElement.querySelector('.timer-btn');
-                     if (timerBtn) {
-                         timerBtn.classList.toggle('active', isActive);
-                         timerBtn.title = isActive ? 'Pause Timer' : 'Start Timer';
-                         // Maybe disable other timer buttons when one is active? (Optional UX enhancement)
-                     }
-                 }
-             }
-
-            function updateStats() {
-                 const now = new Date();
-                 const todayStart = new Date(now).setHours(0, 0, 0, 0); // Timestamp
-                 const todayEnd = todayStart + 24 * 60 * 60 * 1000 - 1; // End of today timestamp
-
-                 const today = new Date(); // Keep as Date object for getDay()
-                 const dayOfWeek = today.getDay(); // 0 (Sun) to 6 (Sat)
-                 const weekStart = new Date(todayStart - dayOfWeek * 24 * 60 * 60 * 1000); // Start of current week (Sunday) timestamp
-                 const weekEnd = weekStart.getTime() + 7 * 24 * 60 * 60 * 1000 - 1; // End of Saturday timestamp
-
-                 const monthStart = new Date(today.getFullYear(), today.getMonth(), 1).getTime(); // Timestamp
-                 const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0).getTime() + 24 * 60 * 60 * 1000 - 1; // End of month timestamp
-
-
-                 let countToday = 0;
-                 let countWeek = 0;
-                 let countMonth = 0;
-                 let countOverall = 0;
-                 let countCompleted = 0;
-
-                 tasks.forEach(task => {
-                     if (task.completed) {
-                         countCompleted++;
-                     }
-                    if (!task.completed && task.dueDate) {
-                         try {
-                             // Ensure dueDate is parsed correctly, even if stored differently previously
-                             const dueDate = new Date(task.dueDate);
-                              // Add check for invalid date
-                             if (isNaN(dueDate.getTime())) {
-                                 console.warn(`Invalid due date found for task ID ${task.id}: ${task.dueDate}`);
-                                 return; // Skip this task for date calculations
-                             }
-                             const dueDateTimestamp = dueDate.setHours(0,0,0,0); // Normalize to start of day for comparison
-
-                             countOverall++; // Count all non-completed tasks with a valid due date
-                             if (dueDateTimestamp >= todayStart && dueDateTimestamp <= todayEnd) countToday++;
-                             if (dueDateTimestamp >= weekStart.getTime() && dueDateTimestamp <= weekEnd) countWeek++;
-                             if (dueDateTimestamp >= monthStart && dueDateTimestamp <= monthEnd) countMonth++;
-                         } catch (e) {
-                             console.error(`Error processing due date for task ID ${task.id}:`, e);
-                         }
-                     }
-                 });
-
-                 statToday.textContent = countToday;
-                 statWeek.textContent = countWeek;
-                 statMonth.textContent = countMonth;
-                 statOverall.textContent = countOverall;
-                 statCompleted.textContent = countCompleted;
-             }
-
-             function renderNotifications() {
-                 notificationList.innerHTML = ''; // Clear existing
-                 const unreadCount = notifications.filter(n => !n.read).length;
-
-                 if (notifications.length === 0) {
-                     notificationList.innerHTML = '<div class="notification-empty">No notifications.</div>';
-                     updateNotificationCountVisual();
-                     return;
-                 }
-
-                 const fragment = document.createDocumentFragment();
-                 notifications.forEach(n => {
-                     const item = document.createElement('div');
-                     item.className = `notification-item ${n.type} ${n.read ? 'read' : ''}`;
-                     item.dataset.id = n.id;
-                     item.setAttribute('role', 'alert');
-                     item.innerHTML = `
-                         ${n.message}
-                         <span class="notification-timestamp">${timeAgo(n.timestamp)}</span>
-                     `;
-                     // Mark as read on click
-                     item.addEventListener('click', () => {
-                         if (!n.read) {
-                             n.read = true;
-                             saveNotifications();
-                             item.classList.add('read'); // Update style immediately
-                             updateNotificationCountVisual(); // Update badge immediately
-                         }
-                         // Optional: Add navigation logic here if needed
-                     });
-                     fragment.appendChild(item);
-                 });
-                 notificationList.appendChild(fragment);
-
-                 updateNotificationCountVisual(); // Update badge count
-             }
-
-
-            // --- Data Persistence (LocalStorage) ---
-            function saveTasks() {
-                 // Ensure we don't save transient state or large objects unintentionally
-                 const tasksToSave = tasks.map(({ selected, ...rest }) => {
-                     // Ensure timeTracked is a number
-                     rest.timeTracked = Number(rest.timeTracked) || 0;
-                     // Timer should not be running when saved like this
-                     rest.timerStartTime = null;
-                     return rest;
-                 });
-                 try {
-                     localStorage.setItem('todos', JSON.stringify(tasksToSave));
-                 } catch (e) {
-                     console.error("Error saving tasks to localStorage:", e);
-                      addNotification("Could not save tasks. Storage might be full.", "error");
-                 }
+            // User Management
+            function loadUser() {
+                const loggedIn = localStorage.getItem('loggedIn') === 'true';
+                currentUser = loggedIn ? { email: localStorage.getItem('userEmail') || 'test@example.com' } : null;
+                if (loggedIn && currentUser) {
+                    showAppView();
+                } else {
+                    showLoginView();
+                }
             }
 
             function loadTasks() {
-                const storedTasks = localStorage.getItem('todos');
-                if (storedTasks) {
-                    try {
-                        let loadedTasks = JSON.parse(storedTasks);
-                        // Ensure it's an array
-                        if (!Array.isArray(loadedTasks)) throw new Error("Stored data is not an array");
-
-                         // Ensure all tasks have necessary properties after loading
-                        const todayGMT = getGMTDateString(new Date());
-                        tasks = loadedTasks.map(task => {
-                             // Basic validation of loaded task structure
-                             if (!task || typeof task.text !== 'string') return null; // Skip invalid tasks
-
-                             return {
-                                 id: task.id || generateId(),
-                                 text: task.text,
-                                 completed: task.completed || false,
-                                 createdAt: task.createdAt || new Date().toISOString(),
-                                 dueDate: task.dueDate || null,
-                                 notes: task.notes || '',
-                                 timeTracked: Number(task.timeTracked) || 0,
-                                 timerStartTime: null, // Ensure timer is not running on load
-                                 lastResetDate: task.lastResetDate || todayGMT,
-                                 selected: false // Always false on load
-                             };
-                        }).filter(task => task !== null); // Remove any null tasks from validation fail
-
-                        // Check timer reset for all tasks after loading
-                         tasks.forEach(task => checkTimerReset(task));
-
-                    } catch (e) {
-                        console.error("Error parsing tasks from localStorage:", e);
-                        tasks = []; // Reset if data is corrupted
-                         addNotification("Could not load saved tasks. Data might be corrupted.", "error");
-                         localStorage.removeItem('todos'); // Attempt to clear corrupted data
-                    }
-                } else {
-                    tasks = []; // Start fresh if no saved data
-                }
-                 // Ensure active timer state is consistent after loading tasks
-                 activeTaskId = null; // Reset active task ID on load
-                 stopTimerInterval(); // Ensure no lingering interval
+                const storedTasks = localStorage.getItem(`tasks_${currentUser?.email}`);
+                tasks = storedTasks ? JSON.parse(storedTasks) : [];
+                tasks.forEach(task => {
+                    task.selected = false;
+                    task.isTracking = false;
+                    task.subtasks = task.subtasks || [];
+                    task.notes = task.notes || '';
+                    task.timeTrackedToday = task.timeTrackedToday || 0;
+                });
             }
 
-            function saveNotifications() {
-                 try {
-                    localStorage.setItem('notifications', JSON.stringify(notifications));
-                 } catch (e) {
-                     console.error("Error saving notifications:", e);
-                 }
+            function saveTasks() {
+                if (currentUser) {
+                    localStorage.setItem(`tasks_${currentUser.email}`, JSON.stringify(tasks));
+                }
             }
 
             function loadNotifications() {
-                const storedNotifications = localStorage.getItem('notifications');
-                 if (storedNotifications) {
-                     try {
-                         let loadedNots = JSON.parse(storedNotifications);
-                         if (Array.isArray(loadedNots)) {
-                            notifications = loadedNots;
-                         } else {
-                             notifications = [];
-                         }
-                         // Optional: Limit number of stored notifications on load
-                         // notifications = notifications.slice(0, 50);
-                     } catch (e) {
-                         console.error("Error parsing notifications:", e);
-                         notifications = [];
-                     }
-                 } else {
-                     notifications = [];
-                 }
+                const storedNotifications = localStorage.getItem(`notifications_${currentUser?.email}`);
+                notifications = storedNotifications ? JSON.parse(storedNotifications) : [];
             }
 
-            function saveAndRender() {
-                 saveTasks();
-                 renderAll(); // Use the full render function
+            function saveNotifications() {
+                if (currentUser) {
+                    localStorage.setItem(`notifications_${currentUser?.email}`, JSON.stringify(notifications));
+                }
             }
 
-            // --- Import / Export ---
-            function exportTasks() {
-                 if (tasks.length === 0) {
-                     addNotification("No tasks to export.", "warning");
-                     return;
-                 }
-                 // Exclude transient state like 'selected'
-                 const tasksToExport = tasks.map(({ selected, timerStartTime, ...rest }) => ({
-                    ...rest,
-                    timeTracked: Number(rest.timeTracked) || 0 // Ensure timeTracked is a number
-                 }));
-
-                 const dataStr = JSON.stringify(tasksToExport, null, 2); // Pretty print JSON
-                 const dataBlob = new Blob([dataStr], { type: 'application/json;charset=utf-8' });
-                 const url = URL.createObjectURL(dataBlob);
-                 const link = document.createElement('a');
-                 link.href = url;
-                 const timestamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-                 link.download = `tasks-export-${timestamp}.json`;
-                 document.body.appendChild(link);
-                 link.click();
-                 document.body.removeChild(link);
-                 URL.revokeObjectURL(url); // Clean up blob URL
-                 addNotification("Tasks exported successfully.", "success");
+            // Time Tracking
+            function initializeTimeTrackers() {
+                tasks.forEach(task => {
+                    if (task.isTracking) {
+                        startTimer(task.id, null);
+                    }
+                });
+                updateGlobalTimeTracker();
+                const now = new Date();
+                const midnight = new Date(now);
+                midnight.setHours(24, 0, 0, 0);
+                const timeToMidnight = midnight - now;
+                setTimeout(() => {
+                    resetDailyTimeTracking();
+                    setInterval(resetDailyTimeTracking, 24 * 60 * 60 * 1000);
+                }, timeToMidnight);
             }
 
-            function importTasks(file) {
-                 if (!file || !file.type.match('application/json')) {
-                     addNotification("Please select a valid JSON file.", "warning");
-                     return;
-                 }
-                 const reader = new FileReader();
-                 reader.onload = (event) => {
-                     try {
-                         const importedData = JSON.parse(event.target.result);
-                         if (!Array.isArray(importedData)) {
-                             throw new Error("Invalid JSON format: Expected an array.");
-                         }
-
-                         // Basic validation and mapping
-                         const todayGMT = getGMTDateString(new Date());
-                         const newTasks = importedData.map(item => {
-                            // Validate essential fields
-                             if (!item || typeof item.text !== 'string') return null;
-                             return {
-                                id: item.id || generateId(),
-                                text: item.text,
-                                completed: item.completed || false,
-                                createdAt: item.createdAt || new Date().toISOString(),
-                                dueDate: item.dueDate || null,
-                                notes: item.notes || '',
-                                timeTracked: Number(item.timeTracked) || 0,
-                                timerStartTime: null, // Never import as running
-                                lastResetDate: item.lastResetDate || todayGMT,
-                                selected: false
-                             };
-                         }).filter(item => item !== null); // Filter out invalid items
-
-                         if (newTasks.length === 0 && importedData.length > 0) {
-                             throw new Error("No valid tasks found in the JSON file.");
-                         }
-
-
-                         // Replace current tasks
-                         tasks = newTasks;
-                         // Run reset check on imported tasks
-                         tasks.forEach(task => checkTimerReset(task));
-
-                         stopTimer(); // Stop any active timer before replacing tasks
-                         saveAndRender();
-                         addNotification(`Tasks imported successfully from ${file.name}. (${newTasks.length} tasks loaded)`, "success");
-                         closeModal(importModal); // Close modal on success
-                     } catch (error) {
-                         console.error("Import Error:", error);
-                         addNotification(`Import failed: ${error.message}`, 'error');
-                     }
-                 };
-                 reader.onerror = (e) => {
-                     console.error("File Reading Error:", e);
-                     addNotification('Error reading file.', 'error');
-                 };
-                 reader.readAsText(file);
-             }
-
-            // --- Modal Handling ---
-             // Use global closeModal function defined later
-             function openModal(modalElement) {
-                 modalElement.style.display = 'flex'; // Use flex for centering
-                 // Focus first focusable element in modal? (Accessibility enhancement)
-             }
-             function closeModal(modalElement) {
-                 if (!modalElement) return;
-                 modalElement.style.display = 'none';
-                 // Reset import file input if closing import modal
-                 if (modalElement.id === 'importModal') {
-                     importFileModalInput.value = ''; // Clear file selection
-                     importFileName.textContent = 'No file chosen';
-                 }
-             }
-             // Attach close handler to modal background clicks (already done in global listener)
-             // Attach close handler to 'x' button
-             importModal.querySelector('.modal-close').addEventListener('click', () => closeModal(importModal));
-
-
-            // --- Utility Functions ---
-            function truncateText(text, maxLength) {
-                 if (!text) return '';
-                 return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+            function resetDailyTimeTracking() {
+                tasks.forEach(task => {
+                    task.timeTrackedToday = 0;
+                    if (task.isTracking) {
+                        stopTimer(task.id, null);
+                        startTimer(task.id, null);
+                    }
+                });
+                saveTasks();
+                updateGlobalTimeTracker();
+                addNotification('Daily time tracking reset.', 'info');
             }
-            function formatDate(dateInput) {
-                if (!dateInput) return '';
-                 let date;
-                 try {
-                    date = new Date(dateInput);
-                     if (isNaN(date.getTime())) return 'Invalid Date'; // Handle invalid dates gracefully
-                 } catch (e) {
-                     return 'Invalid Date';
-                 }
 
-                 // Use Intl for better formatting
-                 try {
-                     return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date);
-                 } catch (e) { // Fallback if Intl fails (shouldn't normally)
-                     return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-                 }
+            function updateGlobalTimeTracker() {
+                const totalMinutes = tasks.reduce((sum, task) => sum + (task.timeTrackedToday || 0), 0);
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = totalMinutes % 60;
+                globalTimeTracker.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
             }
-            function timeAgo(timestamp) {
-                 try {
-                     const now = new Date();
-                     const past = new Date(timestamp);
-                     if (isNaN(past.getTime())) return ''; // Handle invalid timestamp
 
-                     const diffInSeconds = Math.floor((now - past) / 1000);
-                     const diffInMinutes = Math.floor(diffInSeconds / 60);
-                     const diffInHours = Math.floor(diffInMinutes / 60);
-                     const diffInDays = Math.floor(diffInHours / 24);
+            // Theme Management
+            function applyTheme(isDark) {
+                document.body.classList.toggle('dark-mode', isDark);
+                themeToggleBtn.querySelector('i').className = `fas fa-${isDark ? 'sun' : 'moon'}`;
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                updateAllCharts();
+            }
 
-                     if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
-                     if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-                     if (diffInHours < 24) return `${diffInHours}h ago`;
-                     if (diffInDays === 1) return `Yesterday`;
-                     if (diffInDays < 7) return `${diffInDays}d ago`;
-                     return formatDate(past); // Older than a week, show date
-                 } catch (e) {
-                     console.error("Error formatting time ago:", e);
-                     return ''; // Return empty on error
-                 }
-             }
+            // View Management
+            function showLoginView() {
+                localStorage.removeItem('loggedIn');
+                localStorage.removeItem('userEmail');
+                currentUser = null;
+                stopAllTimers();
+                loginContainer.style.display = 'block';
+                appContainer.style.display = 'none';
+                document.body.classList.remove('app-view');
+            }
 
-            // --- Event Listeners ---
-             // Add Task
-            addTaskBtn.addEventListener('click', addTask);
-            taskInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addTask(); });
-            taskDueDateInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addTask(); }); // Allow enter on date too
-
-             // Export
-             exportBtn.addEventListener('click', exportTasks);
-
-            // Import
-             importBtnTrigger.addEventListener('click', () => openModal(importModal));
-             importFileModalInput.addEventListener('change', (e) => {
-                 const file = e.target.files[0];
-                 if (file) {
-                     importFileName.textContent = file.name;
-                     // Directly import when file is selected from modal input
-                     importTasks(file);
-                 } else {
-                     importFileName.textContent = 'No file chosen';
-                 }
-             });
-
-            // Notifications
-             notificationBtn.addEventListener('click', (e) => {
-                 e.stopPropagation(); // Prevent closing immediately by window listener
-                 const isDisplayed = notificationList.style.display === 'block';
-                 notificationList.style.display = isDisplayed ? 'none' : 'block';
-                 if (!isDisplayed) {
-                     // Mark notifications as read when opened
-                     markNotificationsRead();
-                 }
-             });
-
-             // Multi-Select Actions
-             multiCompleteBtn.addEventListener('click', multiComplete);
-             multiDeleteBtn.addEventListener('click', multiDelete);
-
-             // Undo Action
-             undoButton.addEventListener('click', performUndo);
-
-            // Refresh
-             refreshLogo.addEventListener('click', () => {
-                // Re-load and re-render everything
-                addNotification('Refreshing view...', 'info');
-                loadTasks(); // Reload from storage
+            function showAppView() {
+                loginContainer.style.display = 'none';
+                appContainer.style.display = 'block';
+                document.body.classList.add('app-view');
+                loadTasks();
                 loadNotifications();
                 renderAll();
-                addNotification('View refreshed.', 'success');
-             });
+            }
 
-             // Global Click Listener (for closing dropdowns/modals)
-            window.addEventListener('click', (e) => {
-                 // Close notification list if clicked outside
-                 // Check if the click target is outside the notification button AND the list itself
-                 if (!notificationBtn.contains(e.target) && !notificationList.contains(e.target)) {
-                    if (notificationList.style.display === 'block') {
-                        notificationList.style.display = 'none';
+            // Rendering
+            function renderAll() {
+                renderTasks();
+                renderNotifications();
+                updateStats();
+                updateProgress();
+                updateAllCharts();
+                updateBatchActionVisibility();
+            }
+
+            function renderTasks() {
+                if (!currentUser) return;
+
+                let filteredTasks = [...tasks];
+                const filters = getFilters();
+                if (filters.status !== 'all') {
+                    filteredTasks = filteredTasks.filter(task => task.status.toLowerCase() === filters.status);
+                }
+                if (filters.category !== 'all') {
+                    filteredTasks = filteredTasks.filter(task => task.category === filters.category);
+                }
+                if (filters.priority !== 'all') {
+                    filteredTasks = filteredTasks.filter(task => task.priority === filters.priority);
+                }
+                if (filters.date !== 'all') {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    let startDate, endDate;
+                    switch (filters.date) {
+                        case 'today':
+                            startDate = today;
+                            endDate = new Date(today);
+                            endDate.setHours(23, 59, 59, 999);
+                            break;
+                        case 'week':
+                            startDate = new Date(today);
+                            const dayOfWeek = today.getDay();
+                            const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+                            startDate.setDate(diff);
+                            endDate = new Date(startDate);
+                            endDate.setDate(startDate.getDate() + 6);
+                            endDate.setHours(23, 59, 59, 999);
+                            break;
+                        case 'month':
+                            startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                            endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                            endDate.setHours(23, 59, 59, 999);
+                            break;
+                        case 'custom':
+                            if (filters.startDate) {
+                                startDate = new Date(filters.startDate);
+                                startDate.setHours(0, 0, 0, 0);
+                            }
+                            if (filters.endDate) {
+                                endDate = new Date(filters.endDate);
+                                endDate.setHours(23, 59, 59, 999);
+                            }
+                            break;
                     }
-                 }
-                 // Close modals on overlay click
-                 if (e.target.classList.contains('modal')) {
-                     closeModal(e.target);
-                 }
-                  // Deselect all if clicking outside task list and multi-select bar (and bar is visible)
-                 if (multiSelectBar.classList.contains('visible') && !taskList.contains(e.target) && !multiSelectBar.contains(e.target)) {
-                      let changed = false;
-                      tasks.forEach(t => { if(t.selected) {t.selected = false; changed = true;}});
-                      if (changed) renderTasks(); // Re-render only tasks to clear checks
-                      updateMultiSelectBar(); // Hide the bar
-                 }
-                  // Close open notes sections if clicking outside a task item
-                 if (!e.target.closest('.task-item')) {
-                    document.querySelectorAll('.task-item .task-notes-section').forEach(ns => ns.style.display = 'none');
-                    document.querySelectorAll('.task-item .notes-btn.active').forEach(nb => nb.classList.remove('active'));
-                 }
-            });
+                    if (startDate && endDate) {
+                        filteredTasks = filteredTasks.filter(task => {
+                            if (!task.dueDate) return false;
+                            const dueDate = new Date(task.dueDate + 'T00:00:00');
+                            return !isNaN(dueDate.getTime()) && dueDate >= startDate && dueDate <= endDate;
+                        });
+                    }
+                }
 
-             // Global Key Listener
-            window.addEventListener('keydown', (e) => {
-                 // Close modals/dropdowns on Escape key
-                if (e.key === 'Escape') {
-                    // Close Modal First
-                     const openModalElement = document.querySelector('.modal[style*="display: flex"]');
-                     if (openModalElement) {
-                         closeModal(openModalElement);
-                         return; // Don't process other escape actions if modal was closed
-                     }
-                     // Close Notification List
-                     if (notificationList.style.display === 'block') {
-                         notificationList.style.display = 'none';
-                         return;
-                     }
-                      // Close Multi-Select Bar & Deselect
-                     if (multiSelectBar.classList.contains('visible')) {
-                         tasks.forEach(t => t.selected = false);
-                         renderTasks();
-                         updateMultiSelectBar();
-                         return;
-                     }
-                     // Close any open notes sections
-                     const openNotes = document.querySelector('.task-notes-section[style*="display: block"]');
-                     if (openNotes) {
-                         openNotes.style.display = 'none';
-                          const notesBtn = openNotes.closest('.task-item')?.querySelector('.notes-btn.active');
-                          if (notesBtn) notesBtn.classList.remove('active');
-                         return;
-                     }
-                 }
-                 // Undo with Ctrl+Z / Cmd+Z
-                 if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-                     if (undoContainer.classList.contains('visible')) {
-                         e.preventDefault(); // Prevent browser's default undo
-                         performUndo();
-                     }
-                 }
-            });
+                const [sortField, sortDirection] = sortTasksSelect.value.split('-');
+                filteredTasks.sort((a, b) => {
+                    let compareA, compareB;
+                    switch (sortField) {
+                        case 'dueDate':
+                            compareA = a.dueDate ? new Date(a.dueDate) : (sortDirection === 'asc' ? Infinity : -Infinity);
+                            compareB = b.dueDate ? new Date(b.dueDate) : (sortDirection === 'asc' ? Infinity : -Infinity);
+                            if (isNaN(compareA)) compareA = (sortDirection === 'asc' ? Infinity : -Infinity);
+                            if (isNaN(compareB)) compareB = (sortDirection === 'asc' ? Infinity : -Infinity);
+                            break;
+                        case 'priority':
+                            compareA = priorityMap[a.priority] || 0;
+                            compareB = priorityMap[b.priority] || 0;
+                            break;
+                        case 'title':
+                            compareA = a.title.toLowerCase();
+                            compareB = b.title.toLowerCase();
+                            break;
+                        case 'dateCreated':
+                        default:
+                            compareA = new Date(a.dateCreated);
+                            compareB = new Date(b.dateCreated);
+                            if (isNaN(compareA)) compareA = (sortDirection === 'asc' ? Infinity : -Infinity);
+                            if (isNaN(compareB)) compareB = (sortDirection === 'asc' ? Infinity : -Infinity);
+                            break;
+                    }
+                    let comparison = compareA > compareB ? 1 : compareA < compareB ? -1 : 0;
+                    return sortDirection === 'desc' ? -comparison : comparison;
+                });
 
-            // Stop timers before unloading page
-            window.addEventListener('beforeunload', stopAllTimers);
+                taskList.innerHTML = '';
+                if (filteredTasks.length === 0) {
+                    taskList.innerHTML = '<li class="no-tasks">No tasks match the current filters/sort.</li>';
+                } else {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const upcomingLimit = new Date(today);
+                    upcomingLimit.setDate(today.getDate() + UPCOMING_THRESHOLD_DAYS);
 
-        }); // End DOMContentLoaded
-    </script>
-</body>
-</html>
+                    filteredTasks.forEach(task => {
+                        const li = document.createElement('li');
+                        li.className = `task-item ${task.status.toLowerCase()} ${task.selected ? 'selected' : ''}`;
+                        li.dataset.id = task.id;
+                        li.draggable = true;
+
+                        let dueDateAlertHTML = '';
+                        if (task.dueDate) {
+                            try {
+                                const dueDate = new Date(task.dueDate + 'T00:00:00');
+                                if (!isNaN(dueDate.getTime())) {
+                                    if (dueDate < today) {
+                                        dueDateAlertHTML = `<span class="due-date-alert alert-expired"><i class="fas fa-exclamation-circle"></i> Expired</span>`;
+                                    } else if (dueDate >= today && dueDate < upcomingLimit) {
+                                        const daysDiff = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+                                        const upcomingText = daysDiff === 0 ? 'Due Today' : `Due in ${daysDiff}d`;
+                                        dueDateAlertHTML = `<span class="due-date-alert alert-upcoming"><i class="fas fa-clock"></i> ${upcomingText}</span>`;
+                                    } else {
+                                        dueDateAlertHTML = `<span class="due-date-alert alert-ontime"><i class="fas fa-check-circle"></i> On Time</span>`;
+                                    }
+                                }
+                            } catch (e) { /* Ignore invalid dates */ }
+                        }
+
+                        let subtasksHTML = task.subtasks && task.subtasks.length > 0 ? `<div class="subtasks-container">` + task.subtasks.map((subtask, index) => `
+                            <div class="subtask-item ${subtask.completed ? 'completed' : ''}" data-subtask-index="${index}">
+                                <input type="checkbox" class="subtask-checkbox" ${subtask.completed ? 'checked' : ''}>
+                                <span>${escapeHtml(subtask.text)}</span>
+                            </div>
+                        `).join('') + `</div>` : '';
+
+                        const timeTrackedMinutes = task.timeTrackedToday || 0;
+                        const hours = Math.floor(timeTrackedMinutes / 60);
+                        const minutes = timeTrackedMinutes % 60;
+                        const timeDisplay = timeTrackedMinutes > 0 ? `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}` : '';
+                        const timeTrackedHTML = timeDisplay ? `<span class="time-tracked-display"><i class="fas fa-stopwatch"></i> ${timeDisplay}</span>` : '';
+
+                        li.innerHTML = `
+                            <div class="task-item-main">
+                                <div class="task-checkbox-container">
+                                    <input type="checkbox" class="task-checkbox" ${task.selected ? 'checked' : ''} title="Select task">
+                                </div>
+                                <div class="task-info">
+                                    <div class="task-title">${escapeHtml(task.title)}</div>
+                                    <div class="task-details">
+                                        ${task.dueDate ? `<div class="task-detail"><i class="fas fa-calendar-alt"></i> Due: ${task.dueDate} ${dueDateAlertHTML}</div>` : ''}
+                                        ${task.category ? `<div class="task-detail"><i class="fas fa-folder"></i> ${escapeHtml(task.category)}</div>` : ''}
+                                        <div class="task-detail">
+                                            <span class="tag tag-${task.priority.toLowerCase()}">${escapeHtml(task.priority)}</span>
+                                        </div>
+                                        ${timeTrackedHTML ? `<div class="task-detail">${timeTrackedHTML}</div>` : ''}
+                                    </div>
+                                    ${task.details ? `<div class="task-description">${escapeHtml(task.details)}</div>` : ''}
+                                    ${task.notes ? `<div class="task-notes">${escapeHtml(task.notes)}</div>` : ''}
+                                    ${subtasksHTML}
+                                </div>
+                            </div>
+                            <div class="task-actions">
+                                <label class="toggle-switch" title="Mark as ${task.status === 'Completed' ? 'Pending' : 'Completed'}">
+                                    <input type="checkbox" class="status-toggle" ${task.status === 'Completed' ? 'checked' : ''}>
+                                    <span class="slider"></span>
+                                </label>
+                                <button class="icon-btn timer-btn ${task.isTracking ? 'active' : ''}" title="${task.isTracking ? 'Stop Timer' : 'Start Timer'}">
+                                    <i class="fas ${task.isTracking ? 'fa-pause-circle' : 'fa-play-circle'}"></i>
+                                </button>
+                                <button class="icon-btn edit-btn" title="Edit Task">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="icon-btn delete-btn" title="Delete Task">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                        taskList.appendChild(li);
+
+                        li.querySelector('.task-checkbox').addEventListener('change', handleTaskSelectToggle);
+                        li.querySelector('.status-toggle').addEventListener('change', handleStatusToggle);
+                        li.querySelector('.edit-btn').addEventListener('click', handleEditClick);
+                        li.querySelector('.delete-btn').addEventListener('click', handleDeleteClick);
+                        li.querySelector('.timer-btn').addEventListener('click', handleTimerToggle);
+                        li.querySelectorAll('.subtask-checkbox').forEach(cb => cb.addEventListener('change', handleSubtaskToggle));
+
+                        li.addEventListener('dragstart', handleDragStart);
+                        li.addEventListener('dragover', handleDragOver);
+                        li.addEventListener('dragenter', handleDragEnter);
+                        li.addEventListener('dragleave', handleDragLeave);
+                        li.addEventListener('drop', handleDrop);
+                        li.addEventListener('dragend', handleDragEnd);
+                    });
+                    updateStats();
+                    updateProgress();
+                }
+            }
+
+            // Drag-and-Drop
+            let draggedItem = null;
+
+            function handleDragStart(e) {
+                draggedItem = e.target;
+                setTimeout(() => draggedItem.classList.add('dragging'), 0);
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', draggedItem.dataset.id);
+            }
+
+            function handleDragOver(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+            }
+
+            function handleDragEnter(e) {
+                e.preventDefault();
+                if (e.target.closest('.task-item') && e.target.closest('.task-item') !== draggedItem) {
+                    e.target.closest('.task-item').classList.add('drag-over');
+                }
+            }
+
+            function handleDragLeave(e) {
+                if (e.target.closest('.task-item')) {
+                    e.target.closest('.task-item').classList.remove('drag-over');
+                }
+            }
+
+            function handleDrop(e) {
+                e.preventDefault();
+                const dropTarget = e.target.closest('.task-item');
+                if (dropTarget && dropTarget !== draggedItem) {
+                    const draggedId = parseInt(draggedItem.dataset.id);
+                    const targetId = parseInt(dropTarget.dataset.id);
+                    const draggedIndex = tasks.findIndex(t => t.id === draggedId);
+                    const targetIndex = tasks.findIndex(t => t.id === targetId);
+                    const [draggedTask] = tasks.splice(draggedIndex, 1);
+                    tasks.splice(targetIndex, 0, draggedTask);
+                    saveTasks();
+                    renderTasks();
+                    addNotification('Task reordered.', 'info');
+                }
+                dropTarget?.classList.remove('drag-over');
+            }
+
+            function handleDragEnd(e) {
+                draggedItem.classList.remove('dragging');
+                document.querySelectorAll('.task-item').forEach(item => item.classList.remove('drag-over'));
+                draggedItem = null;
+            }
+
+            function renderNotifications() {
+                const unreadCount = notifications.filter(n => !n.read).length;
+                notificationCountBadge.textContent = unreadCount;
+                notificationCountBadge.style.display = unreadCount > 0 ? 'flex' : 'none';
+                notificationList.innerHTML = notifications.length === 0 ? '<div class="notification-list-empty">No notifications</div>' : '';
+                [...notifications].reverse().forEach(note => {
+                    const div = document.createElement('div');
+                    div.className = `notification-item ${note.read ? '' : 'unread'}`;
+                    div.dataset.id = note.id;
+                    div.innerHTML = `
+                        <div style="font-weight: ${note.read ? 'normal' : 'bold'}; margin-bottom: 3px;">${escapeHtml(note.message)}</div>
+                        <div style="font-size: 0.7rem; color: var(--lm-muted-text); opacity: 0.8;">${timeAgo(note.timestamp)}</div>
+                    `;
+                    div.addEventListener('click', function() {
+                        const id = parseInt(this.dataset.id);
+                        const notification = notifications.find(n => n.id === id);
+                        if (notification && !notification.read) {
+                            notification.read = true;
+                            saveNotifications();
+                            renderNotifications();
+                        }
+                    });
+                    notificationList.appendChild(div);
+                });
+            }
+
+            function updateStats() {
+                const total = tasks.length;
+                const completed = tasks.filter(task => task.status === 'Completed').length;
+                const pending = total - completed;
+
+                totalTasksStat.textContent = total;
+                completedTasksStat.textContent = completed;
+                pendingTasksStat.textContent = pending;
+            }
+
+            function updateProgress() {
+                const todayStart = new Date();
+                todayStart.setHours(0, 0, 0, 0);
+                const todayEnd = new Date();
+                todayEnd.setHours(23, 59, 59, 999);
+                const weekStart = new Date(todayStart);
+                const dayOfWeek = todayStart.getDay();
+                const diff = todayStart.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+                weekStart.setDate(diff);
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekStart.getDate() + 6);
+                weekEnd.setHours(23, 59, 59, 999);
+                const monthStart = new Date(todayStart.getFullYear(), todayStart.getMonth(), 1);
+                const monthEnd = new Date(todayStart.getFullYear(), todayStart.getMonth() + 1, 0);
+                monthEnd.setHours(23, 59, 59, 999);
+
+                const calculateRate = (start, end) => {
+                    const relevantTasks = tasks.filter(task => {
+                        if (!task.dueDate) return false;
+                        const dueDate = new Date(task.dueDate + 'T00:00:00');
+                        return !isNaN(dueDate.getTime()) && dueDate >= start && dueDate <= end;
+                    });
+                    const completed = relevantTasks.filter(t => t.status === 'Completed').length;
+                    return relevantTasks.length > 0 ? Math.round((completed / relevantTasks.length) * 100) : 0;
+                };
+
+                progressToday.textContent = `${calculateRate(todayStart, todayEnd)}%`;
+                progressWeek.textContent = `${calculateRate(weekStart, weekEnd)}%`;
+                progressMonth.textContent = `${calculateRate(monthStart, monthEnd)}%`;
+                const overallCompleted = tasks.filter(t => t.status === 'Completed').length;
+                const overallRate = tasks.length > 0 ? Math.round((overallCompleted / tasks.length) * 100) : 0;
+                progressOverall.textContent = `${overallRate}%`;
+            }
+
+            function updateAllCharts() {
+                if (taskStatusChart) taskStatusChart.destroy();
+                if (taskPriorityChart) taskPriorityChart.destroy();
+                if (completionChart) completionChart.destroy();
+                taskStatusChart = createTaskStatusChart();
+                taskPriorityChart = createTaskPriorityChart();
+                completionChart = createCompletionChart();
+            }
+
+            function getChartColors() {
+                const isDark = document.body.classList.contains('dark-mode');
+                const graphColors = {
+                    completed: '#28a745',
+                    pending: '#6c757d',
+                    high: '#0b5ed7',
+                    medium: '#58a6ff',
+                    low: '#a0c4ff'
+                };
+                const themeColors = {
+                    gridColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)',
+                    ticksColor: isDark ? 'var(--dm-muted-text)' : 'var(--lm-muted-text)',
+                    legendColor: isDark ? 'var(--dm-text)' : 'var(--lm-text)',
+                    titleColor: isDark ? 'var(--dm-text)' : 'var(--lm-text)',
+                    primary: isDark ? 'var(--dm-primary)' : 'var(--lm-primary)',
+                    componentBg: isDark ? 'var(--dm-component-bg)' : 'var(--lm-component-bg)'
+                };
+                return { ...graphColors, ...themeColors };
+            }
+
+            function createTaskStatusChart() {
+                const completed = tasks.filter(task => task.status === 'Completed').length;
+                const pending = tasks.filter(task => task.status === 'Pending').length;
+                const colors = get
