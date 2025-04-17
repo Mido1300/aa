@@ -1,458 +1,1222 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Todo App</title>
-  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.22.9/Babel.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-    }
-    .task-enter {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    .task-enter-active {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 300ms, transform 300ms;
-    }
-    .task-exit {
-      opacity: 1;
-    }
-    .task-exit-active {
-      opacity: 0;
-      transition: opacity 300ms;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Todo App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Basic Styling & Theme Variables */
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Light Theme (Default) */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6; /* gray-100 */
+            --text-primary: #111827; /* gray-900 */
+            --text-secondary: #6b7280; /* gray-500 */
+            --border-color: #e5e7eb; /* gray-200 */
+            --accent-color: #3b82f6; /* blue-500 */
+            --accent-hover: #2563eb; /* blue-600 */
+            --danger-color: #ef4444; /* red-500 */
+            --danger-hover: #dc2626; /* red-600 */
+            --warning-color: #f59e0b; /* amber-500 */
+            --success-color: #22c55e; /* green-500 */
+        }
+
+        /* Dark Theme */
+        html.dark {
+            --bg-primary: #1f2937; /* gray-800 */
+            --bg-secondary: #374151; /* gray-700 */
+            --text-primary: #f9fafb; /* gray-50 */
+            --text-secondary: #9ca3af; /* gray-400 */
+            --border-color: #4b5563; /* gray-600 */
+            /* Accent, danger, warning, success colors can remain the same or be adjusted */
+        }
+
+        /* Apply Theme Variables with Tailwind */
+        .bg-primary { background-color: var(--bg-primary); }
+        .bg-secondary { background-color: var(--bg-secondary); }
+        .text-primary { color: var(--text-primary); }
+        .text-secondary { color: var(--text-secondary); }
+        .border-themed { border-color: var(--border-color); }
+        .accent-button { background-color: var(--accent-color); color: white; }
+        .accent-button:hover { background-color: var(--accent-hover); }
+        .danger-button { background-color: var(--danger-color); color: white; }
+        .danger-button:hover { background-color: var(--danger-hover); }
+
+        /* Custom Styles */
+        .task-item {
+            transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+            cursor: grab;
+        }
+        .task-item:active {
+            cursor: grabbing;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: scale(1.02);
+            background-color: var(--bg-secondary); /* Slightly change bg on grab */
+        }
+        .task-item.dragging {
+            opacity: 0.5;
+            border: 2px dashed var(--accent-color);
+        }
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+        .priority-high { border-left: 4px solid var(--danger-color); }
+        .priority-medium { border-left: 4px solid var(--warning-color); }
+        .priority-low { border-left: 4px solid var(--success-color); }
+
+        /* Hide default checkbox */
+        .custom-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            height: 1.25rem;
+            width: 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.25rem;
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+            flex-shrink: 0; /* Prevent checkbox from shrinking */
+        }
+        .custom-checkbox:checked {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        .custom-checkbox:checked::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        /* Modal Styling */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6); /* Dim background */
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active {
+            display: flex; /* Show when active */
+        }
+        .modal-content {
+            max-width: 500px;
+            width: 90%;
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Notification Styling */
+        #notification-area {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .notification {
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .notification-success { background-color: var(--success-color); color: white; }
+        .notification-error { background-color: var(--danger-color); color: white; }
+        .notification-info { background-color: var(--accent-color); color: white; }
+
+        /* Loading Spinner */
+        .loader {
+            border: 4px solid var(--bg-secondary);
+            border-top: 4px solid var(--accent-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto; /* Center it */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Drag placeholder */
+        .drag-over {
+            border-top: 2px dashed var(--accent-color);
+            background-color: rgba(59, 130, 246, 0.1); /* Light blue background */
+        }
+
+    </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
-  <div id="root"></div>
-  <script type="text/babel">
-    const { useState, useEffect, useContext, createContext, useRef } = React;
+<body class="bg-primary text-primary">
 
-    // Task Context
-    const TaskContext = createContext();
-
-    // Utility Functions
-    const generateId = () => crypto.randomUUID();
-    const saveToLocalStorage = (key, data) => localStorage.setItem(key, JSON.stringify(data));
-    const loadFromLocalStorage = (key) => JSON.parse(localStorage.getItem(key)) || [];
-
-    // Custom Hook for Tasks
-    const useTasks = () => {
-      const [tasks, setTasks] = useState(loadFromLocalStorage('tasks'));
-      const [lastAction, setLastAction] = useState(null);
-
-      useEffect(() => {
-        saveToLocalStorage('tasks', tasks);
-      }, [tasks]);
-
-      const addTask = (task) => {
-        const newTask = { ...task, id: generateId(), completed: false, createdAt: new Date().toISOString() };
-        setTasks([...tasks, newTask]);
-        setLastAction({ type: 'add', task: newTask });
-      };
-
-      const updateTask = (id, updates) => {
-        const oldTask = tasks.find((t) => t.id === id);
-        setTasks(tasks.map((t) => (t.id === id ? { ...t, ...updates } : t)));
-        setLastAction({ type: 'update', task: oldTask, id });
-      };
-
-      const deleteTask = (id) => {
-        const task = tasks.find((t) => t.id === id);
-        setTasks(tasks.filter((t) => t.id !== id));
-        setLastAction({ type: 'delete', task, id });
-      };
-
-      const undoLastAction = () => {
-        if (!lastAction) return;
-        if (lastAction.type === 'add') {
-          setTasks(tasks.filter((t) => t.id !== lastAction.task.id));
-        } else if (lastAction.type === 'delete') {
-          setTasks([...tasks, lastAction.task]);
-        } else if (lastAction.type === 'update') {
-          setTasks(tasks.map((t) => (t.id === lastAction.id ? lastAction.task : t)));
-        }
-        setLastAction(null);
-      };
-
-      const batchDelete = (ids) => {
-        const deletedTasks = tasks.filter((t) => ids.includes(t.id));
-        setTasks(tasks.filter((t) => !ids.includes(t.id)));
-        setLastAction({ type: 'batchDelete', tasks: deletedTasks });
-      };
-
-      const batchComplete = (ids) => {
-        const updatedTasks = tasks.map((t) => (ids.includes(t.id) ? { ...t, completed: true } : t));
-        setTasks(updatedTasks);
-        setLastAction({ type: 'batchComplete', ids });
-      };
-
-      const reorderTasks = (reorderedTasks) => {
-        setTasks(reorderedTasks);
-      };
-
-      return { tasks, addTask, updateTask, deleteTask, undoLastAction, batchDelete, batchComplete, reorderTasks };
-    };
-
-    // Task Provider
-    const TaskProvider = ({ children }) => {
-      const taskMethods = useTasks();
-      return <TaskContext.Provider value={taskMethods}>{children}</TaskContext.Provider>;
-    };
-
-    // Auth Context
-    const AuthContext = createContext();
-
-    const AuthProvider = ({ children }) => {
-      const [user, setUser] = useState(null);
-
-      const login = (email, password) => {
-        if (email && password) {
-          setUser({ email });
-          saveToLocalStorage('user', { email });
-        }
-      };
-
-      const logout = () => {
-        setUser(null);
-        localStorage.removeItem('user');
-      };
-
-      useEffect(() => {
-        const savedUser = loadFromLocalStorage('user');
-        if (savedUser.email) setUser(savedUser);
-      }, []);
-
-      return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>;
-    };
-
-    // Task Form Component
-    const TaskForm = () => {
-      const { addTask } = useContext(TaskContext);
-      const [title, setTitle] = useState('');
-      const [description, setDescription] = useState('');
-      const [dueDate, setDueDate] = useState('');
-      const [category, setCategory] = useState('Work');
-      const [priority, setPriority] = useState('Medium');
-
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!title.trim()) return;
-        addTask({ title, description, dueDate, category, priority });
-        setTitle('');
-        setDescription('');
-        setDueDate('');
-        setCategory('Work');
-        setPriority('Medium');
-      };
-
-      return (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Add Task</h2>
-          <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="Task Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-            />
-            <textarea
-              placeholder="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-            />
-            <input
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-            />
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-            >
-              <option>Work</option>
-              <option>Personal</option>
-              <option>Other</option>
-            </select>
-            <select
-              value={priority}
-              onChange={(e) => setPriority(e.target.value)}
-              className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-            >
-              <option>High</option>
-              <option>Medium</option>
-              <option>Low</option>
-            </select>
-            <button
-              onClick={handleSubmit}
-              className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-            >
-              Add Task
-            </button>
-          </div>
-        </div>
-      );
-    };
-
-    // Task List Component
-    const TaskList = () => {
-      const { tasks, updateTask, deleteTask, reorderTasks } = useContext(TaskContext);
-      const [filter, setFilter] = useState('All');
-      const [sort, setSort] = useState('Due Date');
-      const [search, setSearch] = useState('');
-      const [selectedTasks, setSelectedTasks] = useState([]);
-      const [draggedTask, setDraggedTask] = useState(null);
-
-      const filteredTasks = tasks
-        .filter((task) => {
-          if (filter === 'Active') return !task.completed;
-          if (filter === 'Completed') return task.completed;
-          return true;
-        })
-        .filter((task) => task.title.toLowerCase().includes(search.toLowerCase()) || task.description.toLowerCase().includes(search.toLowerCase()))
-        .sort((a, b) => {
-          if (sort === 'Due Date') return new Date(a.dueDate) - new Date(b.dueDate);
-          if (sort === 'Priority') {
-            const priorityOrder = { High: 3, Medium: 2, Low: 1 };
-            return priorityOrder[b.priority] - priorityOrder[a.priority];
-          }
-          return 0;
-        });
-
-      const handleDragStart = (task) => {
-        setDraggedTask(task);
-      };
-
-      const handleDragOver = (e) => {
-        e.preventDefault();
-      };
-
-      const handleDrop = (targetTask) => {
-        if (!draggedTask || draggedTask.id === targetTask.id) return;
-        const reordered = [...tasks];
-        const draggedIndex = tasks.findIndex((t) => t.id === draggedTask.id);
-        const targetIndex = tasks.findIndex((t) => t.id === targetTask.id);
-        reordered.splice(draggedIndex, 1);
-        reordered.splice(targetIndex, 0, draggedTask);
-        reorderTasks(reordered);
-        setDraggedTask(null);
-      };
-
-      return (
-        <div>
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <input
-              type="text"
-              placeholder="Search tasks..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="p-2 border rounded dark:bg-gray-700 dark:text-white flex-1"
-            />
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="p-2 border rounded dark:bg-gray-700 dark:text-white"
-            >
-              <option>All</option>
-              <option>Active</option>
-              <option>Completed</option>
-            </select>
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className="p-2 border rounded dark:bg-gray-700 dark:text-white"
-            >
-              <option>Due Date</option>
-              <option>Priority</option>
-            </select>
-          </div>
-          <div className="space-y-4">
-            {filteredTasks.map((task) => (
-              <div
-                key={task.id}
-                draggable
-                onDragStart={() => handleDragStart(task)}
-                onDragOver={handleDragOver}
-                onDrop={() => handleDrop(task)}
-                className="task-enter task-enter-active bg-white dark:bg-gray-800 p-4 rounded-lg shadow flex items-center gap-4"
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedTasks.includes(task.id)}
-                  onChange={() => setSelectedTasks((prev) => prev.includes(task.id) ? prev.filter((id) => id !== task.id) : [...prev, task.id])}
-                  className="h-5 w-5"
-                />
-                <input
-                  type="checkbox"
-                  checked={task.completed}
-                  onChange={() => updateTask(task.id, { completed: !task.completed })}
-                  className="h-5 w-5"
-                />
-                <div className="flex-1">
-                  <h3 className={`text-lg ${task.completed ? 'line-through text-gray-500' : 'text-gray-900 dark:text-white'}`}>
-                    {task.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">{task.description}</p>
-                  <p className="text-sm text-gray-500">Due: {task.dueDate || 'No due date'}</p>
-                  <p className="text-sm text-gray-500">Category: {task.category}</p>
-                  <p className="text-sm text-gray-500">Priority: {task.priority}</p>
+    <div id="login-screen" class="fixed inset-0 bg-primary z-50 flex items-center justify-center p-4">
+        <div class="w-full max-w-md p-8 bg-secondary rounded-lg shadow-lg border border-themed">
+            <h2 class="text-2xl font-bold text-center text-primary mb-6">Login to Todo App</h2>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="username" class="block text-sm font-medium text-secondary mb-1">Username</label>
+                    <input type="text" id="username" name="username" required class="w-full px-3 py-2 bg-primary border border-themed rounded-md focus:outline-none focus:ring-2 focus:ring-accent-color text-primary" placeholder="e.g., demo_user">
                 </div>
-                <button
-                  onClick={() => deleteTask(task.id)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  Delete
-                </button>
-              </div>
-            ))}
-          </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-sm font-medium text-secondary mb-1">Password</label>
+                    <input type="password" id="password" name="password" required class="w-full px-3 py-2 bg-primary border border-themed rounded-md focus:outline-none focus:ring-2 focus:ring-accent-color text-primary" placeholder="e.g., password">
+                </div>
+                <button type="submit" class="w-full accent-button font-semibold py-2 px-4 rounded-md transition duration-150 ease-in-out">Login</button>
+                <p class="text-xs text-secondary text-center mt-4">Use any username/password (e.g., demo/demo) - data is stored locally per username.</p>
+            </form>
         </div>
-      );
-    };
+    </div>
 
-    // Login Component
-    const Login = () => {
-      const { login } = useContext(AuthContext);
-      const [email, setEmail] = useState('');
-      const [password, setPassword] = useState('');
+    <div id="app-container" class="hidden min-h-screen flex flex-col">
 
-      const handleLogin = () => {
-        login(email, password);
-      };
-
-      return (
-        <div className="max-w-md mx-auto mt-10 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">Login</h2>
-          <div className="space-y-4">
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-            />
-            <button
-              onClick={handleLogin}
-              className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-            >
-              Login
-            </button>
-          </div>
-        </div>
-      );
-    };
-
-    // Main App Component
-    const App = () => {
-      const { user, logout } = useContext(AuthContext);
-      const { undoLastAction, batchDelete, batchComplete } = useContext(TaskContext);
-      const [theme, setTheme] = useState('light');
-
-      useEffect(() => {
-        document.documentElement.classList.toggle('dark', theme === 'dark');
-      }, [theme]);
-
-      const handleExport = () => {
-        const data = JSON.stringify(loadFromLocalStorage('tasks'));
-        const blob = new Blob([data], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'tasks.json';
-        a.click();
-        URL.revokeObjectURL(url);
-      };
-
-      const handleImport = (e) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const tasks = JSON.parse(event.target.result);
-          saveToLocalStorage('tasks', tasks);
-          window.location.reload();
-        };
-        reader.readAsText(file);
-      };
-
-      if (!user) return <Login />;
-
-      return (
-        <div className="max-w-4xl mx-auto p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Todo App</h1>
-            <div className="flex gap-4">
-              <button
-                onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-                className="p-2 rounded bg-gray-200 dark:bg-gray-700"
-              >
-                {theme === 'light' ? '🌙' : '☀️'}
-              </button>
-              <button onClick={handleExport} className="p-2 rounded bg-blue-500 text-white">
-                Export
-              </button>
-              <label className="p-2 rounded bg-blue-500 text-white cursor-pointer">
-                Import
-                <input type="file" accept=".json" onChange={handleImport} className="hidden" />
-              </label>
-              <button onClick={logout} className="p-2 rounded bg-red-500 text-white">
-                Logout
-              </button>
+        <header class="bg-secondary border-b border-themed shadow-sm p-4">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-primary">My Todo App</h1>
+                <div class="flex items-center space-x-4">
+                    <span id="welcome-message" class="text-sm text-secondary hidden md:block"></span>
+                    <button id="theme-toggle-btn" class="p-2 rounded-md hover:bg-primary border border-transparent hover:border-themed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-color" aria-label="Toggle theme">
+                        <i class="fas fa-sun text-yellow-500"></i> <i class="fas fa-moon text-indigo-400 hidden"></i> </button>
+                     <button id="logout-btn" class="text-sm danger-button font-medium py-1 px-3 rounded-md transition duration-150 ease-in-out">Logout</button>
+                </div>
             </div>
-          </div>
-          <TaskForm />
-          <div className="flex gap-4 mb-4">
-            <button
-              onClick={undoLastAction}
-              className="p-2 rounded bg-yellow-500 text-white"
-            >
-              Undo
-            </button>
-            <button
-              onClick={() => batchDelete([])}
-              className="p-2 rounded bg-red-500 text-white"
-            >
-              Delete Selected
-            </button>
-            <button
-              onClick={() => batchComplete([])}
-              className="p-2 rounded bg-green-500 text-white"
-            >
-              Complete Selected
-            </button>
-          </div>
-          <TaskList />
+        </header>
+
+        <main class="container mx-auto p-4 flex-grow flex flex-col md:flex-row gap-6">
+
+            <aside class="w-full md:w-1/4 lg:w-1/5 bg-secondary p-4 rounded-lg border border-themed shadow-sm h-fit">
+                <h2 class="text-lg font-semibold mb-4 text-primary">Controls & Filters</h2>
+
+                <button id="add-task-btn" class="w-full accent-button font-semibold py-2 px-4 rounded-md mb-4 transition duration-150 ease-in-out"><i class="fas fa-plus mr-2"></i>Add New Task</button>
+
+                <div class="mb-4">
+                    <label for="search-input" class="block text-sm font-medium text-secondary mb-1">Search Tasks</label>
+                    <input type="search" id="search-input" placeholder="Search by title..." class="w-full px-3 py-2 bg-primary border border-themed rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-accent-color text-primary">
+                </div>
+
+                <div class="mb-4">
+                    <label for="filter-status" class="block text-sm font-medium text-secondary mb-1">Filter by Status</label>
+                    <select id="filter-status" class="w-full px-3 py-2 bg-primary border border-themed rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-accent-color text-primary">
+                        <option value="all">All</option>
+                        <option value="active">Active</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="filter-priority" class="block text-sm font-medium text-secondary mb-1">Filter by Priority</label>
+                    <select id="filter-priority" class="w-full px-3 py-2 bg-primary border border-themed rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-accent-color text-primary">
+                        <option value="all">All Priorities</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+
+                 <div class="mb-4">
+                    <label for="filter-category" class="block text-sm font-medium text-secondary mb-1">Filter by Category</label>
+                    <select id="filter-category" class="w-full px-3 py-2 bg-primary border border-themed rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-accent-color text-primary">
+                        <option value="all">All Categories</option>
+                        </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="sort-tasks" class="block text-sm font-medium text-secondary mb-1">Sort by</label>
+                    <select id="sort-tasks" class="w-full px-3 py-2 bg-primary border border-themed rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-accent-color text-primary">
+                        <option value="default">Default Order</option>
+                        <option value="dueDateAsc">Due Date (Asc)</option>
+                        <option value="dueDateDesc">Due Date (Desc)</option>
+                        <option value="priority">Priority (High-Low)</option>
+                        <option value="titleAsc">Title (A-Z)</option>
+                    </select>
+                </div>
+
+                 <div class="mt-6 border-t border-themed pt-4">
+                     <h3 class="text-md font-semibold mb-2 text-primary">Batch Actions</h3>
+                     <button id="delete-selected-btn" class="w-full danger-button text-sm font-medium py-1.5 px-3 rounded-md mb-2 transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed" disabled><i class="fas fa-trash-alt mr-1"></i>Delete Selected</button>
+                     <button id="complete-selected-btn" class="w-full accent-button text-sm font-medium py-1.5 px-3 rounded-md transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed" disabled><i class="fas fa-check-double mr-1"></i>Complete Selected</button>
+                 </div>
+
+                 <div class="mt-6 border-t border-themed pt-4">
+                     <h3 class="text-md font-semibold mb-2 text-primary">Data</h3>
+                     <button id="export-json-btn" class="w-full bg-gray-500 hover:bg-gray-600 text-white text-sm font-medium py-1.5 px-3 rounded-md mb-2 transition duration-150 ease-in-out"><i class="fas fa-file-export mr-1"></i>Export Tasks (JSON)</button>
+                     <label for="import-json-input" class="w-full inline-block text-center bg-gray-500 hover:bg-gray-600 text-white text-sm font-medium py-1.5 px-3 rounded-md cursor-pointer transition duration-150 ease-in-out">
+                         <i class="fas fa-file-import mr-1"></i>Import Tasks (JSON)
+                     </label>
+                     <input type="file" id="import-json-input" accept=".json" class="hidden">
+                 </div>
+
+            </aside>
+
+            <section class="w-full md:w-3/4 lg:w-4/5">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-primary">Your Tasks</h2>
+                    <div>
+                        <span id="task-count" class="text-sm text-secondary mr-2"></span>
+                        <button id="undo-btn" class="text-sm text-accent-color hover:underline disabled:opacity-50 disabled:cursor-not-allowed" disabled>Undo Last Action</button>
+                    </div>
+                </div>
+                <div id="loading-indicator" class="hidden">
+                    <div class="loader"></div>
+                </div>
+                <ul id="task-list" class="space-y-3">
+                    <p id="no-tasks-message" class="text-center text-secondary py-6">No tasks found. Add one to get started!</p>
+                </ul>
+            </section>
+
+        </main>
+
+        <footer class="bg-secondary border-t border-themed mt-8 py-4">
+            <div class="container mx-auto text-center text-xs text-secondary">
+                Todo App &copy; 2025 | Data stored locally in your browser.
+            </div>
+        </footer>
+
+    </div> <div id="task-modal" class="modal">
+        <div class="modal-content bg-primary p-6 rounded-lg shadow-xl border border-themed">
+            <form id="task-form">
+                <input type="hidden" id="task-id"> <h3 id="modal-title" class="text-xl font-semibold mb-4 text-primary">Add New Task</h3>
+
+                <div class="mb-4">
+                    <label for="task-title" class="block text-sm font-medium text-secondary mb-1">Title <span class="text-red-500">*</span></label>
+                    <input type="text" id="task-title" required class="w-full px-3 py-2 bg-primary border border-themed rounded-md focus:outline-none focus:ring-2 focus:ring-accent-color text-primary" placeholder="e.g., Buy groceries">
+                </div>
+
+                <div class="mb-4">
+                    <label for="task-description" class="block text-sm font-medium text-secondary mb-1">Description</label>
+                    <textarea id="task-description" rows="3" class="w-full px-3 py-2 bg-primary border border-themed rounded-md focus:outline-none focus:ring-2 focus:ring-accent-color text-primary" placeholder="Optional details..."></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label for="task-due-date" class="block text-sm font-medium text-secondary mb-1">Due Date</label>
+                    <input type="date" id="task-due-date" class="w-full px-3 py-2 bg-primary border border-themed rounded-md focus:outline-none focus:ring-2 focus:ring-accent-color text-primary">
+                </div>
+
+                <div class="mb-4">
+                    <label for="task-priority" class="block text-sm font-medium text-secondary mb-1">Priority</label>
+                    <select id="task-priority" class="w-full px-3 py-2 bg-primary border border-themed rounded-md focus:outline-none focus:ring-2 focus:ring-accent-color text-primary">
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="task-category" class="block text-sm font-medium text-secondary mb-1">Category</label>
+                    <div class="flex gap-2">
+                         <input type="text" id="task-category" list="category-datalist" class="flex-grow px-3 py-2 bg-primary border border-themed rounded-md focus:outline-none focus:ring-2 focus:ring-accent-color text-primary" placeholder="e.g., Work, Personal">
+                         <datalist id="category-datalist">
+                             </datalist>
+                         <button type="button" id="add-category-btn" class="accent-button text-sm px-3 rounded-md" title="Add as new category if not exists">+</button>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="cancel-task-btn" class="bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 font-semibold py-2 px-4 rounded-md transition duration-150 ease-in-out">Cancel</button>
+                    <button type="submit" id="save-task-btn" class="accent-button font-semibold py-2 px-4 rounded-md transition duration-150 ease-in-out">Save Task</button>
+                </div>
+            </form>
         </div>
-      );
-    };
+    </div>
 
-    // Render App
-    const Root = () => (
-      <AuthProvider>
-        <TaskProvider>
-          <App />
-        </TaskProvider>
-      </AuthProvider>
-    );
+    <div id="notification-area"></div>
 
-    ReactDOM.render(<Root />, document.getElementById('root'));
-  </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const loginScreen = document.getElementById('login-screen');
+            const loginForm = document.getElementById('login-form');
+            const appContainer = document.getElementById('app-container');
+            const welcomeMessage = document.getElementById('welcome-message');
+            const logoutBtn = document.getElementById('logout-btn');
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            const addTaskBtn = document.getElementById('add-task-btn');
+            const taskListUl = document.getElementById('task-list');
+            const taskModal = document.getElementById('task-modal');
+            const taskForm = document.getElementById('task-form');
+            const modalTitle = document.getElementById('modal-title');
+            const cancelTaskBtn = document.getElementById('cancel-task-btn');
+            const saveTaskBtn = document.getElementById('save-task-btn');
+            const taskIdInput = document.getElementById('task-id');
+            const taskTitleInput = document.getElementById('task-title');
+            const taskDescriptionInput = document.getElementById('task-description');
+            const taskDueDateInput = document.getElementById('task-due-date');
+            const taskPriorityInput = document.getElementById('task-priority');
+            const taskCategoryInput = document.getElementById('task-category');
+            const categoryDatalist = document.getElementById('category-datalist');
+            const addCategoryBtn = document.getElementById('add-category-btn');
+            const searchInput = document.getElementById('search-input');
+            const filterStatusSelect = document.getElementById('filter-status');
+            const filterPrioritySelect = document.getElementById('filter-priority');
+            const filterCategorySelect = document.getElementById('filter-category');
+            const sortTasksSelect = document.getElementById('sort-tasks');
+            const taskCountSpan = document.getElementById('task-count');
+            const noTasksMessage = document.getElementById('no-tasks-message');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const undoBtn = document.getElementById('undo-btn');
+            const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+            const completeSelectedBtn = document.getElementById('complete-selected-btn');
+            const exportJsonBtn = document.getElementById('export-json-btn');
+            const importJsonInput = document.getElementById('import-json-input');
+            const notificationArea = document.getElementById('notification-area');
+
+            // --- State ---
+            let tasks = [];
+            let categories = new Set(); // Use a Set for unique categories
+            let currentUser = null;
+            let lastState = null; // For undo functionality
+            let currentFilters = {
+                status: 'all',
+                priority: 'all',
+                category: 'all',
+                searchTerm: ''
+            };
+            let currentSort = 'default';
+            let draggedItem = null; // For drag and drop
+
+            // --- Constants ---
+            const LOCAL_STORAGE_PREFIX = 'todoApp_';
+
+            // --- Utility Functions ---
+            const generateId = () => `task_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+            const getLocalStorageKey = (key) => `${LOCAL_STORAGE_PREFIX}${currentUser}_${key}`;
+
+            const showNotification = (message, type = 'info', duration = 3000) => {
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type}`;
+                notification.textContent = message;
+                notificationArea.appendChild(notification);
+
+                // Trigger reflow to enable transition
+                notification.offsetHeight;
+
+                notification.classList.add('show');
+
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300); // Wait for fade out transition
+                }, duration);
+            };
+
+            // --- Local Storage ---
+            const saveState = () => {
+                if (!currentUser) return;
+                try {
+                    // Save tasks and categories separately per user
+                    localStorage.setItem(getLocalStorageKey('tasks'), JSON.stringify(tasks));
+                    localStorage.setItem(getLocalStorageKey('categories'), JSON.stringify(Array.from(categories)));
+                    // Save theme preference globally or per user
+                    localStorage.setItem('todoApp_theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+                } catch (e) {
+                    console.error("Error saving state to localStorage:", e);
+                    showNotification("Error saving data. Storage might be full.", "error");
+                }
+            };
+
+            const loadState = () => {
+                if (!currentUser) return;
+                setLoading(true);
+                try {
+                    const storedTasks = localStorage.getItem(getLocalStorageKey('tasks'));
+                    const storedCategories = localStorage.getItem(getLocalStorageKey('categories'));
+
+                    tasks = storedTasks ? JSON.parse(storedTasks) : [];
+                    // Ensure categories are loaded correctly into the Set
+                    const loadedCats = storedCategories ? JSON.parse(storedCategories) : ['Work', 'Personal', 'Shopping']; // Default categories
+                    categories = new Set(loadedCats);
+
+                    // Migrate old tasks without IDs if necessary (optional)
+                    tasks.forEach(task => {
+                        if (!task.id) task.id = generateId();
+                        if (task.completed === undefined) task.completed = false; // Ensure completed property exists
+                        if (!task.priority) task.priority = 'medium'; // Default priority
+                        if (!task.category) task.category = 'Uncategorized'; // Default category
+                    });
+
+                    updateCategoryFilters(); // Update filters after loading categories
+                    renderTasks();
+                } catch (e) {
+                    console.error("Error loading state from localStorage:", e);
+                    tasks = []; // Reset state on error
+                    categories = new Set(['Work', 'Personal', 'Shopping']);
+                    showNotification("Error loading data. Resetting tasks.", "error");
+                    renderTasks(); // Render empty state
+                } finally {
+                     setLoading(false);
+                }
+            };
+
+            const saveLastState = () => {
+                // Simple deep copy for undo
+                lastState = JSON.parse(JSON.stringify({ tasks, categories: Array.from(categories) }));
+                undoBtn.disabled = false;
+            };
+
+            const restoreLastState = () => {
+                if (!lastState) return;
+                tasks = lastState.tasks;
+                categories = new Set(lastState.categories);
+                lastState = null; // Only one level of undo
+                undoBtn.disabled = true;
+                saveState();
+                updateCategoryFilters();
+                renderTasks();
+                showNotification("Last action undone.", "info");
+            };
+
+            // --- Theme Management ---
+            const applyTheme = (theme) => {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    themeToggleBtn.querySelector('.fa-sun').classList.add('hidden');
+                    themeToggleBtn.querySelector('.fa-moon').classList.remove('hidden');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    themeToggleBtn.querySelector('.fa-sun').classList.remove('hidden');
+                    themeToggleBtn.querySelector('.fa-moon').classList.add('hidden');
+                }
+            };
+
+            const toggleTheme = () => {
+                const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+                applyTheme(newTheme);
+                saveState(); // Save theme preference
+            };
+
+            const loadTheme = () => {
+                const savedTheme = localStorage.getItem('todoApp_theme') || 'light'; // Default to light
+                applyTheme(savedTheme);
+            };
+
+            // --- UI Rendering ---
+             const setLoading = (isLoading) => {
+                if (isLoading) {
+                    loadingIndicator.classList.remove('hidden');
+                    taskListUl.classList.add('hidden'); // Hide list while loading
+                    noTasksMessage.classList.add('hidden');
+                } else {
+                    loadingIndicator.classList.add('hidden');
+                    taskListUl.classList.remove('hidden');
+                }
+            };
+
+            const createTaskElement = (task) => {
+                const li = document.createElement('li');
+                li.className = `task-item bg-secondary p-4 rounded-lg border border-themed shadow-sm flex items-start gap-3 priority-${task.priority} ${task.completed ? 'completed opacity-70' : ''}`;
+                li.dataset.id = task.id;
+                li.draggable = true; // Make item draggable
+
+                // Checkbox for completion and selection
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = task.completed;
+                checkbox.className = 'custom-checkbox mt-1 batch-select'; // Added batch-select class
+                checkbox.addEventListener('change', () => toggleTaskComplete(task.id));
+
+                // Task Content Area
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'flex-grow';
+
+                const titleSpan = document.createElement('span');
+                titleSpan.textContent = task.title;
+                titleSpan.className = 'task-title font-medium text-primary block';
+
+                const detailsDiv = document.createElement('div');
+                detailsDiv.className = 'text-sm text-secondary mt-1 space-y-1';
+
+                if (task.description) {
+                    const descP = document.createElement('p');
+                    descP.textContent = task.description;
+                    detailsDiv.appendChild(descP);
+                }
+
+                const metaDiv = document.createElement('div');
+                metaDiv.className = 'flex flex-wrap gap-x-3 gap-y-1 items-center';
+
+                if (task.category && task.category !== 'Uncategorized') {
+                    const categorySpan = document.createElement('span');
+                    categorySpan.innerHTML = `<i class="fas fa-tag mr-1 opacity-75"></i>${task.category}`;
+                    categorySpan.className = 'bg-gray-200 dark:bg-gray-600 px-1.5 py-0.5 rounded text-xs';
+                    metaDiv.appendChild(categorySpan);
+                }
+
+                if (task.dueDate) {
+                    const dateSpan = document.createElement('span');
+                    const dueDate = new Date(task.dueDate + 'T00:00:00'); // Ensure date is parsed correctly
+                    const formattedDate = dueDate.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+                    dateSpan.innerHTML = `<i class="fas fa-calendar-alt mr-1 opacity-75"></i>${formattedDate}`;
+                    dateSpan.className = 'text-xs';
+                    // Add styling if overdue
+                    if (!task.completed && new Date(task.dueDate) < new Date().setHours(0,0,0,0)) {
+                         dateSpan.classList.add('text-red-500', 'font-medium');
+                    }
+                    metaDiv.appendChild(dateSpan);
+                }
+
+                detailsDiv.appendChild(metaDiv);
+                contentDiv.appendChild(titleSpan);
+                contentDiv.appendChild(detailsDiv);
+
+                // Action Buttons
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'flex flex-col md:flex-row items-center gap-1 md:gap-2 ml-auto pl-2 flex-shrink-0'; // Ensure buttons don't wrap awkwardly
+
+                const editBtn = document.createElement('button');
+                editBtn.innerHTML = '<i class="fas fa-pencil-alt"></i>';
+                editBtn.className = 'text-blue-500 hover:text-blue-700 p-1 text-sm';
+                editBtn.title = "Edit Task";
+                editBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent triggering other listeners
+                    openEditModal(task.id);
+                });
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                deleteBtn.className = 'text-red-500 hover:text-red-700 p-1 text-sm';
+                deleteBtn.title = "Delete Task";
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (confirm(`Are you sure you want to delete task: "${task.title}"?`)) {
+                        deleteTask(task.id);
+                    }
+                });
+
+                actionsDiv.appendChild(editBtn);
+                actionsDiv.appendChild(deleteBtn);
+
+                li.appendChild(checkbox);
+                li.appendChild(contentDiv);
+                li.appendChild(actionsDiv);
+
+                // Add drag and drop event listeners
+                li.addEventListener('dragstart', handleDragStart);
+                li.addEventListener('dragover', handleDragOver);
+                li.addEventListener('dragleave', handleDragLeave);
+                li.addEventListener('drop', handleDrop);
+                li.addEventListener('dragend', handleDragEnd);
+
+
+                return li;
+            };
+
+            const renderTasks = () => {
+                taskListUl.innerHTML = ''; // Clear existing list
+                setLoading(true); // Show loader briefly
+
+                // Apply filtering
+                let filteredTasks = tasks.filter(task => {
+                    const statusMatch = currentFilters.status === 'all' ||
+                                        (currentFilters.status === 'completed' && task.completed) ||
+                                        (currentFilters.status === 'active' && !task.completed);
+                    const priorityMatch = currentFilters.priority === 'all' || task.priority === currentFilters.priority;
+                    const categoryMatch = currentFilters.category === 'all' || task.category === currentFilters.category;
+                    const searchMatch = !currentFilters.searchTerm ||
+                                        task.title.toLowerCase().includes(currentFilters.searchTerm) ||
+                                        (task.description && task.description.toLowerCase().includes(currentFilters.searchTerm));
+
+                    return statusMatch && priorityMatch && categoryMatch && searchMatch;
+                });
+
+                // Apply sorting
+                filteredTasks.sort((a, b) => {
+                    switch (currentSort) {
+                        case 'dueDateAsc':
+                            // Handle tasks without due dates (place them last)
+                            if (!a.dueDate) return 1;
+                            if (!b.dueDate) return -1;
+                            return new Date(a.dueDate) - new Date(b.dueDate);
+                        case 'dueDateDesc':
+                            if (!a.dueDate) return 1;
+                            if (!b.dueDate) return -1;
+                            return new Date(b.dueDate) - new Date(a.dueDate);
+                        case 'priority':
+                            const priorityOrder = { high: 1, medium: 2, low: 3 };
+                            return (priorityOrder[a.priority] || 4) - (priorityOrder[b.priority] || 4);
+                        case 'titleAsc':
+                            return a.title.localeCompare(b.title);
+                        case 'default':
+                        default:
+                            // Maintain original order (or order from drag/drop)
+                            // We achieve this by sorting based on the original `tasks` array index
+                            return tasks.findIndex(t => t.id === a.id) - tasks.findIndex(t => t.id === b.id);
+                    }
+                });
+
+                if (filteredTasks.length === 0) {
+                    noTasksMessage.classList.remove('hidden');
+                    noTasksMessage.textContent = currentFilters.searchTerm || currentFilters.status !== 'all' || currentFilters.priority !== 'all' || currentFilters.category !== 'all'
+                        ? 'No tasks match your current filters.'
+                        : 'No tasks yet. Add one to get started!';
+                } else {
+                    noTasksMessage.classList.add('hidden');
+                    filteredTasks.forEach(task => {
+                        const taskElement = createTaskElement(task);
+                        taskListUl.appendChild(taskElement);
+                    });
+                }
+
+                taskCountSpan.textContent = `${filteredTasks.length} task(s) shown`;
+                updateBatchActionButtons(); // Check if any checkboxes are selected
+                setLoading(false); // Hide loader
+            };
+
+            // --- Task Operations ---
+            const addTask = (taskData) => {
+                saveLastState();
+                const newTask = {
+                    id: generateId(),
+                    ...taskData,
+                    completed: false,
+                    createdAt: new Date().toISOString() // Add creation timestamp
+                };
+                tasks.unshift(newTask); // Add to the beginning
+                addCategory(taskData.category); // Add category if new
+                saveState();
+                renderTasks();
+                showNotification(`Task "${newTask.title}" added.`, "success");
+            };
+
+            const editTask = (id, updatedData) => {
+                saveLastState();
+                const taskIndex = tasks.findIndex(task => task.id === id);
+                if (taskIndex > -1) {
+                    tasks[taskIndex] = { ...tasks[taskIndex], ...updatedData };
+                    addCategory(updatedData.category); // Add category if new/changed
+                    saveState();
+                    renderTasks();
+                    showNotification(`Task "${updatedData.title}" updated.`, "success");
+                }
+            };
+
+            const deleteTask = (id) => {
+                saveLastState();
+                const taskToDelete = tasks.find(task => task.id === id);
+                tasks = tasks.filter(task => task.id !== id);
+                saveState();
+                renderTasks();
+                if (taskToDelete) {
+                    showNotification(`Task "${taskToDelete.title}" deleted.`, "info");
+                }
+            };
+
+            const toggleTaskComplete = (id) => {
+                saveLastState();
+                const taskIndex = tasks.findIndex(task => task.id === id);
+                if (taskIndex > -1) {
+                    tasks[taskIndex].completed = !tasks[taskIndex].completed;
+                    saveState();
+                    // Re-render only the affected task for performance? Or full render for simplicity?
+                    // Full render is simpler for now given filtering/sorting.
+                    renderTasks();
+                    const status = tasks[taskIndex].completed ? 'completed' : 'marked as active';
+                    showNotification(`Task "${tasks[taskIndex].title}" ${status}.`, "info");
+                }
+            };
+
+            // --- Category Management ---
+            const addCategory = (categoryName) => {
+                if (categoryName && !categories.has(categoryName)) {
+                    categories.add(categoryName);
+                    updateCategoryFilters(); // Update dropdowns
+                    updateCategoryDatalist();
+                    saveState(); // Save updated categories
+                }
+            };
+
+            const updateCategoryFilters = () => {
+                // Update filter dropdown
+                const currentFilterValue = filterCategorySelect.value;
+                filterCategorySelect.innerHTML = '<option value="all">All Categories</option>'; // Reset
+                const sortedCategories = Array.from(categories).sort((a, b) => a.localeCompare(b));
+                sortedCategories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.textContent = cat;
+                    filterCategorySelect.appendChild(option);
+                });
+                 // Try to preserve the selected filter if it still exists
+                if (categories.has(currentFilterValue)) {
+                    filterCategorySelect.value = currentFilterValue;
+                } else {
+                    filterCategorySelect.value = 'all'; // Default back to 'all' if category was removed
+                    currentFilters.category = 'all'; // Update state if category removed
+                }
+            };
+
+             const updateCategoryDatalist = () => {
+                categoryDatalist.innerHTML = ''; // Clear existing options
+                const sortedCategories = Array.from(categories).sort((a, b) => a.localeCompare(b));
+                sortedCategories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    categoryDatalist.appendChild(option);
+                });
+            };
+
+
+            // --- Modal Handling ---
+            const openTaskModal = (mode = 'add', taskId = null) => {
+                taskForm.reset(); // Clear form
+                taskIdInput.value = ''; // Clear hidden ID
+                taskCategoryInput.value = ''; // Clear category specifically
+
+                if (mode === 'edit' && taskId) {
+                    const task = tasks.find(t => t.id === taskId);
+                    if (task) {
+                        modalTitle.textContent = 'Edit Task';
+                        saveTaskBtn.textContent = 'Update Task';
+                        taskIdInput.value = task.id;
+                        taskTitleInput.value = task.title;
+                        taskDescriptionInput.value = task.description || '';
+                        taskDueDateInput.value = task.dueDate || '';
+                        taskPriorityInput.value = task.priority || 'medium';
+                        taskCategoryInput.value = task.category || '';
+                    } else {
+                        console.error("Task not found for editing:", taskId);
+                        showNotification("Could not find the task to edit.", "error");
+                        return; // Don't open modal if task not found
+                    }
+                } else {
+                    modalTitle.textContent = 'Add New Task';
+                    saveTaskBtn.textContent = 'Save Task';
+                    // Set default priority maybe?
+                    taskPriorityInput.value = 'medium';
+                }
+                updateCategoryDatalist(); // Ensure datalist is up-to-date
+                taskModal.classList.add('active');
+                taskTitleInput.focus(); // Focus title field
+            };
+
+            const closeTaskModal = () => {
+                taskModal.classList.remove('active');
+            };
+
+            // --- Event Handlers ---
+            const handleLoginFormSubmit = (e) => {
+                e.preventDefault();
+                const username = loginForm.username.value.trim();
+                // No real password check in mock auth
+                if (username) {
+                    currentUser = username;
+                    loginScreen.style.display = 'none'; // Hide login
+                    appContainer.classList.remove('hidden'); // Show app
+                    welcomeMessage.textContent = `Welcome, ${currentUser}!`;
+                    loadTheme(); // Load theme preference
+                    loadState(); // Load user-specific tasks and categories
+                } else {
+                    showNotification("Please enter a username.", "error");
+                }
+            };
+
+            const handleLogout = () => {
+                if (confirm("Are you sure you want to logout? Unsaved changes might be lost if not persisted.")) {
+                    currentUser = null;
+                    tasks = [];
+                    categories = new Set();
+                    lastState = null;
+                    appContainer.classList.add('hidden');
+                    loginScreen.style.display = 'flex';
+                    welcomeMessage.textContent = '';
+                    // Clear localStorage for the logged-out user? Or keep it for next login?
+                    // Let's keep it for simplicity.
+                }
+            };
+
+
+            const handleTaskFormSubmit = (e) => {
+                e.preventDefault();
+                const id = taskIdInput.value;
+                const taskData = {
+                    title: taskTitleInput.value.trim(),
+                    description: taskDescriptionInput.value.trim(),
+                    dueDate: taskDueDateInput.value || null, // Store null if empty
+                    priority: taskPriorityInput.value,
+                    category: taskCategoryInput.value.trim() || 'Uncategorized' // Default category
+                };
+
+                if (!taskData.title) {
+                    showNotification("Task title is required.", "error");
+                    taskTitleInput.focus();
+                    return;
+                }
+
+                if (id) {
+                    // Editing existing task
+                    editTask(id, taskData);
+                } else {
+                    // Adding new task
+                    addTask(taskData);
+                }
+                closeTaskModal();
+            };
+
+            const handleFilterChange = () => {
+                currentFilters.status = filterStatusSelect.value;
+                currentFilters.priority = filterPrioritySelect.value;
+                currentFilters.category = filterCategorySelect.value;
+                currentFilters.searchTerm = searchInput.value.trim().toLowerCase();
+                renderTasks();
+            };
+
+            const handleSortChange = () => {
+                currentSort = sortTasksSelect.value;
+                renderTasks();
+            };
+
+            const handleAddCategory = () => {
+                const categoryName = taskCategoryInput.value.trim();
+                if (categoryName) {
+                    addCategory(categoryName);
+                    showNotification(`Category "${categoryName}" added/selected.`, "info");
+                    // Optionally clear the input after adding: taskCategoryInput.value = '';
+                } else {
+                    showNotification("Please enter a category name.", "error");
+                }
+            };
+
+            // --- Batch Actions ---
+            const getSelectedTaskIds = () => {
+                const selectedCheckboxes = taskListUl.querySelectorAll('.batch-select:checked');
+                return Array.from(selectedCheckboxes).map(cb => cb.closest('.task-item').dataset.id);
+            };
+
+            const updateBatchActionButtons = () => {
+                 const selectedIds = getSelectedTaskIds();
+                 const hasSelection = selectedIds.length > 0;
+                 deleteSelectedBtn.disabled = !hasSelection;
+                 completeSelectedBtn.disabled = !hasSelection;
+            };
+
+            const handleDeleteSelected = () => {
+                const selectedIds = getSelectedTaskIds();
+                if (selectedIds.length === 0) return;
+
+                if (confirm(`Are you sure you want to delete ${selectedIds.length} selected task(s)?`)) {
+                    saveLastState();
+                    tasks = tasks.filter(task => !selectedIds.includes(task.id));
+                    saveState();
+                    renderTasks();
+                    showNotification(`${selectedIds.length} task(s) deleted.`, "info");
+                }
+            };
+
+            const handleCompleteSelected = () => {
+                const selectedIds = getSelectedTaskIds();
+                if (selectedIds.length === 0) return;
+
+                saveLastState();
+                let completedCount = 0;
+                tasks = tasks.map(task => {
+                    if (selectedIds.includes(task.id) && !task.completed) {
+                        task.completed = true;
+                        completedCount++;
+                    }
+                    return task;
+                });
+                saveState();
+                renderTasks();
+                 if (completedCount > 0) {
+                    showNotification(`${completedCount} task(s) marked as complete.`, "info");
+                } else {
+                     showNotification("Selected tasks were already complete.", "info");
+                 }
+            };
+
+             // --- Import/Export ---
+            const handleExportTasks = () => {
+                if (tasks.length === 0) {
+                    showNotification("No tasks to export.", "info");
+                    return;
+                }
+                try {
+                    const dataToExport = {
+                        exportDate: new Date().toISOString(),
+                        user: currentUser, // Include user for context
+                        tasks: tasks,
+                        categories: Array.from(categories)
+                    };
+                    const jsonString = JSON.stringify(dataToExport, null, 2); // Pretty print JSON
+                    const blob = new Blob([jsonString], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `todo_app_export_${currentUser}_${new Date().toISOString().split('T')[0]}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    showNotification("Tasks exported successfully.", "success");
+                } catch (e) {
+                    console.error("Error exporting tasks:", e);
+                    showNotification("Failed to export tasks.", "error");
+                }
+            };
+
+            const handleImportTasks = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+
+                        // Basic validation of imported structure
+                        if (!importedData || !Array.isArray(importedData.tasks)) {
+                            throw new Error("Invalid JSON format. Expected 'tasks' array.");
+                        }
+
+                        if (confirm(`Import ${importedData.tasks.length} tasks? This will REPLACE your current tasks for user "${currentUser}".`)) {
+                            saveLastState(); // Save state before replacing
+                            tasks = importedData.tasks.map(task => ({ // Basic sanitization/defaults
+                                id: task.id || generateId(),
+                                title: task.title || 'Untitled Task',
+                                description: task.description || '',
+                                dueDate: task.dueDate || null,
+                                priority: task.priority || 'medium',
+                                category: task.category || 'Uncategorized',
+                                completed: task.completed || false,
+                                createdAt: task.createdAt || new Date().toISOString()
+                            }));
+
+                            // Import categories, merging with existing ones
+                            if (Array.isArray(importedData.categories)) {
+                                importedData.categories.forEach(cat => categories.add(cat));
+                            } else {
+                                // If categories aren't in the file, extract from imported tasks
+                                tasks.forEach(task => addCategory(task.category));
+                            }
+
+                            saveState();
+                            updateCategoryFilters();
+                            renderTasks();
+                            showNotification(`Successfully imported ${importedData.tasks.length} tasks.`, "success");
+                        }
+                    } catch (error) {
+                        console.error("Error importing file:", error);
+                        showNotification(`Import failed: ${error.message}`, "error");
+                    } finally {
+                        // Reset file input to allow importing the same file again
+                        importJsonInput.value = null;
+                    }
+                };
+                reader.onerror = () => {
+                    showNotification("Failed to read the import file.", "error");
+                     importJsonInput.value = null;
+                };
+                reader.readAsText(file);
+            };
+
+
+            // --- Drag and Drop Handlers ---
+            function handleDragStart(e) {
+                draggedItem = this; // `this` refers to the li element being dragged
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', this.dataset.id); // Set data (optional but good practice)
+                // Add a slight delay to allow the browser to render the drag image
+                setTimeout(() => {
+                    this.classList.add('dragging');
+                }, 0);
+            }
+
+            function handleDragOver(e) {
+                e.preventDefault(); // Necessary to allow dropping
+                 e.dataTransfer.dropEffect = 'move';
+                 const targetItem = e.target.closest('.task-item');
+                 if (targetItem && targetItem !== draggedItem) {
+                     // Remove existing placeholders
+                     document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+                     // Add placeholder class to the item being hovered over
+                     targetItem.classList.add('drag-over');
+                 }
+            }
+
+            function handleDragLeave(e) {
+                const targetItem = e.target.closest('.task-item');
+                if (targetItem) {
+                    targetItem.classList.remove('drag-over');
+                }
+            }
+
+            function handleDrop(e) {
+                e.preventDefault();
+                e.stopPropagation(); // Prevent drop event from bubbling up
+
+                const targetItem = e.target.closest('.task-item');
+                 document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')); // Clean up placeholders
+
+                if (targetItem && draggedItem && targetItem !== draggedItem) {
+                    const draggedId = draggedItem.dataset.id;
+                    const targetId = targetItem.dataset.id;
+
+                    // Find original indices in the main `tasks` array
+                    const draggedIndex = tasks.findIndex(task => task.id === draggedId);
+                    const targetIndex = tasks.findIndex(task => task.id === targetId);
+
+                    if (draggedIndex !== -1 && targetIndex !== -1) {
+                        saveLastState();
+                        // Remove the dragged item and store it
+                        const [movedTask] = tasks.splice(draggedIndex, 1);
+                        // Insert the dragged item before the target item
+                        // Adjust index if the dragged item was originally before the target
+                        const newTargetIndex = tasks.findIndex(task => task.id === targetId);
+                        tasks.splice(newTargetIndex, 0, movedTask);
+
+                        saveState();
+                        // Re-render based on the new order in the `tasks` array
+                        // Ensure sorting is set to 'default' to reflect the manual order
+                        if (currentSort !== 'default') {
+                            // console.warn("Drag/drop reordering applied. Consider setting sort to 'Default Order'.");
+                            // Optionally force sort to default:
+                            // sortTasksSelect.value = 'default';
+                            // currentSort = 'default';
+                        }
+                         renderTasks(); // Render with the new order
+                         showNotification("Task order updated.", "info");
+                    }
+                }
+                 if (draggedItem) {
+                    draggedItem.classList.remove('dragging');
+                }
+                draggedItem = null;
+            }
+
+            function handleDragEnd(e) {
+                 // Clean up dragging class and placeholders regardless of drop success
+                 this.classList.remove('dragging');
+                 document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+                 draggedItem = null; // Reset dragged item reference
+            }
+
+
+            // --- Keyboard Shortcuts ---
+            const handleKeyPress = (e) => {
+                // Example: Ctrl+Alt+N to open "Add New Task" modal
+                if (e.ctrlKey && e.altKey && e.key === 'n') {
+                     e.preventDefault();
+                     if (!taskModal.classList.contains('active')) { // Only open if not already open
+                        openTaskModal('add');
+                     }
+                }
+                // Example: Escape key to close modal
+                if (e.key === 'Escape' && taskModal.classList.contains('active')) {
+                    closeTaskModal();
+                }
+                 // Example: Ctrl+Z to undo
+                if (e.ctrlKey && e.key === 'z') {
+                    e.preventDefault();
+                    if (!undoBtn.disabled) {
+                        restoreLastState();
+                    }
+                }
+            };
+
+
+            // --- Initialization ---
+            const init = () => {
+                // Event Listeners
+                loginForm.addEventListener('submit', handleLoginFormSubmit);
+                logoutBtn.addEventListener('click', handleLogout);
+                themeToggleBtn.addEventListener('click', toggleTheme);
+                addTaskBtn.addEventListener('click', () => openTaskModal('add'));
+                cancelTaskBtn.addEventListener('click', closeTaskModal);
+                taskForm.addEventListener('submit', handleTaskFormSubmit);
+                addCategoryBtn.addEventListener('click', handleAddCategory); // Button next to category input
+
+                // Filters and Sorting Listeners
+                searchInput.addEventListener('input', handleFilterChange);
+                filterStatusSelect.addEventListener('change', handleFilterChange);
+                filterPrioritySelect.addEventListener('change', handleFilterChange);
+                filterCategorySelect.addEventListener('change', handleFilterChange);
+                sortTasksSelect.addEventListener('change', handleSortChange);
+
+                // Batch Action Listeners
+                deleteSelectedBtn.addEventListener('click', handleDeleteSelected);
+                completeSelectedBtn.addEventListener('click', handleCompleteSelected);
+                // Update batch buttons whenever a checkbox changes
+                taskListUl.addEventListener('change', (e) => {
+                    if (e.target.classList.contains('batch-select')) {
+                        updateBatchActionButtons();
+                    }
+                });
+
+                // Import/Export Listeners
+                exportJsonBtn.addEventListener('click', handleExportTasks);
+                importJsonInput.addEventListener('change', handleImportTasks);
+
+
+                // Undo Listener
+                undoBtn.addEventListener('click', restoreLastState);
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', handleKeyPress);
+
+                // Modal closing on outside click
+                taskModal.addEventListener('click', (e) => {
+                    if (e.target === taskModal) { // Check if the click is on the backdrop
+                        closeTaskModal();
+                    }
+                });
+
+                // Initial Load (Theme first, then check login status)
+                loadTheme();
+
+                // Check if a user was previously logged in (simple persistence)
+                // This is a basic example; real auth is more complex.
+                // For now, we force login every time. If you want session persistence:
+                // const lastUser = localStorage.getItem('todoApp_lastUser');
+                // if (lastUser) {
+                //     currentUser = lastUser;
+                //     loginScreen.style.display = 'none';
+                //     appContainer.classList.remove('hidden');
+                //     welcomeMessage.textContent = `Welcome back, ${currentUser}!`;
+                //     loadState();
+                // } else {
+                     loginScreen.style.display = 'flex'; // Show login if no last user
+                // }
+
+            };
+
+            // Start the application
+            init();
+        });
+    </script>
+
 </body>
 </html>
