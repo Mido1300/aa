@@ -8,11 +8,37 @@
   <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.20.15/babel.min.js"></script>
+  <style>
+    /* Basic styling for the loading spinner */
+    .loader {
+      border: 4px solid #f3f3f3; /* Light grey */
+      border-top: 4px solid #3498db; /* Blue */
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    /* Ensure body takes full height for vertical centering */
+    html, body, #root {
+        height: 100%;
+    }
+    /* Apply Inter font globally */
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+    /* Add Inter font link */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  </style>
 </head>
-<body>
+<body class="font-['Inter']">
   <div id="root"></div>
   <script type="text/babel" data-presets="react,typescript">
-    // Types
+    // --- Type Definitions ---
     type Task = {
       id: string;
       title: string;
@@ -32,99 +58,140 @@
       id: string;
       name: string;
       email: string;
-      password: string;
+      password: string; // Note: Storing passwords directly is insecure. Use hashing in real apps.
     };
 
-    // Context
+    // --- Context Definitions ---
+    // Theme Context for managing light/dark mode
     const ThemeContext = React.createContext<{
       theme: 'light' | 'dark';
       toggleTheme: () => void;
     }>({ theme: 'light', toggleTheme: () => {} });
 
+    // Authentication Context for managing user state
     const AuthContext = React.createContext<{
       user: User | null;
-      login: (email: string, password: string) => boolean;
-      register: (user: User) => boolean;
+      login: (email: string, password: string) => Promise<boolean>; // Made async
+      register: (user: Omit<User, 'id'>) => Promise<boolean>; // Made async
       logout: () => void;
-    }>({ user: null, login: () => false, register: () => false, logout: () => {} });
+    }>({
+      user: null,
+      login: async () => false,
+      register: async () => false,
+      logout: () => {},
+    });
 
-    // Custom Hooks
+    // --- Custom Hooks ---
+    // Hook to synchronize state with localStorage
     const useLocalStorage = <T,>(key: string, initialValue: T) => {
       const [value, setValue] = React.useState<T>(() => {
-        const stored = localStorage.getItem(key);
-        return stored ? JSON.parse(stored) : initialValue;
+        try {
+          const stored = localStorage.getItem(key);
+          // Ensure stored value is not null or undefined before parsing
+          return stored != null ? JSON.parse(stored) : initialValue;
+        } catch (error) {
+          console.error("Error reading localStorage key “" + key + "”:", error);
+          return initialValue;
+        }
       });
 
+      // Update localStorage whenever the state value changes
       React.useEffect(() => {
-        localStorage.setItem(key, JSON.stringify(value));
-      }, [value]);
+        try {
+          localStorage.setItem(key, JSON.stringify(value));
+        } catch (error) {
+          console.error("Error setting localStorage key “" + key + "”:", error);
+        }
+      }, [key, value]); // Include key in dependency array
 
       return [value, setValue] as const;
     };
 
-    // Sample Data
+    // --- Sample Data (Used if no user data exists) ---
     const sampleTasks: Task[] = [
-      { id: '1', title: 'Buy groceries', description: 'Milk, eggs, bread', dueDate: '2025-04-18', category: 'Personal', priority: 'Medium', completed: false },
-      { id: '2', title: 'Finish report', dueDate: '2025-04-17', category: 'Work', priority: 'High', completed: false },
-      { id: '3', title: 'Call mom', category: 'Personal', priority: 'Low', completed: true },
-      { id: '4', title: 'Plan vacation', description: 'Check flights and hotels', dueDate: '2025-04-20', category: 'Personal', priority: 'Medium', completed: false },
-      { id: '5', title: 'Team meeting', dueDate: '2025-04-17', category: 'Work', priority: 'High', completed: false },
-      { id: '6', title: 'Gym session', dueDate: '2025-04-17', category: 'Health', priority: 'Medium', completed: false },
-      { id: '7', title: 'Read book', category: 'Personal', priority: 'Low', completed: false },
-      { id: '8', title: 'Pay bills', dueDate: '2025-04-19', category: 'Finance', priority: 'High', completed: false },
-      { id: '9', title: 'Clean house', category: 'Personal', priority: 'Medium', completed: false },
-      { id: '10', title: 'Update resume', category: 'Work', priority: 'Low', completed: true },
+        { id: '1', title: 'Buy groceries', description: 'Milk, eggs, bread', dueDate: '2025-04-18', category: 'Personal', priority: 'Medium', completed: false },
+        { id: '2', title: 'Finish report', dueDate: '2025-04-17', category: 'Work', priority: 'High', completed: false },
+        { id: '3', title: 'Call mom', category: 'Personal', priority: 'Low', completed: true },
+        { id: '4', title: 'Plan vacation', description: 'Check flights and hotels', dueDate: '2025-04-20', category: 'Personal', priority: 'Medium', completed: false },
+        { id: '5', title: 'Team meeting', dueDate: '2025-04-17', category: 'Work', priority: 'High', completed: false },
+        { id: '6', title: 'Gym session', dueDate: '2025-04-17', category: 'Health', priority: 'Medium', completed: false },
+        { id: '7', title: 'Read book', category: 'Personal', priority: 'Low', completed: false },
+        { id: '8', title: 'Pay bills', dueDate: '2025-04-19', category: 'Finance', priority: 'High', completed: false },
+        { id: '9', title: 'Clean house', category: 'Personal', priority: 'Medium', completed: false },
+        { id: '10', title: 'Update resume', category: 'Work', priority: 'Low', completed: true },
     ];
 
     const sampleCategories: Category[] = [
-      { id: '1', name: 'Personal' },
-      { id: '2', name: 'Work' },
-      { id: '3', name: 'Health' },
-      { id: '4', name: 'Finance' },
+        { id: '1', name: 'Personal' },
+        { id: '2', name: 'Work' },
+        { id: '3', name: 'Health' },
+        { id: '4', name: 'Finance' },
     ];
 
-    // Components
+    // --- UI Components ---
+
+    /**
+     * Displays a single task item with controls.
+     */
     const TaskItem: React.FC<{
       task: Task;
       onToggle: (id: string) => void;
       onDelete: (id: string) => void;
       onEdit: (task: Task) => void;
     }> = ({ task, onToggle, onDelete, onEdit }) => {
+      const { theme } = React.useContext(ThemeContext);
+      // Determine priority color based on theme
+      const priorityColor =
+        task.priority === 'High' ? 'text-red-500 dark:text-red-400' :
+        task.priority === 'Medium' ? 'text-yellow-500 dark:text-yellow-400' :
+        'text-green-500 dark:text-green-400';
+
       return (
-        <li className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow mb-2 transition-all">
+        <li className={`flex items-start sm:items-center p-4 ${theme === 'light' ? 'bg-white' : 'bg-gray-800'} rounded-lg shadow mb-2 transition-all duration-300 hover:shadow-md flex-col sm:flex-row`}>
+          {/* Checkbox aligned to the top in mobile view */}
           <input
             type="checkbox"
             checked={task.completed}
             onChange={() => onToggle(task.id)}
-            className="mr-4"
+            className="mr-4 h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer flex-shrink-0 mb-2 sm:mb-0"
+            aria-labelledby={`task-title-${task.id}`} // Associate checkbox with title for accessibility
           />
-          <div className="flex-1">
-            <h3 className={`text-lg ${task.completed ? 'line-through text-gray-500' : ''}`}>
+          {/* Task details section */}
+          <div className="flex-1 min-w-0"> {/* Added min-w-0 for text truncation */}
+            {/* Task Title */}
+            <h3 id={`task-title-${task.id}`} className={`text-lg font-medium break-words ${task.completed ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-900 dark:text-gray-100'}`}>
               {task.title}
             </h3>
-            {task.description && <p className="text-sm text-gray-600 dark:text-gray-400">{task.description}</p>}
-            {task.dueDate && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Due: {new Date(task.dueDate).toLocaleDateString()}
-              </p>
-            )}
-            {task.category && <p className="text-sm text-blue-500">{task.category}</p>}
-            {task.priority && (
-              <p className={`text-sm ${task.priority === 'High' ? 'text-red-500' : task.priority === 'Medium' ? 'text-yellow-500' : 'text-green-500'}`}>
-                Priority: {task.priority}
-              </p>
-            )}
+            {/* Task Description (Optional) */}
+            {task.description && <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 break-words">{task.description}</p>}
+            {/* Meta information (Due Date, Category, Priority) */}
+            <div className="flex flex-wrap items-center text-sm mt-2 space-x-3">
+              {task.dueDate && (
+                <span className="text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                  Due: {new Date(task.dueDate + 'T00:00:00').toLocaleDateString()} {/* Ensure date is parsed in local timezone */}
+                </span>
+              )}
+              {task.category && <span className="text-xs font-medium text-blue-800 dark:text-blue-300 bg-blue-100 dark:bg-blue-900 px-2 py-0.5 rounded-full whitespace-nowrap">{task.category}</span>}
+              {task.priority && (
+                <span className={`text-xs font-medium ${priorityColor} border ${task.priority === 'High' ? 'border-red-300 dark:border-red-600' : task.priority === 'Medium' ? 'border-yellow-300 dark:border-yellow-600' : 'border-green-300 dark:border-green-600'} px-2 py-0.5 rounded-full whitespace-nowrap`}>
+                  {task.priority} Priority
+                </span>
+              )}
+            </div>
           </div>
-          <div>
+          {/* Action Buttons (Edit, Delete) */}
+          <div className="flex-shrink-0 ml-0 sm:ml-4 mt-3 sm:mt-0 space-x-2 self-end sm:self-center">
             <button
               onClick={() => onEdit(task)}
-              className="text-blue-500 mr-2"
+              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium text-sm"
+              aria-label={`Edit task ${task.title}`}
             >
               Edit
             </button>
             <button
               onClick={() => onDelete(task.id)}
-              className="text-red-500"
+              className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-medium text-sm"
+              aria-label={`Delete task ${task.title}`}
             >
               Delete
             </button>
@@ -133,171 +200,284 @@
       );
     };
 
+    /**
+     * Form for adding or editing tasks.
+     */
     const TaskForm: React.FC<{
       onSubmit: (task: Omit<Task, 'id' | 'completed'>) => void;
       categories: Category[];
-      initialTask?: Task;
-      onCancel?: () => void;
+      initialTask?: Task | null; // Allow null for add mode
+      onCancel?: () => void; // Callback for cancelling edit mode
     }> = ({ onSubmit, categories, initialTask, onCancel }) => {
-      const [title, setTitle] = React.useState(initialTask?.title || '');
-      const [description, setDescription] = React.useState(initialTask?.description || '');
-      const [dueDate, setDueDate] = React.useState(initialTask?.dueDate || '');
-      const [category, setCategory] = React.useState(initialTask?.category || '');
-      const [priority, setPriority] = React.useState<Task['priority']>(initialTask?.priority || undefined);
+      const { theme } = React.useContext(ThemeContext);
+      // State for form fields
+      const [title, setTitle] = React.useState('');
+      const [description, setDescription] = React.useState('');
+      const [dueDate, setDueDate] = React.useState('');
+      const [category, setCategory] = React.useState('');
+      const [priority, setPriority] = React.useState<Task['priority'] | ''>(''); // Allow empty string for select default
 
+      // Effect to populate form when editing an existing task
+      React.useEffect(() => {
+        if (initialTask) {
+          setTitle(initialTask.title);
+          setDescription(initialTask.description || '');
+          // Ensure date format is YYYY-MM-DD for the input type="date"
+          setDueDate(initialTask.dueDate || '');
+          setCategory(initialTask.category || '');
+          setPriority(initialTask.priority || '');
+        } else {
+          // Reset form if initialTask is null (i.e., switching from edit to add mode)
+          setTitle('');
+          setDescription('');
+          setDueDate('');
+          setCategory('');
+          setPriority('');
+        }
+      }, [initialTask]); // Rerun effect when initialTask changes
+
+      // Handle form submission
       const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!title.trim()) return;
-        onSubmit({ title, description, dueDate, category, priority });
-        setTitle('');
-        setDescription('');
-        setDueDate('');
-        setCategory('');
-        setPriority(undefined);
+        if (!title.trim()) return; // Basic validation: title is required
+        // Call the onSubmit prop with the task data
+        onSubmit({
+            title: title.trim(),
+            description: description.trim() || undefined, // Store undefined if description is empty
+            dueDate: dueDate || undefined, // Store undefined if dueDate is empty
+            category: category || undefined, // Store undefined if category is not selected
+            priority: priority || undefined // Store undefined if priority is not selected
+        });
+        // Reset form only if it's the 'Add Task' form (not editing)
+        if (!initialTask) {
+            setTitle('');
+            setDescription('');
+            setDueDate('');
+            setCategory('');
+            setPriority('');
+        }
+        // Note: For edit mode, the parent component (`App`) handles closing the form (`setEditingTask(null)`)
       };
 
+      // Common Tailwind classes for inputs and selects
+      const inputClasses = `w-full p-2 border rounded ${theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'} focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors`;
+      const selectClasses = `${inputClasses}`; // Reuse styles for selects
+
       return (
-        <form onSubmit={handleSubmit} className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg mb-4">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Task title"
-            className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
-            required
-          />
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Description"
-            className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
-          />
-          <input
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
-          />
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
-          >
-            <option value="">Select Category</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.name}>{cat.name}</option>
-            ))}
-         FIT
-          <select
-            value={priority || ''}
-            onChange={(e) => setPriority(e.target.value as Task['priority'])}
-            className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
-          >
-            <option value="">Select Priority</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-          </select>
-          <div className="flex justify-end">
+        // Form container with appropriate background and shadow based on theme
+        <form onSubmit={handleSubmit} className={`p-4 rounded-lg mb-6 shadow ${theme === 'light' ? 'bg-gray-50' : 'bg-gray-700'}`}>
+          {/* Form Title: Changes based on whether adding or editing */}
+          <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">{initialTask ? 'Edit Task' : 'Add New Task'}</h2>
+          {/* Form Fields */}
+          <div className="space-y-3">
+            {/* Task Title Input */}
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Task title (required)"
+              className={inputClasses}
+              required
+              aria-label="Task title"
+            />
+            {/* Task Description Textarea */}
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Description (optional)"
+              className={inputClasses}
+              rows={3}
+              aria-label="Task description"
+            />
+            {/* Grid for Date, Category, Priority */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {/* Due Date Input */}
+              <input
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className={inputClasses}
+                aria-label="Due date"
+                // Set min date to today if desired: min={new Date().toISOString().split('T')[0]}
+              />
+              {/* Category Select */}
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className={selectClasses}
+                aria-label="Category"
+              >
+                <option value="">Select Category</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>{cat.name}</option>
+                ))}
+              </select>
+              {/* Priority Select */}
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value as Task['priority'] | '')}
+                className={selectClasses}
+                aria-label="Priority"
+              >
+                <option value="">Select Priority</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+          </div>
+          {/* Form Action Buttons */}
+          <div className="flex justify-end mt-4 space-x-2">
+            {/* Cancel Button (only shown in edit mode) */}
             {onCancel && (
               <button
                 type="button"
                 onClick={onCancel}
-                className="mr-2 px-4 py-2 bg-gray-300 rounded"
+                className="px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-100 rounded-md font-medium transition-colors text-sm"
               >
                 Cancel
               </button>
             )}
+            {/* Submit Button (Text changes based on mode) */}
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded"
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md font-medium transition-colors text-sm"
             >
-              {initialTask ? 'Update' : 'Add'} Task
+              {initialTask ? 'Update Task' : 'Add Task'}
             </button>
           </div>
         </form>
       );
     };
 
+    /**
+     * Modal for user registration.
+     */
     const RegisterModal: React.FC<{
-      onClose: () => void;
-      onRegister: (user: User) => void;
+      onClose: () => void; // Function to close the modal
+      onRegister: (user: Omit<User, 'id'>) => Promise<boolean>; // Async function to handle registration logic
     }> = ({ onClose, onRegister }) => {
+      const { theme } = React.useContext(ThemeContext);
+      // State for registration form fields
       const [name, setName] = React.useState('');
       const [email, setEmail] = React.useState('');
       const [password, setPassword] = React.useState('');
       const [confirmPassword, setConfirmPassword] = React.useState('');
-      const [error, setError] = React.useState('');
+      const [error, setError] = React.useState(''); // State for displaying errors
+      const [isLoading, setIsLoading] = React.useState(false); // State to manage loading indicator
 
-      const handleSubmit = (e: React.FormEvent) => {
+      // Handle registration form submission
+      const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!name || !email || !password || !confirmPassword) {
-          setError('All fields are required');
+        setError(''); // Clear previous errors
+
+        // --- Input Validation ---
+        if (!name.trim() || !email.trim() || !password || !confirmPassword) {
+          setError('All fields are required.');
           return;
         }
         if (password !== confirmPassword) {
-          setError('Passwords do not match');
+          setError('Passwords do not match.');
           return;
         }
+        // Basic email format validation
         if (!/\S+@\S+\.\S+/.test(email)) {
-          setError('Invalid email format');
+          setError('Please enter a valid email address.');
           return;
         }
-        onRegister({ id: Date.now().toString(), name, email, password });
-        onClose();
+        // Example: Basic password strength check
+        if (password.length < 6) {
+          setError('Password must be at least 6 characters long.');
+          return;
+        }
+        // --- End Validation ---
+
+        setIsLoading(true); // Show loading indicator
+        // Call the onRegister prop (passed from App component)
+        const success = await onRegister({ name: name.trim(), email: email.trim(), password });
+        setIsLoading(false); // Hide loading indicator
+
+        if (success) {
+          onClose(); // Close modal on successful registration
+        } else {
+          // Display error message if registration failed (e.g., email already exists)
+          setError('Registration failed. This email might already be in use.');
+        }
       };
 
+      // Common input styling
+      const inputClasses = `w-full p-2 border rounded ${theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-800 border-gray-600 text-white'} focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors`;
+
       return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md w-full">
-            <h2 className="text-2xl mb-4">Register</h2>
-            {error && <p className="text-red-500 mb-4">{error}</p>}
-            <form onSubmit={handleSubmit}>
+        // Modal backdrop and container
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          {/* Modal content */}
+          <div className={`p-6 rounded-lg shadow-xl max-w-md w-full ${theme === 'light' ? 'bg-white' : 'bg-gray-800'}`}>
+            <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Register</h2>
+            {/* Display error message if any */}
+            {error && <p className="text-red-500 dark:text-red-400 mb-3 text-sm font-medium">{error}</p>}
+            {/* Registration Form */}
+            <form onSubmit={handleSubmit} className="space-y-3">
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Name"
-                className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
+                className={inputClasses}
                 required
+                aria-label="Name"
+                disabled={isLoading} // Disable input while loading
               />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
-                className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
+                className={inputClasses}
                 required
+                aria-label="Email"
+                disabled={isLoading}
               />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
+                placeholder="Password (min. 6 characters)"
+                className={inputClasses}
                 required
+                aria-label="Password"
+                disabled={isLoading}
               />
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm Password"
-                className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
+                className={inputClasses}
                 required
+                aria-label="Confirm Password"
+                disabled={isLoading}
               />
-              <div className="flex justify-end">
+              {/* Action Buttons */}
+              <div className="flex justify-end items-center pt-3 space-x-2">
+                 {/* Loading spinner */}
+                 {isLoading && <div className="loader !w-6 !h-6 !border-2"></div>}
+                 {/* Cancel Button */}
                 <button
                   type="button"
                   onClick={onClose}
-                  className="mr-2 px-4 py-2 bg-gray-300 rounded"
+                  className="px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-100 rounded-md font-medium transition-colors text-sm"
+                  disabled={isLoading} // Disable button while loading
                 >
                   Cancel
                 </button>
+                {/* Register Button */}
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-500 text-white rounded"
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md font-medium transition-colors disabled:opacity-50 text-sm"
+                  disabled={isLoading} // Disable button while loading
                 >
-                  Register
+                  {isLoading ? 'Registering...' : 'Register'}
                 </button>
               </div>
             </form>
@@ -306,62 +486,95 @@
       );
     };
 
+    /**
+     * Login page component.
+     */
     const LoginPage: React.FC<{
-      onLogin: (email: string, password: string) => boolean;
-      onRegisterClick: () => void;
+      onLogin: (email: string, password: string) => Promise<boolean>; // Async function for login logic
+      onRegisterClick: () => void; // Function to open the registration modal
     }> = ({ onLogin, onRegisterClick }) => {
+      const { theme } = React.useContext(ThemeContext);
+      // State for login form fields
       const [email, setEmail] = React.useState('');
       const [password, setPassword] = React.useState('');
-      const [error, setError] = React.useState('');
+      const [error, setError] = React.useState(''); // State for login errors
+      const [isLoading, setIsLoading] = React.useState(false); // State for loading indicator
 
-      const handleSubmit = (e: React.FormEvent) => {
+      // Handle login form submission
+      const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email || !password) {
-          setError('All fields are required');
+        setError(''); // Clear previous errors
+        // Basic validation
+        if (!email.trim() || !password) {
+          setError('Email and password are required.');
           return;
         }
-        const success = onLogin(email, password);
+
+        setIsLoading(true); // Show loading indicator
+        // Call the onLogin prop (passed from App component)
+        const success = await onLogin(email.trim(), password);
+        setIsLoading(false); // Hide loading indicator
+
         if (!success) {
-          setError('Invalid credentials');
+          // Display error if login failed
+          setError('Invalid email or password. Please try again.');
         }
+        // On successful login, the App component handles the state change and rerender.
       };
 
+      // Common input styling
+      const inputClasses = `w-full p-2 border rounded ${theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-800 border-gray-600 text-white'} focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors`;
+
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h2 className="text-2xl mb-4">Login</h2>
-            {error && <p className="text-red-500 mb-4">{error}</p>}
-            <form onSubmit={handleSubmit}>
+        // Full screen container, centered content
+        <div className={`min-h-screen flex items-center justify-center p-4 ${theme === 'light' ? 'bg-gray-100' : 'bg-gray-900'}`}>
+          {/* Login form card */}
+          <div className={`p-6 md:p-8 rounded-lg shadow-xl max-w-sm w-full ${theme === 'light' ? 'bg-white' : 'bg-gray-800'}`}>
+            <h2 className="text-2xl font-semibold mb-5 text-center text-gray-900 dark:text-gray-100">Login</h2>
+            {/* Display login error if any */}
+            {error && <p className="text-red-500 dark:text-red-400 mb-4 text-sm text-center font-medium">{error}</p>}
+            {/* Login Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
-                className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
+                className={inputClasses}
                 required
+                aria-label="Email"
+                disabled={isLoading} // Disable input while loading
               />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
-                className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
+                className={inputClasses}
                 required
+                aria-label="Password"
+                disabled={isLoading}
               />
+              {/* Login Button with Loading State */}
               <button
                 type="submit"
-                className="w-full px-4 py-2 bg-blue-500 text-white rounded"
+                className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md font-medium transition-colors disabled:opacity-50 flex items-center justify-center space-x-2 text-sm"
+                disabled={isLoading} // Disable button while loading
               >
-                Login
+                 {/* Small loader inside button */}
+                 {isLoading && <div className="loader !w-5 !h-5 !border-2 !border-t-white"></div>}
+                 <span>{isLoading ? 'Logging in...' : 'Login'}</span>
               </button>
             </form>
-            <p className="mt-4 text-center">
+            {/* Link to Register */}
+            <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
               Don't have an account?{' '}
               <button
                 onClick={onRegisterClick}
-                className="text-blue-500 underline"
+                className="text-blue-500 hover:underline font-medium"
+                disabled={isLoading} // Disable link while loading
               >
-                Register
+                Register here
               </button>
             </p>
           </div>
@@ -369,254 +582,477 @@
       );
     };
 
+    /**
+     * Main Application Component - Manages overall state and renders UI conditionally.
+     */
     const App: React.FC = () => {
+      // --- State ---
+      // Theme state (light/dark) persisted in localStorage
       const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('theme', 'light');
-      const [user, setUser] = useLocalStorage<User | null>('user', null);
+      // State for all registered users, persisted
       const [users, setUsers] = useLocalStorage<User[]>('users', []);
-      const [tasks, setTasks] = useLocalStorage<Task[]>('tasks', user ? [] : sampleTasks);
-      const [categories, setCategories] = useLocalStorage<Category[]>('categories', user ? [] : sampleCategories);
+      // State for the currently logged-in user, persisted
+      const [currentUser, setCurrentUser] = useLocalStorage<User | null>('currentUser', null);
+
+      // User-specific tasks and categories state, persisted
+      // Generate unique localStorage keys based on the current user's ID
+      const userTasksKey = currentUser ? `tasks_${currentUser.id}` : 'tasks_guest'; // Key for guest tasks if no user logged in
+      const userCategoriesKey = currentUser ? `categories_${currentUser.id}` : 'categories_guest'; // Key for guest categories
+
+      // Initialize tasks/categories: Load from localStorage or use sample data
+      const initialTasks = React.useCallback(() => {
+          const stored = localStorage.getItem(userTasksKey);
+          // If user is logged in and has no stored tasks, start with sample tasks. Otherwise use stored or guest samples.
+          if (currentUser && stored === null) return sampleTasks;
+          return stored ? JSON.parse(stored) : sampleTasks; // Fallback to sampleTasks for guests or errors
+      }, [currentUser, userTasksKey]);
+
+      const initialCategories = React.useCallback(() => {
+          const stored = localStorage.getItem(userCategoriesKey);
+          // If user is logged in and has no stored categories, start with sample categories. Otherwise use stored or guest samples.
+          if (currentUser && stored === null) return sampleCategories;
+          return stored ? JSON.parse(stored) : sampleCategories; // Fallback to sampleCategories for guests or errors
+      }, [currentUser, userCategoriesKey]);
+
+      const [tasks, setTasks] = useLocalStorage<Task[]>(userTasksKey, initialTasks());
+      const [categories, setCategories] = useLocalStorage<Category[]>(userCategoriesKey, initialCategories());
+
+
+      // UI State (Filters, Sort, Search, Modals, etc.)
       const [filter, setFilter] = React.useState<'All' | 'Active' | 'Completed'>('All');
       const [categoryFilter, setCategoryFilter] = React.useState('');
       const [priorityFilter, setPriorityFilter] = React.useState('');
       const [search, setSearch] = React.useState('');
       const [sort, setSort] = React.useState<'title' | 'dueDate' | 'priority'>('title');
-      const [editingTask, setEditingTask] = React.useState<Task | null>(null);
-      const [showRegister, setShowRegister] = React.useState(false);
-      const [loading, setLoading] = React.useState(false);
+      const [editingTask, setEditingTask] = React.useState<Task | null>(null); // Holds the task being edited, or null
+      const [showRegister, setShowRegister] = React.useState(false); // Controls visibility of RegisterModal
+      const [showAddCategory, setShowAddCategory] = React.useState(false); // Controls visibility of add category input
+      const [newCategoryName, setNewCategoryName] = React.useState(''); // Input state for new category
+      const [categoryError, setCategoryError] = React.useState(''); // Error message for category input
 
+      // --- Effects ---
+      // Effect to apply theme class to HTML element and body
       React.useEffect(() => {
-        document.documentElement.classList.toggle('dark', theme === 'dark');
+        const root = document.documentElement;
+        const body = document.body;
+        if (theme === 'dark') {
+          root.classList.add('dark');
+          body.classList.add('bg-gray-900', 'text-gray-100');
+          body.classList.remove('bg-gray-100', 'text-gray-900');
+        } else {
+          root.classList.remove('dark');
+          body.classList.add('bg-gray-100', 'text-gray-900');
+          body.classList.remove('bg-gray-900', 'text-gray-100');
+        }
+        // Ensure font is applied
+        body.classList.add("font-['Inter']");
       }, [theme]);
 
+      // Effect to reload tasks/categories when the user logs in or out, or when keys change
+      // This ensures the correct data is displayed for the current user/guest.
       React.useEffect(() => {
-        if (user && tasks.length === 0) {
-          setTasks(sampleTasks);
-          setCategories(sampleCategories);
-        }
-      }, [user]);
+            const storedTasks = localStorage.getItem(userTasksKey);
+            const storedCategories = localStorage.getItem(userCategoriesKey);
 
+            // Load tasks: Use stored data if available, otherwise use sample data (especially for new users)
+            if (storedTasks) {
+                try {
+                    setTasks(JSON.parse(storedTasks));
+                } catch (e) {
+                    console.error("Error parsing stored tasks:", e);
+                    setTasks(currentUser ? sampleTasks : []); // Fallback for logged-in user or empty for guest
+                }
+            } else {
+                // If no stored data, load sample data for logged-in users or guests
+                setTasks(sampleTasks);
+            }
+
+            // Load categories: Use stored data if available, otherwise use sample data
+            if (storedCategories) {
+                 try {
+                    setCategories(JSON.parse(storedCategories));
+                } catch (e) {
+                    console.error("Error parsing stored categories:", e);
+                    setCategories(currentUser ? sampleCategories : []); // Fallback
+                }
+            } else {
+                setCategories(sampleCategories);
+            }
+      }, [currentUser, userTasksKey, userCategoriesKey]); // Rerun when user or storage keys change
+
+
+      // --- Event Handlers & Logic ---
+      // Toggle theme between light and dark
       const toggleTheme = () => {
         setTheme(theme === 'light' ? 'dark' : 'light');
       };
 
-      const login = (email: string, password: string) => {
-        setLoading(true);
-        setTimeout(() => {
-          const foundUser = users.find((u) => u.email === email && u.password === password);
-          if (foundUser) {
-            setUser(foundUser);
-            setTasks([]);
-            setCategories([]);
-          }
-          setLoading(false);
-          return !!foundUser;
-        }, 500);
-        return true;
+      // Login function (async, simulates API call)
+      const login = async (email: string, password: string): Promise<boolean> => {
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        // Find user in the persisted list
+        const foundUser = users.find((u) => u.email === email && u.password === password); // Insecure password check!
+        if (foundUser) {
+          setCurrentUser(foundUser); // Set the current user state
+          // Tasks/Categories will be reloaded by the useEffect hook based on currentUser change
+          return true; // Indicate success
+        }
+        return false; // Indicate failure
       };
 
-      const register = (newUser: User) => {
-        setLoading(true);
-        setTimeout(() => {
-          if (users.some((u) => u.email === newUser.email)) {
-            setLoading(false);
-            return false;
-          }
-          setUsers([...users, newUser]);
-          setUser(newUser);
-          setTasks([]);
-          setCategories([]);
-          setLoading(false);
-          return true;
-        }, 500);
-        return true;
+      // Register function (async, simulates API call)
+      const register = async (newUser: Omit<User, 'id'>): Promise<boolean> => {
+         // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        // Check if email already exists
+        if (users.some((u) => u.email === newUser.email)) {
+          console.error("Registration failed: Email already exists.");
+          return false; // Indicate failure (email taken)
+        }
+        // Create new user object with an ID
+        const userWithId = { ...newUser, id: Date.now().toString() };
+        // Add new user to the list of users
+        setUsers([...users, userWithId]);
+        // Log in the newly registered user
+        setCurrentUser(userWithId);
+        // Initialize tasks/categories for the new user (useEffect will handle loading samples)
+        // Explicitly set sample data here to ensure immediate update after registration
+        setTasks(sampleTasks);
+        setCategories(sampleCategories);
+        return true; // Indicate success
       };
 
+      // Logout function
       const logout = () => {
-        setUser(null);
-        setTasks([]);
-        setCategories([]);
+        setCurrentUser(null); // Clear the current user state
+        // Tasks/Categories will reset to guest view via the useEffect hook
       };
 
-      const addTask = (task: Omit<Task, 'id' | 'completed'>) => {
-        setTasks([...tasks, { ...task, id: Date.now().toString(), completed: false }]);
+      // --- Task CRUD Operations ---
+      // Add a new task
+      const addTask = (taskData: Omit<Task, 'id' | 'completed'>) => {
+        const newTask: Task = {
+          ...taskData,
+          id: Date.now().toString(), // Generate unique ID
+          completed: false, // New tasks are not completed by default
+        };
+        setTasks(prevTasks => [...prevTasks, newTask]); // Add to the tasks list
       };
 
-      const updateTask = (updatedTask: Task) => {
-        setTasks(tasks.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
-        setEditingTask(null);
+      // Update an existing task
+      const updateTask = (updatedTaskData: Task) => {
+        setTasks(prevTasks =>
+            prevTasks.map((t) => (t.id === updatedTaskData.id ? updatedTaskData : t)) // Find and replace the task
+        );
+        setEditingTask(null); // Exit edit mode after update
       };
 
+      // Toggle the completion status of a task
       const toggleTask = (id: string) => {
-        setTasks(tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
+        setTasks(prevTasks =>
+            prevTasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)) // Find task and flip 'completed' status
+        );
       };
 
+      // Delete a task
       const deleteTask = (id: string) => {
-        setTasks(tasks.filter((t) => t.id !== id));
+        // Optional: Implement a confirmation dialog here for better UX
+        // if (window.confirm("Are you sure you want to delete this task?")) { ... }
+        setTasks(prevTasks => prevTasks.filter((t) => t.id !== id)); // Remove task from the list
+         // If the deleted task was being edited, close the edit form
+        if (editingTask?.id === id) {
+            setEditingTask(null);
+        }
       };
 
-      const addCategory = (name: string) => {
-        setCategories([...categories, { id: Date.now().toString(), name }]);
-      };
-
-      const filteredTasks = tasks
-        .filter((task) => {
-          if (filter === 'Active') return !task.completed;
-          if (filter === 'Completed') return task.completed;
-          return true;
-        })
-        .filter((task) => (categoryFilter ? task.category === categoryFilter : true))
-        .filter((task) => (priorityFilter ? task.priority === priorityFilter : true))
-        .filter((task) => task.title.toLowerCase().includes(search.toLowerCase()) || (task.description?.toLowerCase().includes(search.toLowerCase()) ?? false))
-        .sort((a, b) => {
-          if (sort === 'title') return a.title.localeCompare(b.title);
-          if (sort === 'dueDate') return (a.dueDate || '9999-12-31').localeCompare(b.dueDate || '9999-12-31');
-          if (sort === 'priority') {
-            const priorities = { High: 3, Medium: 2, Low: 1 };
-            return (priorities[b.priority || 'Low'] - priorities[a.priority || 'Low']);
+      // --- Category Management ---
+      // Add a new category
+      const addCategory = () => {
+          setCategoryError(''); // Clear previous errors
+          const name = newCategoryName.trim();
+          // Validate category name
+          if (!name) {
+              setCategoryError('Category name cannot be empty.');
+              return;
           }
-          return 0;
-        });
+          // Check for duplicate category names (case-insensitive)
+          if (categories.some(cat => cat.name.toLowerCase() === name.toLowerCase())) {
+              setCategoryError(`Category "${name}" already exists.`);
+              return;
+          }
+          // Add the new category to the list
+          setCategories(prevCategories => [...prevCategories, { id: Date.now().toString(), name }]);
+          setNewCategoryName(''); // Clear the input field
+          setShowAddCategory(false); // Hide the input field after adding
+      };
 
-      if (!user) {
+      // --- Filtering and Sorting Logic ---
+      // Memoized calculation of tasks to display based on current filters and sort order
+      const filteredAndSortedTasks = React.useMemo(() => {
+          // Start with the current tasks list
+          return tasks
+          // Apply status filter (All, Active, Completed)
+          .filter((task) => {
+            if (filter === 'Active') return !task.completed;
+            if (filter === 'Completed') return task.completed;
+            return true; // 'All' shows everything
+          })
+          // Apply category filter (if a category is selected)
+          .filter((task) => categoryFilter ? task.category === categoryFilter : true)
+          // Apply priority filter (if a priority is selected)
+          .filter((task) => priorityFilter ? task.priority === priorityFilter : true)
+          // Apply search filter (checks title and description, case-insensitive)
+          .filter((task) => {
+            const searchTerm = search.toLowerCase();
+            return task.title.toLowerCase().includes(searchTerm) ||
+                   (task.description?.toLowerCase().includes(searchTerm) ?? false);
+          })
+          // Apply sorting
+          .sort((a, b) => {
+            if (sort === 'title') {
+              // Sort alphabetically by title
+              return a.title.localeCompare(b.title);
+            }
+            if (sort === 'dueDate') {
+              // Sort by due date (tasks without dates are sorted last)
+              const dateA = a.dueDate || '9999-12-31'; // Assign a far future date for sorting purposes
+              const dateB = b.dueDate || '9999-12-31';
+              return dateA.localeCompare(dateB);
+            }
+            if (sort === 'priority') {
+              // Sort by priority (High > Medium > Low > None)
+              const priorities: { [key in Task['priority'] | 'None']: number } = { High: 3, Medium: 2, Low: 1, None: 0 };
+              // Assign 0 if priority is undefined
+              const priorityA = priorities[a.priority || 'None'];
+              const priorityB = priorities[b.priority || 'None'];
+              return priorityB - priorityA; // Descending order (High first)
+            }
+            return 0; // Default: no specific sort order (maintains filtered order)
+          });
+      }, [tasks, filter, categoryFilter, priorityFilter, search, sort]); // Recalculate when any dependency changes
+
+      // --- Render Logic ---
+
+      // Render Login/Register page if no user is logged in
+      if (!currentUser) {
         return (
-          <>
-            <LoginPage
-              onLogin={login}
-              onRegisterClick={() => setShowRegister(true)}
-            />
-            {showRegister && (
-              <RegisterModal
-                onClose={() => setShowRegister(false)}
-                onRegister={register}
-              />
-            )}
-            {loading && <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"><div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div></div>}
-          </>
+          // Provide contexts even for the login page
+          <ThemeContext.Provider value={{ theme, toggleTheme }}>
+            <AuthContext.Provider value={{ user: null, login, register, logout }}>
+                <LoginPage
+                  onLogin={login}
+                  onRegisterClick={() => setShowRegister(true)} // Open register modal on click
+                />
+                {/* Conditionally render the Register Modal */}
+                {showRegister && (
+                  <RegisterModal
+                    onClose={() => setShowRegister(false)} // Close modal
+                    onRegister={register} // Pass register function
+                  />
+                )}
+            </AuthContext.Provider>
+          </ThemeContext.Provider>
         );
       }
 
+      // Render the main application UI for logged-in users
+      // Common Tailwind classes for filter/sort select elements
+      const selectClasses = `p-2 border rounded ${theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'} focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm transition-colors`;
+      const inputClasses = selectClasses; // Reuse styles for search input
+
       return (
+        // Provide Theme and Auth contexts to the rest of the app
         <ThemeContext.Provider value={{ theme, toggleTheme }}>
-          <AuthContext.Provider value={{ user, login, register, logout }}>
-            <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
-              <div className="max-w-4xl mx-auto">
-                <header className="flex justify-between items-center mb-6">
-                  <h1 className="text-3xl font-bold">Todo List</h1>
-                  <div className="flex items-center space-x-4">
+          <AuthContext.Provider value={{ user: currentUser, login, register, logout }}>
+            {/* Main container with padding and theme-based background */}
+            <div className={`min-h-screen p-4 md:p-6 transition-colors duration-300 ${theme === 'light' ? 'bg-gray-100' : 'bg-gray-900'}`}>
+              {/* Centered content area */}
+              <div className="max-w-5xl mx-auto">
+                {/* --- Header --- */}
+                <header className="flex flex-wrap justify-between items-center mb-6 gap-4">
+                  {/* App Title including logged-in user's name */}
+                  <h1 className={`text-2xl sm:text-3xl font-bold ${theme === 'light' ? 'text-gray-800' : 'text-gray-100'}`}>
+                    Todo List ({currentUser.name})
+                  </h1>
+                  {/* Header controls: Theme toggle and Logout button */}
+                  <div className="flex items-center space-x-3">
                     <button
                       onClick={toggleTheme}
-                      className="p-2 rounded bg-gray-200 dark:bg-gray-700"
+                      className={`p-2 rounded-full transition-colors ${theme === 'light' ? 'bg-gray-200 hover:bg-gray-300 text-gray-700' : 'bg-gray-700 hover:bg-gray-600 text-yellow-300'}`}
+                      aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
                     >
                       {theme === 'light' ? '🌙' : '☀️'}
                     </button>
                     <button
                       onClick={logout}
-                      className="px-4 py-2 bg-red-500 text-white rounded"
+                      className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md font-medium text-sm transition-colors"
                     >
                       Logout
                     </button>
                   </div>
                 </header>
 
+                {/* --- Task Form (conditionally renders Add or Edit form) --- */}
                 <TaskForm
-                  onSubmit={addTask}
-                  categories={categories}
+                    // Use task ID as key for Edit form, 'add-form' for Add form.
+                    // This forces React to re-mount the component (resetting its internal state) when switching modes.
+                    key={editingTask ? editingTask.id : 'add-form'}
+                    // Submit handler depends on whether we are editing or adding
+                    onSubmit={editingTask ? (taskData) => updateTask({ ...editingTask, ...taskData }) : addTask}
+                    categories={categories} // Pass available categories
+                    initialTask={editingTask} // Pass the task being edited (or null for add mode)
+                    // Provide a cancel callback only when editing
+                    onCancel={editingTask ? () => setEditingTask(null) : undefined}
                 />
 
-                <div className="mb-4 flex flex-wrap gap-4">
-                  <select
-                    value={filter}
-                    onChange={(e) => setFilter(e.target.value as typeof filter)}
-                    className="p-2 border rounded dark:bg-gray-800 dark:text-white"
-                  >
-                    <option value="All">All</option>
-                    <option value="Active">Active</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                  <select
-                    value={categoryFilter}
-                    onChange={(e) => setCategoryFilter(e.target.value)}
-                    className="p-2 border rounded dark:bg-gray-800 dark:text-white"
-                  >
-                    <option value="">All Categories</option>
-                    {categories.map((cat) => (
-                      <option key={cat.id} value={cat.name}>{cat.name}</option>
-                    ))}
-                  </select>
-                  <select
-                    value={priorityFilter}
-                    onChange={(e) => setPriorityFilter(e.target.value)}
-                    className="p-2 border rounded dark:bg-gray-800 dark:text-white"
-                  >
-                    <option value="">All Priorities</option>
-                    <option value="High">High</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Low">Low</option>
-                  </select>
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search tasks..."
-                    className="p-2 border rounded dark:bg-gray-800 dark:text-white"
-                  />
-                  <select
-                    value={sort}
-                    onChange={(e) => setSort(e.target.value as typeof sort)}
-                    className="p-2 border rounded dark:bg-gray-800 dark:text-white"
-                  >
-                    <option value="title">Sort by Title</option>
-                    <option value="dueDate">Sort by Due Date</option>
-                    <option value="priority">Sort by Priority</option>
-                  </select>
+
+                {/* --- Filters, Sort, Search, and Category Management Section --- */}
+                <div className={`p-4 rounded-lg mb-6 shadow ${theme === 'light' ? 'bg-gray-50' : 'bg-gray-700'}`}>
+                    {/* Grid layout for filter/sort controls */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
+                        {/* Filter by Status (All/Active/Completed) */}
+                        <select
+                          value={filter}
+                          onChange={(e) => setFilter(e.target.value as typeof filter)}
+                          className={selectClasses}
+                          aria-label="Filter tasks by status"
+                        >
+                          <option value="All">All Statuses</option>
+                          <option value="Active">Active</option>
+                          <option value="Completed">Completed</option>
+                        </select>
+
+                        {/* Filter by Category */}
+                        <select
+                          value={categoryFilter}
+                          onChange={(e) => setCategoryFilter(e.target.value)}
+                          className={selectClasses}
+                          aria-label="Filter tasks by category"
+                        >
+                          <option value="">All Categories</option>
+                          {/* Populate options from categories state */}
+                          {categories.map((cat) => (
+                            <option key={cat.id} value={cat.name}>{cat.name}</option>
+                          ))}
+                        </select>
+
+                        {/* Filter by Priority */}
+                        <select
+                          value={priorityFilter}
+                          onChange={(e) => setPriorityFilter(e.target.value)}
+                          className={selectClasses}
+                          aria-label="Filter tasks by priority"
+                        >
+                          <option value="">All Priorities</option>
+                          <option value="High">High</option>
+                          <option value="Medium">Medium</option>
+                          <option value="Low">Low</option>
+                        </select>
+
+                        {/* Sort Dropdown */}
+                        <select
+                          value={sort}
+                          onChange={(e) => setSort(e.target.value as typeof sort)}
+                          className={selectClasses}
+                          aria-label="Sort tasks"
+                        >
+                          <option value="title">Sort by Title</option>
+                          <option value="dueDate">Sort by Due Date</option>
+                          <option value="priority">Sort by Priority</option>
+                        </select>
+
+                         {/* Search Input */}
+                        <input
+                          type="text"
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          placeholder="Search tasks..."
+                          className={inputClasses + ' lg:col-span-1'} // Adjust column span on larger screens
+                          aria-label="Search tasks by title or description"
+                        />
+                    </div>
+
+                     {/* Add Category Section */}
+                    <div className="flex items-center space-x-2">
+                        {/* Button to toggle the visibility of the add category input */}
+                        <button
+                            onClick={() => setShowAddCategory(!showAddCategory)}
+                            className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm font-medium transition-colors"
+                        >
+                           {showAddCategory ? 'Cancel' : '+ Add Category'}
+                        </button>
+                        {/* Conditionally render the input field and save button */}
+                        {showAddCategory && (
+                            <div className="flex-1 flex items-center space-x-2">
+                                <input
+                                    type="text"
+                                    value={newCategoryName}
+                                    onChange={(e) => { setNewCategoryName(e.target.value); setCategoryError(''); }} // Clear error on change
+                                    placeholder="New category name"
+                                    className={inputClasses + ' flex-1'} // Input takes remaining space
+                                    // Allow adding category by pressing Enter key
+                                    onKeyDown={(e) => { if (e.key === 'Enter') addCategory(); }}
+                                    aria-label="New category name"
+                                    autoFocus // Focus the input when it appears
+                                />
+                                <button
+                                    onClick={addCategory} // Save button calls addCategory function
+                                    className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm font-medium transition-colors"
+                                >
+                                    Save
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    {/* Display category error message if any */}
+                    {categoryError && <p className="text-red-500 dark:text-red-400 text-xs mt-1 ml-2">{categoryError}</p>}
                 </div>
 
-                <div className="mb-4">
-                  <input
-                    type="text"
-                    placeholder="New category"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && e.currentTarget.value.trim()) {
-                        addCategory(e.currentTarget.value.trim());
-                        e.currentTarget.value = '';
-                      }
-                    }}
-                    className="p-2 border rounded dark:bg-gray-800 dark:text-white"
-                  />
-                </div>
 
-                {editingTask && (
-                  <TaskForm
-                    onSubmit={(task) => updateTask({ ...editingTask, ...task })}
-                    categories={categories}
-                    initialTask={editingTask}
-                    onCancel={() => setEditingTask(null)}
-                  />
+                {/* --- Task List Section --- */}
+                {/* Check if there are tasks to display after filtering/sorting */}
+                {filteredAndSortedTasks.length > 0 ? (
+                    // Render the list if tasks exist
+                    <ul className="space-y-2">
+                      {/* Map over the filtered and sorted tasks and render a TaskItem for each */}
+                      {filteredAndSortedTasks.map((task) => (
+                        <TaskItem
+                          key={task.id} // Unique key for each list item
+                          task={task} // Pass task data
+                          onToggle={toggleTask} // Pass toggle completion handler
+                          onDelete={deleteTask} // Pass delete handler
+                          onEdit={setEditingTask} // Pass handler to set the task being edited
+                        />
+                      ))}
+                    </ul>
+                ) : (
+                    // Display a message if no tasks match the current filters/search
+                     <p className={`text-center text-gray-500 dark:text-gray-400 mt-8 ${theme === 'light' ? 'bg-white' : 'bg-gray-800'} p-6 rounded-lg shadow`}>
+                        {tasks.length === 0 ? "You haven't added any tasks yet. Add one above!" : "No tasks match your current filters. Try adjusting them!"}
+                     </p>
                 )}
 
-                <ul className="space-y-2">
-                  {filteredTasks.map((task) => (
-                    <TaskItem
-                      key={task.id}
-                      task={task}
-                      onToggle={toggleTask}
-                      onDelete={deleteTask}
-                      onEdit={setEditingTask}
-                    />
-                  ))}
-                </ul>
-
-                {loading && <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"><div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div></div>}
-              </div>
-            </div>
+              </div> {/* End max-w-5xl */}
+            </div> {/* End main container */}
           </AuthContext.Provider>
         </ThemeContext.Provider>
       );
     };
 
-    // Render
-    const root = ReactDOM.createRoot(document.getElementById('root')!);
-    root.render(<App />);
+    // --- Render the App ---
+    // Find the root DOM element
+    const container = document.getElementById('root');
+    // Ensure the container exists before rendering
+    if (container) {
+      // Create a React root and render the App component
+      const root = ReactDOM.createRoot(container);
+      root.render(<App />);
+    } else {
+      // Log an error if the root element is not found in the HTML
+      console.error("Fatal Error: Root element with ID 'root' not found in the DOM.");
+    }
+
   </script>
 </body>
 </html>
