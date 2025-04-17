@@ -1,2067 +1,458 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced To-Do App</title>
-    <meta name="theme-color" content="#6a040f">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-
-    <style>
-        /* --- CSS Variables --- */
-        :root {
-            /* --- Light Mode --- */
-            --lm-page-bg-start: #f8f9fa; /* Lighter background */
-            --lm-page-bg-end: #e9ecef;
-            --lm-component-bg: #ffffff;
-            --lm-text: #212529;
-            --lm-muted-text: #6c757d;
-            --lm-border: #dee2e6;
-            --lm-input-bg: #ffffff;
-            --lm-input-border: #ced4da;
-            --lm-shadow-color: rgba(0, 0, 0, 0.1);
-            --lm-header-bg: #ffffff;
-            --lm-task-bg: #ffffff;
-            --lm-task-selected-bg: #e0f7ff; /* Light blue selection */
-            --lm-task-completed-bg: rgba(40, 167, 69, 0.08);
-            --lm-subtask-bg: #f8f9fa;
-            --lm-primary: #007bff;
-            --lm-secondary: #6c757d;
-            --lm-success: #28a745;
-            --lm-danger: #dc3545;
-            --lm-warning: #ffc107;
-            --lm-info: #17a2b8;
-            --lm-tag-high-bg: rgba(220, 53, 69, 0.1);
-            --lm-tag-medium-bg: rgba(0, 123, 255, 0.1);
-            --lm-tag-low-bg: rgba(108, 117, 125, 0.1);
-            --lm-tag-high-text: var(--lm-danger);
-            --lm-tag-medium-text: var(--lm-primary);
-            --lm-tag-low-text: var(--lm-secondary);
-            --lm-alert-expired-bg: #f8d7da;
-            --lm-alert-expired-text: #721c24;
-            --lm-alert-upcoming-bg: #fff3cd;
-            --lm-alert-upcoming-text: #856404;
-            --lm-alert-ontime-bg: #d4edda;
-            --lm-alert-ontime-text: #155724;
-            --lm-multi-select-bar-bg: #007bff;
-
-            /* --- Dark Mode --- */
-            --dm-page-bg-start: #1a1a1a; /* Darker */
-            --dm-page-bg-end: #2c2c2c;
-            --dm-component-bg: #3a3a3a;
-            --dm-text: #e9ecef;
-            --dm-muted-text: #8b949e;
-            --dm-border: #555;
-            --dm-input-bg: #2c2c2c;
-            --dm-input-border: #555;
-            --dm-shadow-color: rgba(0, 0, 0, 0.5);
-            --dm-header-bg: #2c2c2c;
-            --dm-task-bg: #3a3a3a;
-            --dm-task-selected-bg: #4a5a6a; /* Darker blue selection */
-            --dm-task-completed-bg: rgba(86, 211, 100, 0.15);
-            --dm-subtask-bg: #2c2c2c;
-            --dm-primary: #58a6ff;
-            --dm-secondary: #8b949e;
-            --dm-success: #56d364;
-            --dm-danger: #f85149;
-            --dm-warning: #e3b341;
-            --dm-info: #79c0ff;
-            --dm-tag-high-bg: rgba(248, 81, 73, 0.2);
-            --dm-tag-medium-bg: rgba(88, 166, 255, 0.2);
-            --dm-tag-low-bg: rgba(139, 148, 158, 0.2);
-            --dm-tag-high-text: var(--dm-danger);
-            --dm-tag-medium-text: var(--dm-primary);
-            --dm-tag-low-text: var(--dm-secondary);
-            --dm-alert-expired-bg: #572023;
-            --dm-alert-expired-text: #f8d7da;
-            --dm-alert-upcoming-bg: #664d00;
-            --dm-alert-upcoming-text: #fff3cd;
-            --dm-alert-ontime-bg: #0c3c1e;
-            --dm-alert-ontime-text: #d4edda;
-            --dm-multi-select-bar-bg: #58a6ff;
-
-            /* --- General --- */
-            --border-radius: 8px;
-            --notification-bg: rgba(10, 10, 10, 0.9);
-            --notification-text: white;
-            --transition-speed: 0.3s;
-        }
-
-        /* --- Base Styles --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        html { font-size: 16px; }
-
-        body {
-            background: linear-gradient(135deg, var(--lm-page-bg-start), var(--lm-page-bg-end));
-            color: var(--lm-text);
-            min-height: 100vh;
-            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
-            overflow-x: hidden; /* Prevent horizontal scroll */
-        }
-
-        body.dark-mode {
-            background: linear-gradient(135deg, var(--dm-page-bg-start), var(--dm-page-bg-end));
-            color: var(--dm-text);
-        }
-
-        /* --- App Layout --- */
-        .app-container {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        header {
-            background-color: var(--lm-header-bg);
-            border-bottom: 1px solid var(--lm-border);
-            box-shadow: 0 2px 5px var(--lm-shadow-color);
-            padding: 0.75rem 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
-        }
-        body.dark-mode header {
-            background-color: var(--dm-header-bg);
-            border-bottom-color: var(--dm-border);
-            box-shadow: 0 2px 5px var(--dm-shadow-color);
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--lm-primary);
-            cursor: default; /* No action on click */
-        }
-        body.dark-mode .logo { color: var(--dm-primary); }
-
-        .header-actions { display: flex; align-items: center; gap: 0.75rem; }
-
-        /* Header Time Tracker */
-        .header-time-tracker {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            padding: 0.3rem 0.8rem;
-            border-radius: var(--border-radius);
-            background-color: var(--lm-info);
-            color: white;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease;
-            white-space: nowrap; /* Prevent wrapping */
-        }
-        body.dark-mode .header-time-tracker { background-color: var(--dm-info); }
-        .header-time-tracker.visible { opacity: 1; transform: translateY(0); }
-        .header-time-tracker i { font-size: 1rem; }
-        #header-timer-task { font-weight: 600; max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
-
-        .icon-btn {
-            background: none; border: none; font-size: 1.2rem; cursor: pointer;
-            width: 38px; height: 38px; border-radius: 50%; display: flex;
-            justify-content: center; align-items: center;
-            color: var(--lm-muted-text);
-            transition: background-color 0.2s ease, color 0.2s ease;
-        }
-        body.dark-mode .icon-btn { color: var(--dm-muted-text); }
-        .icon-btn:hover { background-color: rgba(0, 0, 0, 0.05); color: var(--lm-primary); }
-        body.dark-mode .icon-btn:hover { background-color: rgba(255, 255, 255, 0.1); color: var(--dm-primary); }
-
-        main {
-            flex-grow: 1;
-            padding: 1.5rem;
-            max-width: 1200px; /* Limit content width */
-            margin: 0 auto; /* Center content */
-            width: 100%;
-        }
-
-        /* Stats Section */
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        .stat-card {
-            background-color: var(--lm-component-bg);
-            border: 1px solid var(--lm-border);
-            border-radius: var(--border-radius);
-            padding: 1rem 1.25rem;
-            box-shadow: 0 2px 4px var(--lm-shadow-color);
-            text-align: center;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 4px 8px var(--lm-shadow-color); }
-        body.dark-mode .stat-card {
-            background-color: var(--dm-component-bg);
-            border-color: var(--dm-border);
-            box-shadow: 0 2px 4px var(--dm-shadow-color);
-        }
-        body.dark-mode .stat-card:hover { box-shadow: 0 4px 8px var(--dm-shadow-color); }
-        .stat-card h3 { font-size: 0.9rem; color: var(--lm-muted-text); margin-bottom: 0.5rem; font-weight: 500; }
-        body.dark-mode .stat-card h3 { color: var(--dm-muted-text); }
-        .stat-card p { font-size: 1.75rem; font-weight: 600; color: var(--lm-primary); }
-        body.dark-mode .stat-card p { color: var(--dm-primary); }
-
-        /* Action Buttons Section (New Position) */
-        .action-buttons-container {
-            display: flex;
-            flex-wrap: wrap; /* Allow wrapping on smaller screens */
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background-color: var(--lm-component-bg);
-            border-radius: var(--border-radius);
-            border: 1px solid var(--lm-border);
-            box-shadow: 0 2px 4px var(--lm-shadow-color);
-        }
-        body.dark-mode .action-buttons-container {
-            background-color: var(--dm-component-bg);
-            border-color: var(--dm-border);
-            box-shadow: 0 2px 4px var(--dm-shadow-color);
-        }
-        .action-buttons-container .btn { flex-grow: 1; min-width: 120px; } /* Allow buttons to grow */
-
-        /* To-Do Section */
-        .todo-section {
-            background-color: var(--lm-component-bg);
-            border: 1px solid var(--lm-border);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            box-shadow: 0 4px 12px var(--lm-shadow-color);
-            position: relative; /* For multi-select bar positioning */
-            overflow: hidden; /* Contain multi-select bar */
-        }
-        body.dark-mode .todo-section {
-            background-color: var(--dm-component-bg);
-            border-color: var(--dm-border);
-            box-shadow: 0 4px 12px var(--dm-shadow-color);
-        }
-
-        .todo-header {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            gap: 1rem;
-        }
-        .todo-title { font-size: 1.5rem; font-weight: 600; color: inherit; }
-
-        .filter-sort-controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            align-items: center;
-        }
-        .filter-select, .sort-select {
-            padding: 0.5rem 0.8rem;
-            border-radius: var(--border-radius);
-            border: 1px solid var(--lm-input-border);
-            font-size: 0.9rem;
-            background-color: var(--lm-input-bg);
-            color: var(--lm-text);
-            min-width: 150px; /* Ensure decent width */
-            cursor: pointer;
-        }
-        body.dark-mode .filter-select, body.dark-mode .sort-select {
-            background-color: var(--dm-input-bg);
-            color: var(--dm-text);
-            border-color: var(--dm-input-border);
-        }
-
-        /* Task List */
-        #taskList {
-            list-style: none;
-            margin-top: 1rem;
-            min-height: 100px; /* Ensure drop zone is available when empty */
-        }
-        #taskList:empty::before {
-            content: "No tasks yet. Add one!";
-            display: block;
-            text-align: center;
-            padding: 2rem;
-            color: var(--lm-muted-text);
-            font-style: italic;
-        }
-        body.dark-mode #taskList:empty::before { color: var(--dm-muted-text); }
-
-        .task-item {
-            background-color: var(--lm-task-bg);
-            border: 1px solid var(--lm-border);
-            border-radius: var(--border-radius);
-            margin-bottom: 0.75rem;
-            padding: 0.8rem 1rem;
-            display: flex;
-            align-items: flex-start; /* Align items to top */
-            gap: 0.75rem;
-            box-shadow: 0 1px 3px var(--lm-shadow-color);
-            transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease, box-shadow 0.2s ease, transform 0.2s ease;
-            position: relative; /* For absolute positioned elements like alerts */
-            cursor: grab; /* Indicate draggable */
-            overflow: hidden; /* Hide overflowing content */
-        }
-        .task-item:last-child { margin-bottom: 0; }
-        body.dark-mode .task-item {
-            background-color: var(--dm-task-bg);
-            border-color: var(--dm-border);
-            box-shadow: 0 1px 3px var(--dm-shadow-color);
-        }
-
-        /* Drag and Drop Styling */
-        .task-item.sortable-ghost {
-            opacity: 0.4;
-            background-color: #cceeff;
-        }
-        body.dark-mode .task-item.sortable-ghost { background-color: #3a5a7a; }
-        .task-item.sortable-chosen {
-            cursor: grabbing;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        body.dark-mode .task-item.sortable-chosen { box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
-
-        /* Task Selection */
-        .task-item.selected {
-            background-color: var(--lm-task-selected-bg);
-            border-color: var(--lm-primary);
-        }
-        body.dark-mode .task-item.selected {
-            background-color: var(--dm-task-selected-bg);
-            border-color: var(--dm-primary);
-        }
-
-        /* Task Content Area */
-        .task-content { flex-grow: 1; min-width: 0; /* Prevent flex overflow */ }
-
-        .task-main-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-            gap: 0.5rem;
-        }
-        .task-text {
-            font-size: 1rem;
-            font-weight: 500;
-            word-break: break-word; /* Wrap long task names */
-            flex-grow: 1;
-        }
-        .task-item.completed .task-text {
-            text-decoration: line-through;
-            color: var(--lm-muted-text);
-            opacity: 0.7;
-        }
-        body.dark-mode .task-item.completed .task-text { color: var(--dm-muted-text); }
-
-        /* Task Meta Info (Due Date, Priority) */
-        .task-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            align-items: center;
-            font-size: 0.8rem;
-            color: var(--lm-muted-text);
-            margin-bottom: 0.5rem;
-        }
-        body.dark-mode .task-meta { color: var(--dm-muted-text); }
-        .task-meta span { display: flex; align-items: center; gap: 0.3rem; }
-        .task-meta i { font-size: 0.9em; }
-
-        /* Due Date Alert Indicator */
-        .due-date-alert {
-            padding: 0.1rem 0.4rem;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 0.75rem;
-        }
-        .due-date-alert.expired { background-color: var(--lm-alert-expired-bg); color: var(--lm-alert-expired-text); }
-        .due-date-alert.upcoming { background-color: var(--lm-alert-upcoming-bg); color: var(--lm-alert-upcoming-text); }
-        .due-date-alert.on-time { background-color: var(--lm-alert-ontime-bg); color: var(--lm-alert-ontime-text); }
-        body.dark-mode .due-date-alert.expired { background-color: var(--dm-alert-expired-bg); color: var(--dm-alert-expired-text); }
-        body.dark-mode .due-date-alert.upcoming { background-color: var(--dm-alert-upcoming-bg); color: var(--dm-alert-upcoming-text); }
-        body.dark-mode .due-date-alert.on-time { background-color: var(--dm-alert-ontime-bg); color: var(--dm-alert-ontime-text); }
-
-        /* Task Priority Tag */
-        .priority-tag {
-            padding: 0.1rem 0.4rem;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 0.75rem;
-            text-transform: capitalize;
-        }
-        .priority-tag.high { background-color: var(--lm-tag-high-bg); color: var(--lm-tag-high-text); }
-        .priority-tag.medium { background-color: var(--lm-tag-medium-bg); color: var(--lm-tag-medium-text); }
-        .priority-tag.low { background-color: var(--lm-tag-low-bg); color: var(--lm-tag-low-text); }
-        body.dark-mode .priority-tag.high { background-color: var(--dm-tag-high-bg); color: var(--dm-tag-high-text); }
-        body.dark-mode .priority-tag.medium { background-color: var(--dm-tag-medium-bg); color: var(--dm-tag-medium-text); }
-        body.dark-mode .priority-tag.low { background-color: var(--dm-tag-low-bg); color: var(--dm-tag-low-text); }
-
-        /* Task Notes/Description */
-        .task-notes {
-            font-size: 0.85rem;
-            color: var(--lm-muted-text);
-            margin-bottom: 0.5rem;
-            white-space: pre-wrap; /* Preserve whitespace and wrap */
-            max-height: 60px; /* Limit initial height */
-            overflow: hidden;
-            text-overflow: ellipsis;
-            cursor: pointer; /* Indicate clickable */
-            transition: max-height var(--transition-speed) ease;
-        }
-        body.dark-mode .task-notes { color: var(--dm-muted-text); }
-        .task-notes.expanded { max-height: 500px; /* Allow full expansion */ }
-        .task-notes:empty { display: none; } /* Hide if no notes */
-
-        /* Task Time Tracker */
-        .task-timer {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-            color: var(--lm-info);
-        }
-        body.dark-mode .task-timer { color: var(--dm-info); }
-        .task-timer-btn {
-            background: none; border: none; cursor: pointer;
-            color: inherit; font-size: 1.1rem; padding: 0.2rem;
-            line-height: 1;
-        }
-        .task-timer-btn:hover { opacity: 0.7; }
-        .task-timer-display { font-weight: 600; min-width: 60px; text-align: right; }
-
-        /* Task Actions (Complete, Edit, Delete) */
-        .task-actions {
-            display: flex;
-            flex-direction: column; /* Stack vertically */
-            align-items: center;
-            gap: 0.4rem;
-            margin-left: auto; /* Push actions to the right */
-            padding-left: 0.5rem; /* Add some space */
-        }
-        .task-action-btn {
-            background: none; border: none; cursor: pointer;
-            font-size: 1rem; /* Slightly smaller icons */
-            width: 30px; height: 30px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            color: var(--lm-secondary);
-            transition: background-color 0.2s ease, color 0.2s ease;
-        }
-        body.dark-mode .task-action-btn { color: var(--dm-secondary); }
-        .task-action-btn:hover { background-color: rgba(0, 0, 0, 0.05); }
-        body.dark-mode .task-action-btn:hover { background-color: rgba(255, 255, 255, 0.1); }
-
-        .complete-btn { color: var(--lm-success); }
-        .task-item.completed .complete-btn { color: var(--lm-warning); } /* Change to 'undo complete' color */
-        .edit-btn { color: var(--lm-primary); }
-        .delete-btn { color: var(--lm-danger); }
-        body.dark-mode .complete-btn { color: var(--dm-success); }
-        body.dark-mode .task-item.completed .complete-btn { color: var(--dm-warning); }
-        body.dark-mode .edit-btn { color: var(--dm-primary); }
-        body.dark-mode .delete-btn { color: var(--dm-danger); }
-
-        /* Multi-Select Action Bar */
-        .multi-select-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: var(--lm-multi-select-bar-bg);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 0 0 var(--border-radius) var(--border-radius); /* Match bottom corners */
-            transform: translateY(100%);
-            transition: transform var(--transition-speed) ease-in-out;
-            z-index: 5;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-        }
-        body.dark-mode .multi-select-bar {
-             background-color: var(--dm-multi-select-bar-bg);
-             box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
-        }
-        .multi-select-bar.visible { transform: translateY(0); }
-        .multi-select-info { font-size: 0.9rem; font-weight: 500; }
-        .multi-select-actions { display: flex; gap: 0.75rem; }
-        .multi-select-bar .btn {
-            padding: 0.4rem 0.8rem;
-            font-size: 0.85rem;
-            text-transform: none;
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-        }
-        .multi-select-bar .btn:hover { background-color: rgba(255, 255, 255, 0.3); }
-        .multi-select-bar .btn.btn-danger { background-color: var(--lm-danger); border-color: var(--lm-danger); }
-        body.dark-mode .multi-select-bar .btn.btn-danger { background-color: var(--dm-danger); border-color: var(--dm-danger); }
-        .multi-select-bar .btn i { margin-right: 0.3em; }
-
-        /* --- Modal Styles --- */
-        .modal {
-            display: none; position: fixed; z-index: 1050;
-            left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            justify-content: center; align-items: center;
-            backdrop-filter: blur(3px); padding: 1rem;
-            animation: fadeIn 0.3s ease-out forwards;
-        }
-        .modal.show { display: flex; }
-        .modal.hide { animation: fadeOut 0.3s ease-in forwards; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-
-        .modal-content {
-            background-color: var(--lm-component-bg);
-            border-radius: var(--border-radius);
-            padding: 1.5rem 2rem;
-            width: 100%; max-width: 550px;
-            max-height: 90vh; overflow-y: auto;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transform: scale(0.95);
-            animation: scaleIn 0.3s ease-out forwards;
-        }
-        body.dark-mode .modal-content {
-            background-color: var(--dm-component-bg);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-        }
-        .modal.hide .modal-content { animation: scaleOut 0.3s ease-in forwards; }
-
-        @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes scaleOut { from { transform: scale(1); opacity: 1; } to { transform: scale(0.95); opacity: 0; } }
-
-        .modal-title { font-size: 1.4rem; margin-bottom: 1.5rem; text-align: center; font-weight: 600; color: inherit; }
-        .modal-footer { margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 0.75rem; }
-
-        /* Input Fields & Groups */
-        .input-group { margin-bottom: 1.25rem; }
-        .input-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--lm-muted-text); font-size: 0.9rem; }
-        body.dark-mode .input-group label { color: var(--dm-muted-text); }
-
-        .input-field, .filter-select, .sort-select, .priority-select, textarea.input-field {
-            width: 100%; padding: 0.75rem 1rem; border-radius: var(--border-radius);
-            border: 1px solid var(--lm-input-border); font-size: 1rem; outline: none;
-            background-color: var(--lm-input-bg); color: var(--lm-text); line-height: 1.5;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        textarea.input-field { min-height: 80px; resize: vertical; }
-        .input-field::placeholder { color: var(--lm-muted-text); opacity: 0.7; }
-        .input-field:focus, .filter-select:focus, .sort-select:focus, .priority-select:focus, textarea.input-field:focus {
-            border-color: var(--lm-primary); box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
-        }
-        body.dark-mode .input-field, body.dark-mode .filter-select, body.dark-mode .sort-select, body.dark-mode .priority-select, body.dark-mode textarea.input-field {
-            background-color: var(--dm-input-bg); color: var(--dm-text); border-color: var(--dm-input-border);
-        }
-         body.dark-mode .input-field::placeholder { color: var(--dm-muted-text); opacity: 0.7; }
-         body.dark-mode .input-field:focus, body.dark-mode .filter-select:focus, body.dark-mode .sort-select:focus, body.dark-mode .priority-select:focus, body.dark-mode textarea.input-field:focus {
-            border-color: var(--dm-primary); box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.25);
-        }
-        .flatpickr-input { cursor: pointer; background-color: var(--lm-input-bg) !important; } /* Override flatpickr style */
-        body.dark-mode .flatpickr-input { background-color: var(--dm-input-bg) !important; color: var(--dm-text); }
-
-        /* --- Button Styles --- */
-        .btn {
-            padding: 0.65rem 1.25rem; border: none; border-radius: var(--border-radius);
-            font-size: 0.95rem; cursor: pointer; font-weight: 600;
-            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-            text-transform: uppercase; letter-spacing: 0.5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            line-height: 1.5; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 0.5em;
-        }
-        .btn:hover { transform: translateY(-1px); box-shadow: 0 3px 6px rgba(0,0,0,0.15); }
-        .btn:active { transform: translateY(0); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .btn:disabled { background-color: #ccc !important; color: #888 !important; cursor: not-allowed; transform: none; box-shadow: none; opacity: 0.7; }
-        body.dark-mode .btn:disabled { background-color: #555 !important; color: #aaa !important; }
-
-        /* Light Mode Buttons */
-        .btn-primary { background-color: var(--lm-primary); color: white; }
-        .btn-primary:hover { background-color: #0056b3; }
-        .btn-secondary { background-color: var(--lm-secondary); color: white; }
-        .btn-secondary:hover { background-color: #5a6268; }
-        .btn-success { background-color: var(--lm-success); color: white; }
-        .btn-success:hover { background-color: #218838; }
-        .btn-danger { background-color: var(--lm-danger); color: white; }
-        .btn-danger:hover { background-color: #c82333; }
-        .btn-warning { background-color: var(--lm-warning); color: #212529; } /* Dark text on yellow */
-        .btn-warning:hover { background-color: #e0a800; }
-        .btn-info { background-color: var(--lm-info); color: white; }
-        .btn-info:hover { background-color: #138496; }
-        .btn-light { background-color: #f8f9fa; color: #212529; border: 1px solid #dee2e6; }
-        .btn-light:hover { background-color: #e2e6ea; }
-
-        /* Dark Mode Buttons */
-        body.dark-mode .btn-primary { background-color: var(--dm-primary); color: #1a1a1a; } /* Dark text */
-        body.dark-mode .btn-primary:hover { background-color: #79c0ff; }
-        body.dark-mode .btn-secondary { background-color: var(--dm-secondary); color: white; }
-        body.dark-mode .btn-secondary:hover { background-color: #a0a8b1; }
-        body.dark-mode .btn-success { background-color: var(--dm-success); color: #1a1a1a; } /* Dark text */
-        body.dark-mode .btn-success:hover { background-color: #78e084; }
-        body.dark-mode .btn-danger { background-color: var(--dm-danger); color: white; }
-        body.dark-mode .btn-danger:hover { background-color: #fa7069; }
-        body.dark-mode .btn-warning { background-color: var(--dm-warning); color: #1a1a1a; } /* Dark text */
-        body.dark-mode .btn-warning:hover { background-color: #f0c164; }
-        body.dark-mode .btn-info { background-color: var(--dm-info); color: #1a1a1a; } /* Dark text */
-        body.dark-mode .btn-info:hover { background-color: #94d0ff; }
-        body.dark-mode .btn-light { background-color: #4a4a4a; color: #e9ecef; border: 1px solid #555; }
-        body.dark-mode .btn-light:hover { background-color: #5a5a5a; }
-
-        /* --- Notifications & Undo --- */
-        #notificationArea {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            z-index: 2000;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0.5rem;
-        }
-        .notification {
-            background-color: var(--notification-bg);
-            color: var(--notification-text);
-            padding: 0.8rem 1.2rem;
-            border-radius: var(--border-radius);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            opacity: 0;
-            transform: translateX(100%);
-            animation: slideInNotification 0.5s forwards, fadeOutNotification 0.5s 4.5s forwards; /* Slide in, wait, fade out */
-            max-width: 350px;
-            font-size: 0.9rem;
-        }
-        .notification.persistent { animation: slideInNotification 0.5s forwards; /* Don't auto-fade */ }
-        .notification i { font-size: 1.1rem; }
-        .notification.info i { color: var(--lm-info); }
-        .notification.success i { color: var(--lm-success); }
-        .notification.warning i { color: var(--lm-warning); }
-        .notification.error i { color: var(--lm-danger); }
-        body.dark-mode .notification.info i { color: var(--dm-info); }
-        body.dark-mode .notification.success i { color: var(--dm-success); }
-        body.dark-mode .notification.warning i { color: var(--dm-warning); }
-        body.dark-mode .notification.error i { color: var(--dm-danger); }
-
-        .notification-content { flex-grow: 1; }
-        .notification-actions { display: flex; gap: 0.5rem; }
-        .notification .btn-undo, .notification .btn-close {
-            background: none; border: none; color: var(--notification-text);
-            opacity: 0.7; cursor: pointer; padding: 0.2rem; font-size: 0.8rem;
-            font-weight: bold; text-decoration: underline;
-        }
-        .notification .btn-undo:hover, .notification .btn-close:hover { opacity: 1; }
-
-        @keyframes slideInNotification {
-            to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes fadeOutNotification {
-            to { opacity: 0; transform: translateX(50%); }
-        }
-
-        /* --- Utility Classes --- */
-        .hidden { display: none !important; }
-        .visually-hidden {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            margin: -1px;
-            padding: 0;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            border: 0;
-        }
-
-        /* --- Responsive Adjustments --- */
-        @media (max-width: 768px) {
-            html { font-size: 15px; }
-            main { padding: 1rem; }
-            header { padding: 0.75rem 1rem; }
-            .header-actions { gap: 0.5rem; }
-            .header-time-tracker { font-size: 0.8rem; padding: 0.2rem 0.5rem; }
-            #header-timer-task { max-width: 100px; }
-            .stats-container { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; }
-            .stat-card p { font-size: 1.5rem; }
-            .action-buttons-container { flex-direction: column; align-items: stretch; }
-            .todo-header { flex-direction: column; align-items: flex-start; }
-            .filter-sort-controls { width: 100%; justify-content: space-between; }
-            .filter-select, .sort-select { flex-grow: 1; min-width: 120px; }
-            .task-item { flex-direction: column; align-items: stretch; gap: 0.5rem; padding: 0.75rem; }
-            .task-actions { flex-direction: row; justify-content: flex-end; margin-left: 0; padding-left: 0; margin-top: 0.5rem; }
-            .task-timer { justify-content: flex-end; } /* Move timer controls to right on mobile */
-            .multi-select-bar { padding: 0.5rem 1rem; flex-direction: column; align-items: stretch; gap: 0.5rem; }
-            .multi-select-actions { justify-content: space-around; }
-            .modal-content { padding: 1rem 1.2rem; }
-            #notificationArea { bottom: 0.5rem; right: 0.5rem; left: 0.5rem; align-items: stretch; }
-            .notification { max-width: none; }
-        }
-        @media (max-width: 480px) {
-            html { font-size: 14px; }
-            .logo { font-size: 1.3rem; }
-            .icon-btn { width: 34px; height: 34px; font-size: 1.1rem; }
-            .btn { padding: 0.6rem 1rem; font-size: 0.9rem; }
-            .modal-title { font-size: 1.2rem; }
-            .task-text { font-size: 0.95rem; }
-            .task-meta { font-size: 0.75rem; }
-            .task-notes { font-size: 0.8rem; }
-            .task-timer { font-size: 0.8rem; }
-        }
-
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo App</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.22.9/Babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .task-enter {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    .task-enter-active {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 300ms, transform 300ms;
+    }
+    .task-exit {
+      opacity: 1;
+    }
+    .task-exit-active {
+      opacity: 0;
+      transition: opacity 300ms;
+    }
+  </style>
 </head>
-<body>
-    <div class="app-container">
-        <header>
-            <div class="logo">TodoApp</div>
-            <div class="header-actions">
-                <div class="header-time-tracker" id="headerTimeTracker">
-                    <i class="fas fa-stopwatch"></i>
-                    <span id="header-timer-task">Task Name</span>:
-                    <span id="header-timer-display">00:00:00</span>
-                </div>
-                <button class="icon-btn" id="themeToggleBtn" aria-label="Toggle dark mode">
-                    <i class="fas fa-moon"></i> </button>
-                <button class="icon-btn" id="logoutBtn" aria-label="Logout">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
-            </div>
-        </header>
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useContext, createContext, useRef } = React;
 
-        <main>
-            <section class="stats-container" id="statsContainer" aria-label="Task Statistics">
-                <div class="stat-card">
-                    <h3>Today</h3>
-                    <p id="statToday">0/0</p>
-                </div>
-                <div class="stat-card">
-                    <h3>This Week</h3>
-                    <p id="statWeek">0/0</p>
-                </div>
-                <div class="stat-card">
-                    <h3>This Month</h3>
-                    <p id="statMonth">0/0</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Overall</h3>
-                    <p id="statOverall">0/0</p>
-                </div>
-            </section>
+    // Task Context
+    const TaskContext = createContext();
 
-            <section class="action-buttons-container" aria-label="Task Actions">
-                 <button class="btn btn-primary" id="addTaskBtn"><i class="fas fa-plus"></i> Add Task</button>
-                 <button class="btn btn-secondary" id="exportBtn"><i class="fas fa-file-export"></i> Export Tasks</button>
-                 <button class="btn btn-secondary" id="importBtn"><i class="fas fa-file-import"></i> Import Tasks</button>
-                 <input type="file" id="importFile" accept=".json" class="visually-hidden">
-            </section>
+    // Utility Functions
+    const generateId = () => crypto.randomUUID();
+    const saveToLocalStorage = (key, data) => localStorage.setItem(key, JSON.stringify(data));
+    const loadFromLocalStorage = (key) => JSON.parse(localStorage.getItem(key)) || [];
 
-            <section class="todo-section" aria-labelledby="todo-title-label">
-                <div class="todo-header">
-                    <h2 class="todo-title" id="todo-title-label">My Tasks</h2>
-                    <div class="filter-sort-controls">
-                        <select id="filterPriority" class="filter-select" aria-label="Filter by priority">
-                            <option value="all">All Priorities</option>
-                            <option value="high">High</option>
-                            <option value="medium">Medium</option>
-                            <option value="low">Low</option>
-                        </select>
-                        <select id="filterStatus" class="filter-select" aria-label="Filter by status">
-                            <option value="all">All Statuses</option>
-                            <option value="pending">Pending</option>
-                            <option value="completed">Completed</option>
-                        </select>
-                        <select id="sortTasks" class="sort-select" aria-label="Sort tasks">
-                            <option value="default">Default Order</option>
-                            <option value="dueDateAsc">Due Date (Oldest First)</option>
-                            <option value="dueDateDesc">Due Date (Newest First)</option>
-                            <option value="priority">Priority (High First)</option>
-                            <option value="nameAsc">Name (A-Z)</option>
-                        </select>
-                    </div>
-                </div>
+    // Custom Hook for Tasks
+    const useTasks = () => {
+      const [tasks, setTasks] = useState(loadFromLocalStorage('tasks'));
+      const [lastAction, setLastAction] = useState(null);
 
-                <ul id="taskList">
-                    </ul>
+      useEffect(() => {
+        saveToLocalStorage('tasks', tasks);
+      }, [tasks]);
 
-                <div class="multi-select-bar" id="multiSelectBar">
-                    <div class="multi-select-info">
-                        <span id="selectedCount">0</span> tasks selected
-                    </div>
-                    <div class="multi-select-actions">
-                        <button class="btn btn-success" id="multiCompleteBtn"><i class="fas fa-check-double"></i> Mark Complete</button>
-                        <button class="btn btn-danger" id="multiDeleteBtn"><i class="fas fa-trash-alt"></i> Delete</button>
-                        <button class="btn btn-light" id="multiDeselectBtn"><i class="fas fa-times"></i> Deselect All</button>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
+      const addTask = (task) => {
+        const newTask = { ...task, id: generateId(), completed: false, createdAt: new Date().toISOString() };
+        setTasks([...tasks, newTask]);
+        setLastAction({ type: 'add', task: newTask });
+      };
 
-    <div class="modal" id="taskModal" aria-labelledby="modalTitle" aria-modal="true" role="dialog">
-        <div class="modal-content">
-            <h2 class="modal-title" id="modalTitle">Add New Task</h2>
-            <form id="taskForm">
-                <input type="hidden" id="taskId"> <div class="input-group">
-                    <label for="taskText">Task Name</label>
-                    <input type="text" id="taskText" class="input-field" placeholder="e.g., Finish project report" required>
-                </div>
-                <div class="input-group">
-                    <label for="taskNotes">Notes / Description</label>
-                    <textarea id="taskNotes" class="input-field" placeholder="Add details or context..."></textarea>
-                </div>
-                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <div class="input-group" style="flex: 1; min-width: 150px;">
-                        <label for="taskDueDate">Due Date</label>
-                        <input type="text" id="taskDueDate" class="input-field" placeholder="Select date & time">
-                    </div>
-                    <div class="input-group" style="flex: 1; min-width: 150px;">
-                        <label for="taskPriority">Priority</label>
-                        <select id="taskPriority" class="priority-select input-field">
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
-                            <option value="low">Low</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="closeModalBtn">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="saveTaskBtn">Save Task</button>
-                </div>
-            </form>
+      const updateTask = (id, updates) => {
+        const oldTask = tasks.find((t) => t.id === id);
+        setTasks(tasks.map((t) => (t.id === id ? { ...t, ...updates } : t)));
+        setLastAction({ type: 'update', task: oldTask, id });
+      };
+
+      const deleteTask = (id) => {
+        const task = tasks.find((t) => t.id === id);
+        setTasks(tasks.filter((t) => t.id !== id));
+        setLastAction({ type: 'delete', task, id });
+      };
+
+      const undoLastAction = () => {
+        if (!lastAction) return;
+        if (lastAction.type === 'add') {
+          setTasks(tasks.filter((t) => t.id !== lastAction.task.id));
+        } else if (lastAction.type === 'delete') {
+          setTasks([...tasks, lastAction.task]);
+        } else if (lastAction.type === 'update') {
+          setTasks(tasks.map((t) => (t.id === lastAction.id ? lastAction.task : t)));
+        }
+        setLastAction(null);
+      };
+
+      const batchDelete = (ids) => {
+        const deletedTasks = tasks.filter((t) => ids.includes(t.id));
+        setTasks(tasks.filter((t) => !ids.includes(t.id)));
+        setLastAction({ type: 'batchDelete', tasks: deletedTasks });
+      };
+
+      const batchComplete = (ids) => {
+        const updatedTasks = tasks.map((t) => (ids.includes(t.id) ? { ...t, completed: true } : t));
+        setTasks(updatedTasks);
+        setLastAction({ type: 'batchComplete', ids });
+      };
+
+      const reorderTasks = (reorderedTasks) => {
+        setTasks(reorderedTasks);
+      };
+
+      return { tasks, addTask, updateTask, deleteTask, undoLastAction, batchDelete, batchComplete, reorderTasks };
+    };
+
+    // Task Provider
+    const TaskProvider = ({ children }) => {
+      const taskMethods = useTasks();
+      return <TaskContext.Provider value={taskMethods}>{children}</TaskContext.Provider>;
+    };
+
+    // Auth Context
+    const AuthContext = createContext();
+
+    const AuthProvider = ({ children }) => {
+      const [user, setUser] = useState(null);
+
+      const login = (email, password) => {
+        if (email && password) {
+          setUser({ email });
+          saveToLocalStorage('user', { email });
+        }
+      };
+
+      const logout = () => {
+        setUser(null);
+        localStorage.removeItem('user');
+      };
+
+      useEffect(() => {
+        const savedUser = loadFromLocalStorage('user');
+        if (savedUser.email) setUser(savedUser);
+      }, []);
+
+      return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>;
+    };
+
+    // Task Form Component
+    const TaskForm = () => {
+      const { addTask } = useContext(TaskContext);
+      const [title, setTitle] = useState('');
+      const [description, setDescription] = useState('');
+      const [dueDate, setDueDate] = useState('');
+      const [category, setCategory] = useState('Work');
+      const [priority, setPriority] = useState('Medium');
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!title.trim()) return;
+        addTask({ title, description, dueDate, category, priority });
+        setTitle('');
+        setDescription('');
+        setDueDate('');
+        setCategory('Work');
+        setPriority('Medium');
+      };
+
+      return (
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Add Task</h2>
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Task Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+            />
+            <textarea
+              placeholder="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+            />
+            <input
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+            />
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+            >
+              <option>Work</option>
+              <option>Personal</option>
+              <option>Other</option>
+            </select>
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+              className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+            >
+              <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
+            </select>
+            <button
+              onClick={handleSubmit}
+              className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            >
+              Add Task
+            </button>
+          </div>
         </div>
-    </div>
-
-    <div id="notificationArea"></div>
-
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- DOM Elements ---
-            const body = document.body;
-            const themeToggleBtn = document.getElementById('themeToggleBtn');
-            const logoutBtn = document.getElementById('logoutBtn'); // Placeholder
-            const headerTimeTracker = document.getElementById('headerTimeTracker');
-            const headerTimerTask = document.getElementById('header-timer-task');
-            const headerTimerDisplay = document.getElementById('header-timer-display');
-
-            const stats = {
-                today: document.getElementById('statToday'),
-                week: document.getElementById('statWeek'),
-                month: document.getElementById('statMonth'),
-                overall: document.getElementById('statOverall'),
-            };
-
-            const addTaskBtn = document.getElementById('addTaskBtn');
-            const exportBtn = document.getElementById('exportBtn');
-            const importBtn = document.getElementById('importBtn');
-            const importFile = document.getElementById('importFile');
-
-            const filterPriority = document.getElementById('filterPriority');
-            const filterStatus = document.getElementById('filterStatus');
-            const sortTasks = document.getElementById('sortTasks');
-            const taskList = document.getElementById('taskList');
-
-            const multiSelectBar = document.getElementById('multiSelectBar');
-            const selectedCount = document.getElementById('selectedCount');
-            const multiCompleteBtn = document.getElementById('multiCompleteBtn');
-            const multiDeleteBtn = document.getElementById('multiDeleteBtn');
-            const multiDeselectBtn = document.getElementById('multiDeselectBtn');
-
-            const taskModal = document.getElementById('taskModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const taskForm = document.getElementById('taskForm');
-            const taskIdInput = document.getElementById('taskId');
-            const taskTextInput = document.getElementById('taskText');
-            const taskNotesInput = document.getElementById('taskNotes');
-            const taskDueDateInput = document.getElementById('taskDueDate');
-            const taskPriorityInput = document.getElementById('taskPriority');
-            const closeModalBtn = document.getElementById('closeModalBtn');
-            const saveTaskBtn = document.getElementById('saveTaskBtn');
-
-            const notificationArea = document.getElementById('notificationArea');
-
-            // --- State Variables ---
-            let todos = []; // Main array holding task objects
-            let selectedTaskIds = new Set(); // Set to store IDs of selected tasks
-            let editMode = false; // Flag for modal state
-            let currentEditId = null; // ID of task being edited
-            let undoAction = null; // Stores the last action for undo { type: 'delete'/'complete'/'incomplete', data: task/taskId }
-            let activeTimerInterval = null; // Holds the interval ID for the currently running timer
-            let activeTimerTaskId = null; // Holds the ID of the task whose timer is running
-            let sortableInstance = null; // Holds the SortableJS instance
-
-            // --- Initialization ---
-            initializeTheme();
-            initializeFlatpickr();
-            loadTodos();
-            initializeSortable();
-            renderAll();
-            checkDueDates(); // Initial check
-            setInterval(checkDueDates, 60 * 60 * 1000); // Check due dates every hour
-            setInterval(resetDailyTimers, 60 * 1000); // Check for daily reset every minute
-
-            // --- Theme Management ---
-            function initializeTheme() {
-                const savedTheme = localStorage.getItem('theme') || 'light';
-                setTheme(savedTheme);
-                themeToggleBtn.addEventListener('click', toggleTheme);
-            }
-
-            function setTheme(theme) {
-                body.classList.remove('light-mode', 'dark-mode');
-                body.classList.add(theme + '-mode');
-                localStorage.setItem('theme', theme);
-                // Update theme toggle button icon
-                const icon = theme === 'dark' ? 'fa-sun' : 'fa-moon';
-                themeToggleBtn.innerHTML = `<i class="fas ${icon}"></i>`;
-                themeToggleBtn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-                 // Update flatpickr theme
-                const fpInstances = document.querySelectorAll('.flatpickr-input');
-                fpInstances.forEach(fp => {
-                    if (fp._flatpickr) { // Check if flatpickr is initialized
-                        fp._flatpickr.set('theme', theme === 'dark' ? 'dark' : 'light');
-                    }
-                });
-            }
-
-            function toggleTheme() {
-                const currentTheme = localStorage.getItem('theme') || 'light';
-                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                setTheme(newTheme);
-            }
-
-             // --- Flatpickr Initialization ---
-             function initializeFlatpickr() {
-                 flatpickr(taskDueDateInput, {
-                     enableTime: true,
-                     dateFormat: "Y-m-d H:i",
-                     altInput: true, // Human-readable format
-                     altFormat: "M j, Y h:i K", // e.g., Apr 17, 2025 02:30 AM
-                     theme: localStorage.getItem('theme') === 'dark' ? 'dark' : 'light', // Match current theme
-                     minuteIncrement: 15,
-                 });
-             }
-
-            // --- Data Persistence (LocalStorage) ---
-            function saveTodos() {
-                // Before saving, ensure any active timer's elapsed time is captured
-                stopAndRecordActiveTimer(false); // Don't clear active timer ID here
-
-                localStorage.setItem('todos', JSON.stringify(todos));
-                localStorage.setItem('lastTimerResetDate', localStorage.getItem('lastTimerResetDate') || new Date().toISOString().split('T')[0]); // Store reset date if not present
-
-                // Restart timer if it was running
-                if (activeTimerTaskId) {
-                    const task = todos.find(t => t.id === activeTimerTaskId);
-                    if (task && task.timerRunning) {
-                        startTimerInterval(task);
-                    }
-                }
-                console.log("Todos saved:", todos);
-            }
-
-            function loadTodos() {
-                const savedTodos = localStorage.getItem('todos');
-                if (savedTodos) {
-                    try {
-                        todos = JSON.parse(savedTodos).map(todo => ({
-                            ...todo,
-                            // Ensure necessary properties exist, provide defaults if missing
-                            id: todo.id || generateId(),
-                            text: todo.text || '',
-                            completed: todo.completed || false,
-                            priority: todo.priority || 'medium',
-                            dueDate: todo.dueDate || null,
-                            notes: todo.notes || '',
-                            timeTracked: typeof todo.timeTracked === 'number' ? todo.timeTracked : 0, // Ensure it's a number
-                            timerRunning: todo.timerRunning || false,
-                            timerStartTime: todo.timerStartTime || null,
-                            createdAt: todo.createdAt || new Date().toISOString() // Add createdAt if missing
-                        }));
-
-                        // Find if any timer should be running on load
-                        const runningTask = todos.find(t => t.timerRunning);
-                        if (runningTask) {
-                            activeTimerTaskId = runningTask.id;
-                            // Recalculate elapsed time since page was closed
-                            if (runningTask.timerStartTime) {
-                                const elapsedSinceLoad = (Date.now() - new Date(runningTask.timerStartTime).getTime()) / 1000;
-                                runningTask.timeTracked += elapsedSinceLoad;
-                                runningTask.timerStartTime = Date.now(); // Reset start time to now
-                            }
-                            startTimerInterval(runningTask); // Start the visual timer
-                        }
-
-                    } catch (e) {
-                        console.error("Error loading todos:", e);
-                        todos = [];
-                        localStorage.removeItem('todos'); // Clear corrupted data
-                        addNotification("Error loading tasks. Data might be corrupted.", "error");
-                    }
-                } else {
-                    todos = [];
-                }
-                // Ensure selectedTaskIds is cleared on load
-                selectedTaskIds.clear();
-                updateMultiSelectBar();
-                console.log("Todos loaded:", todos);
-            }
-
-            // --- Core Task Functions ---
-            function generateId() {
-                return '_' + Math.random().toString(36).substr(2, 9);
-            }
-
-            function addTask(text, priority, dueDate, notes) {
-                const newTask = {
-                    id: generateId(),
-                    text: text.trim(),
-                    completed: false,
-                    priority: priority,
-                    dueDate: dueDate || null,
-                    notes: notes.trim(),
-                    timeTracked: 0,
-                    timerRunning: false,
-                    timerStartTime: null,
-                    createdAt: new Date().toISOString()
-                };
-                todos.push(newTask);
-                saveTodos();
-                renderAll();
-                addNotification(`Task "${truncate(newTask.text)}" added.`, "success");
-            }
-
-            function editTask(id, newText, newPriority, newDueDate, newNotes) {
-                const taskIndex = todos.findIndex(todo => todo.id === id);
-                if (taskIndex > -1) {
-                    const oldTask = { ...todos[taskIndex] }; // Copy for undo
-                    const updatedTask = {
-                        ...todos[taskIndex],
-                        text: newText.trim(),
-                        priority: newPriority,
-                        dueDate: newDueDate || null,
-                        notes: newNotes.trim(),
-                    };
-                    todos[taskIndex] = updatedTask;
-                    // Update undo action if needed (more complex for edits)
-                    saveTodos();
-                    renderAll(); // Re-render to reflect changes
-                    addNotification(`Task "${truncate(updatedTask.text)}" updated.`, "info");
-                }
-            }
-
-            function deleteTask(id) {
-                const taskIndex = todos.findIndex(todo => todo.id === id);
-                if (taskIndex > -1) {
-                    const deletedTask = todos[taskIndex];
-
-                    // Stop timer if running on the deleted task
-                    if (deletedTask.id === activeTimerTaskId) {
-                        stopAndRecordActiveTimer(true); // Stop and clear active timer
-                    }
-
-                    todos.splice(taskIndex, 1);
-                    selectedTaskIds.delete(id); // Remove from selection if present
-                    undoAction = { type: 'delete', data: deletedTask }; // Store for undo
-                    saveTodos();
-                    renderAll();
-                    showUndoNotification(`Task "${truncate(deletedTask.text)}" deleted.`);
-                }
-            }
-
-            function toggleComplete(id) {
-                const taskIndex = todos.findIndex(todo => todo.id === id);
-                if (taskIndex > -1) {
-                    const task = todos[taskIndex];
-                    const wasCompleted = task.completed;
-                    task.completed = !task.completed;
-
-                    // Stop timer if completing a task with a running timer
-                    if (task.completed && task.id === activeTimerTaskId) {
-                        stopAndRecordActiveTimer(true); // Stop and clear active timer
-                    }
-
-                    undoAction = { type: wasCompleted ? 'incomplete' : 'complete', data: id, previousState: wasCompleted };
-                    saveTodos();
-                    renderAll(); // Re-render specific task or all
-                    showUndoNotification(`Task "${truncate(task.text)}" marked as ${task.completed ? 'complete' : 'pending'}.`);
-                }
-            }
-
-            function deleteMultipleTasks(ids) {
-                const deletedTasks = [];
-                ids.forEach(id => {
-                    const taskIndex = todos.findIndex(todo => todo.id === id);
-                    if (taskIndex > -1) {
-                        const task = todos[taskIndex];
-                        // Stop timer if running on a deleted task
-                         if (task.id === activeTimerTaskId) {
-                            stopAndRecordActiveTimer(true); // Stop and clear active timer
-                        }
-                        deletedTasks.push(task);
-                        todos.splice(taskIndex, 1);
-                    }
-                });
-
-                if (deletedTasks.length > 0) {
-                    selectedTaskIds.clear();
-                    undoAction = { type: 'deleteMultiple', data: deletedTasks }; // Store multiple for undo
-                    saveTodos();
-                    renderAll();
-                    showUndoNotification(`${deletedTasks.length} tasks deleted.`);
-                }
-            }
-
-             function completeMultipleTasks(ids) {
-                let completedCount = 0;
-                const originalStates = []; // Store original states for undo
-
-                ids.forEach(id => {
-                    const taskIndex = todos.findIndex(todo => todo.id === id);
-                    if (taskIndex > -1 && !todos[taskIndex].completed) {
-                        const task = todos[taskIndex];
-                        originalStates.push({ id: task.id, completed: task.completed }); // Store original state
-                        task.completed = true;
-                        completedCount++;
-
-                        // Stop timer if completing a task with running timer
-                        if (task.id === activeTimerTaskId) {
-                            stopAndRecordActiveTimer(true); // Stop and clear active timer
-                        }
-                    }
-                });
-
-                if (completedCount > 0) {
-                    selectedTaskIds.clear(); // Clear selection after action
-                    undoAction = { type: 'completeMultiple', data: originalStates }; // Store original states for undo
-                    saveTodos();
-                    renderAll();
-                    showUndoNotification(`${completedCount} tasks marked as complete.`);
-                } else if (ids.size > 0) {
-                     addNotification("Selected tasks are already complete.", "info");
-                     selectedTaskIds.clear(); // Still clear selection
-                     updateMultiSelectBar();
-                }
-             }
-
-            // --- Rendering Functions ---
-            function renderAll() {
-                renderTaskList();
-                renderStats();
-                updateMultiSelectBar(); // Ensure bar is updated after render
-                // Update header timer visibility based on activeTimerTaskId
-                updateHeaderTimerVisibility();
-            }
-
-            function renderTaskList() {
-                taskList.innerHTML = ''; // Clear existing list
-                const filteredAndSortedTodos = getFilteredAndSortedTodos();
-
-                if (filteredAndSortedTodos.length === 0) {
-                    taskList.innerHTML = ''; // Handled by CSS :empty pseudo-class
-                    return;
-                }
-
-                filteredAndSortedTodos.forEach(todo => {
-                    const taskItem = createTaskElement(todo);
-                    taskList.appendChild(taskItem);
-                });
-                 // Re-initialize sortable after rendering
-                initializeSortable();
-            }
-
-            function createTaskElement(todo) {
-                const li = document.createElement('li');
-                li.className = 'task-item';
-                li.dataset.id = todo.id;
-                li.setAttribute('draggable', true); // Make item draggable
-
-                if (todo.completed) li.classList.add('completed');
-                if (selectedTaskIds.has(todo.id)) li.classList.add('selected');
-
-                // --- Task Content ---
-                const contentDiv = document.createElement('div');
-                contentDiv.className = 'task-content';
-
-                // Main Info (Text + Priority)
-                const mainInfoDiv = document.createElement('div');
-                mainInfoDiv.className = 'task-main-info';
-
-                const taskTextSpan = document.createElement('span');
-                taskTextSpan.className = 'task-text';
-                taskTextSpan.textContent = todo.text;
-                mainInfoDiv.appendChild(taskTextSpan);
-
-                contentDiv.appendChild(mainInfoDiv);
-
-                 // Meta Info (Due Date + Priority Tag)
-                 const metaDiv = document.createElement('div');
-                 metaDiv.className = 'task-meta';
-
-                 // Due Date and Alert
-                 if (todo.dueDate) {
-                     const dueDateSpan = document.createElement('span');
-                     const dateIcon = document.createElement('i');
-                     dateIcon.className = 'far fa-calendar-alt';
-                     dueDateSpan.appendChild(dateIcon);
-
-                     const dateText = document.createTextNode(` ${formatDate(todo.dueDate)}`);
-                     dueDateSpan.appendChild(dateText);
-
-                     const alertSpan = createDueDateAlert(todo.dueDate, todo.completed);
-                     if (alertSpan) {
-                         dueDateSpan.appendChild(document.createTextNode(' ')); // Add space before alert
-                         dueDateSpan.appendChild(alertSpan);
-                     }
-                     metaDiv.appendChild(dueDateSpan);
-                 }
-
-                 // Priority Tag
-                 const prioritySpan = document.createElement('span');
-                 const priorityIcon = document.createElement('i');
-                 priorityIcon.className = 'fas fa-flag'; // Example icon
-                 prioritySpan.appendChild(priorityIcon);
-                 const priorityTag = document.createElement('span');
-                 priorityTag.className = `priority-tag ${todo.priority}`;
-                 priorityTag.textContent = todo.priority;
-                 prioritySpan.appendChild(priorityTag);
-                 metaDiv.appendChild(prioritySpan);
-
-                 contentDiv.appendChild(metaDiv);
-
-                // Notes (Expandable)
-                if (todo.notes) {
-                    const notesP = document.createElement('p');
-                    notesP.className = 'task-notes';
-                    notesP.textContent = todo.notes;
-                    notesP.title = "Click to expand/collapse notes";
-                    notesP.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Prevent triggering task selection
-                        notesP.classList.toggle('expanded');
-                    });
-                    contentDiv.appendChild(notesP);
-                }
-
-                // Time Tracker
-                const timerDiv = document.createElement('div');
-                timerDiv.className = 'task-timer';
-
-                const timerBtn = document.createElement('button');
-                timerBtn.className = 'task-timer-btn';
-                timerBtn.innerHTML = `<i class="fas ${todo.timerRunning ? 'fa-pause-circle' : 'fa-play-circle'}"></i>`;
-                timerBtn.setAttribute('aria-label', todo.timerRunning ? 'Pause timer' : 'Start timer');
-                timerBtn.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent task selection
-                    toggleTimer(todo.id);
-                });
-
-                const timerDisplay = document.createElement('span');
-                timerDisplay.className = 'task-timer-display';
-                timerDisplay.dataset.taskId = todo.id; // Link display to task ID
-                timerDisplay.textContent = formatTime(todo.timeTracked);
-
-                timerDiv.appendChild(timerBtn);
-                timerDiv.appendChild(timerDisplay);
-                contentDiv.appendChild(timerDiv);
-
-                li.appendChild(contentDiv); // Add content div to list item
-
-                // --- Task Actions (Complete, Edit, Delete) ---
-                const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'task-actions';
-
-                // Complete Button
-                const completeBtn = document.createElement('button');
-                completeBtn.className = 'task-action-btn complete-btn';
-                completeBtn.innerHTML = `<i class="fas ${todo.completed ? 'fa-undo-alt' : 'fa-check-circle'}"></i>`; // Undo or Check icon
-                completeBtn.setAttribute('aria-label', todo.completed ? 'Mark as pending' : 'Mark as complete');
-                completeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent task selection
-                    toggleComplete(todo.id);
-                });
-
-                // Edit Button
-                const editBtn = document.createElement('button');
-                editBtn.className = 'task-action-btn edit-btn';
-                editBtn.innerHTML = '<i class="fas fa-pencil-alt"></i>';
-                editBtn.setAttribute('aria-label', 'Edit task');
-                editBtn.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent task selection
-                    openModalForEdit(todo.id);
-                });
-
-                // Delete Button
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'task-action-btn delete-btn';
-                deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-                deleteBtn.setAttribute('aria-label', 'Delete task');
-                deleteBtn.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent task selection
-                    if (confirm(`Are you sure you want to delete task "${truncate(todo.text)}"?`)) {
-                        deleteTask(todo.id);
-                    }
-                });
-
-                actionsDiv.appendChild(completeBtn);
-                actionsDiv.appendChild(editBtn);
-                actionsDiv.appendChild(deleteBtn);
-                li.appendChild(actionsDiv); // Add actions div to list item
-
-                // --- Event Listener for Task Selection ---
-                li.addEventListener('click', (e) => {
-                    // Only select if the click is not on a button or the notes
-                    if (!e.target.closest('button') && !e.target.closest('.task-notes')) {
-                        toggleTaskSelection(todo.id);
-                    }
-                });
-
-                return li;
-            }
-
-            function createDueDateAlert(dueDateStr, completed) {
-                if (!dueDateStr || completed) return null; // No alert if no due date or completed
-
-                const dueDate = new Date(dueDateStr);
-                const now = new Date();
-                const twoDaysFromNow = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
-
-                const alertSpan = document.createElement('span');
-                alertSpan.className = 'due-date-alert';
-
-                if (dueDate < now) {
-                    alertSpan.classList.add('expired');
-                    alertSpan.textContent = 'Expired';
-                } else if (dueDate <= twoDaysFromNow) {
-                    alertSpan.classList.add('upcoming');
-                    alertSpan.textContent = 'Due Soon';
-                } else {
-                    // Optionally show an "On Time" indicator, or return null for no alert
-                     alertSpan.classList.add('on-time');
-                     alertSpan.textContent = 'On Time';
-                    // return null; // Uncomment this line if you don't want an "On Time" alert
-                }
-                return alertSpan;
-            }
-
-            function renderStats() {
-                const now = new Date();
-                const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                const weekStart = new Date(now.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1))); // Adjust to start week on Monday
-                weekStart.setHours(0,0,0,0);
-                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-
-                const calcStats = (filterFn) => {
-                    const relevantTodos = todos.filter(filterFn);
-                    const completed = relevantTodos.filter(t => t.completed).length;
-                    return `${completed}/${relevantTodos.length}`;
-                };
-
-                stats.today.textContent = calcStats(t => t.dueDate && new Date(t.dueDate) >= todayStart);
-                stats.week.textContent = calcStats(t => t.dueDate && new Date(t.dueDate) >= weekStart);
-                stats.month.textContent = calcStats(t => t.dueDate && new Date(t.dueDate) >= monthStart);
-                stats.overall.textContent = calcStats(() => true); // All todos
-            }
-
-            // --- Filtering and Sorting ---
-            function getFilteredAndSortedTodos() {
-                let result = [...todos]; // Create a copy
-
-                // Filter by Priority
-                const priority = filterPriority.value;
-                if (priority !== 'all') {
-                    result = result.filter(todo => todo.priority === priority);
-                }
-
-                // Filter by Status
-                const status = filterStatus.value;
-                if (status !== 'all') {
-                    const isCompleted = status === 'completed';
-                    result = result.filter(todo => todo.completed === isCompleted);
-                }
-
-                // Sort
-                const sortBy = sortTasks.value;
-                const priorityOrder = { high: 1, medium: 2, low: 3 };
-
-                result.sort((a, b) => {
-                    switch (sortBy) {
-                        case 'dueDateAsc':
-                            // Handle null due dates (place them last)
-                            if (!a.dueDate && !b.dueDate) return 0;
-                            if (!a.dueDate) return 1;
-                            if (!b.dueDate) return -1;
-                            return new Date(a.dueDate) - new Date(b.dueDate);
-                        case 'dueDateDesc':
-                            // Handle null due dates (place them last)
-                            if (!a.dueDate && !b.dueDate) return 0;
-                            if (!a.dueDate) return 1;
-                            if (!b.dueDate) return -1;
-                            return new Date(b.dueDate) - new Date(a.dueDate);
-                        case 'priority':
-                            return (priorityOrder[a.priority] || 4) - (priorityOrder[b.priority] || 4);
-                        case 'nameAsc':
-                            return a.text.localeCompare(b.text);
-                        case 'default': // Use original order (or createdAt if available)
-                             return new Date(a.createdAt) - new Date(b.createdAt);
-                        default:
-                            return 0;
-                    }
-                });
-
-                return result;
-            }
-
-            // --- Modal Handling ---
-            function openModalForAdd() {
-                editMode = false;
-                currentEditId = null;
-                modalTitle.textContent = 'Add New Task';
-                saveTaskBtn.textContent = 'Add Task';
-                taskForm.reset(); // Clear form fields
-                // Reset flatpickr
-                 const fp = taskDueDateInput._flatpickr;
-                 if (fp) fp.clear();
-                taskPriorityInput.value = 'medium'; // Default priority
-                taskModal.classList.add('show');
-                taskTextInput.focus();
-            }
-
-            function openModalForEdit(id) {
-                const task = todos.find(todo => todo.id === id);
-                if (task) {
-                    editMode = true;
-                    currentEditId = id;
-                    modalTitle.textContent = 'Edit Task';
-                    saveTaskBtn.textContent = 'Save Changes';
-                    taskIdInput.value = task.id;
-                    taskTextInput.value = task.text;
-                    taskNotesInput.value = task.notes || '';
-                    taskPriorityInput.value = task.priority;
-                    // Set flatpickr date
-                    const fp = taskDueDateInput._flatpickr;
-                    if (fp) fp.setDate(task.dueDate, false); // Set date without triggering change event
-
-                    taskModal.classList.add('show');
-                    taskTextInput.focus();
-                }
-            }
-
-            function closeModal() {
-                taskModal.classList.add('hide');
-                // Wait for fade-out animation before fully hiding
-                setTimeout(() => {
-                    taskModal.classList.remove('show', 'hide');
-                    taskForm.reset(); // Reset form after closing
-                    editMode = false;
-                    currentEditId = null;
-                }, 300); // Match animation duration
-            }
-
-            function handleFormSubmit(e) {
-                e.preventDefault();
-                const text = taskTextInput.value.trim();
-                const notes = taskNotesInput.value.trim();
-                const priority = taskPriorityInput.value;
-                const dueDate = taskDueDateInput.value ? taskDueDateInput._flatpickr.selectedDates[0].toISOString() : null; // Get ISO string or null
-
-                if (!text) {
-                    addNotification("Task name cannot be empty.", "warning");
-                    taskTextInput.focus();
-                    return;
-                }
-
-                if (editMode && currentEditId) {
-                    editTask(currentEditId, text, priority, dueDate, notes);
-                } else {
-                    addTask(text, priority, dueDate, notes);
-                }
-                closeModal();
-            }
-
-            // --- Multi-Select Functionality ---
-            function toggleTaskSelection(id) {
-                const taskItem = taskList.querySelector(`.task-item[data-id="${id}"]`);
-                if (!taskItem) return;
-
-                if (selectedTaskIds.has(id)) {
-                    selectedTaskIds.delete(id);
-                    taskItem.classList.remove('selected');
-                } else {
-                    selectedTaskIds.add(id);
-                    taskItem.classList.add('selected');
-                }
-                updateMultiSelectBar();
-            }
-
-            function updateMultiSelectBar() {
-                const count = selectedTaskIds.size;
-                if (count > 0) {
-                    selectedCount.textContent = count;
-                    multiSelectBar.classList.add('visible');
-                    // Disable complete button if all selected are already complete
-                    const allSelectedComplete = [...selectedTaskIds].every(id => {
-                        const task = todos.find(t => t.id === id);
-                        return task && task.completed;
-                    });
-                    multiCompleteBtn.disabled = allSelectedComplete;
-
-                } else {
-                    multiSelectBar.classList.remove('visible');
-                }
-            }
-
-            function deselectAllTasks() {
-                selectedTaskIds.forEach(id => {
-                    const taskItem = taskList.querySelector(`.task-item[data-id="${id}"]`);
-                    if (taskItem) taskItem.classList.remove('selected');
-                });
-                selectedTaskIds.clear();
-                updateMultiSelectBar();
-            }
-
-            // --- Undo Functionality ---
-            function showUndoNotification(message) {
-                // Remove previous undo notification if exists
-                const existingUndo = notificationArea.querySelector('.undo-notification');
-                if (existingUndo) existingUndo.remove();
-
-                const notification = createNotificationElement(message, 'info', true); // Persistent
-                notification.classList.add('undo-notification');
-
-                const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'notification-actions';
-
-                const undoButton = document.createElement('button');
-                undoButton.className = 'btn-undo';
-                undoButton.textContent = 'Undo';
-                undoButton.onclick = () => {
-                    performUndo();
-                    notification.remove(); // Remove notification after undo
-                };
-
-                const closeButton = document.createElement('button');
-                closeButton.className = 'btn-close';
-                closeButton.innerHTML = '&times;'; // Close symbol
-                closeButton.setAttribute('aria-label', 'Dismiss notification');
-                closeButton.onclick = () => {
-                    notification.style.animation = 'fadeOutNotification 0.5s forwards'; // Fade out on close
-                    setTimeout(() => notification.remove(), 500);
-                    undoAction = null; // Clear undo action if dismissed
-                };
-
-                actionsDiv.appendChild(undoButton);
-                actionsDiv.appendChild(closeButton);
-                notification.appendChild(actionsDiv);
-                notificationArea.appendChild(notification);
-
-                 // Auto-clear undo action after a delay if not used
-                 setTimeout(() => {
-                     if (undoAction && notification.parentNode) { // Check if notification still exists
-                         undoAction = null;
-                         console.log("Undo action expired.");
-                     }
-                 }, 10000); // 10 seconds timeout for undo
-            }
-
-            function performUndo() {
-                if (!undoAction) return;
-
-                switch (undoAction.type) {
-                    case 'delete':
-                        todos.push(undoAction.data); // Add task back
-                        break;
-                    case 'deleteMultiple':
-                         undoAction.data.forEach(task => todos.push(task)); // Add tasks back
-                         break;
-                    case 'complete':
-                    case 'incomplete':
-                        const taskIndex = todos.findIndex(t => t.id === undoAction.data);
-                        if (taskIndex > -1) {
-                            todos[taskIndex].completed = undoAction.previousState; // Revert completion state
-                        }
-                        break;
-                    case 'completeMultiple':
-                         undoAction.data.forEach(originalState => {
-                             const taskIdx = todos.findIndex(t => t.id === originalState.id);
-                             if (taskIdx > -1) {
-                                 todos[taskIdx].completed = originalState.completed; // Revert state
-                             }
-                         });
-                         break;
-                }
-                undoAction = null; // Clear undo action after performing
-                saveTodos();
-                renderAll();
-                addNotification("Action undone.", "success");
-            }
-
-            // --- Import / Export ---
-            function exportTasks() {
-                if (todos.length === 0) {
-                    addNotification("No tasks to export.", "warning");
-                    return;
-                }
-                const jsonString = JSON.stringify(todos, null, 2); // Pretty print JSON
-                const blob = new Blob([jsonString], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                const timestamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-                a.download = `todos_${timestamp}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                addNotification("Tasks exported successfully.", "success");
-            }
-
-            function importTasks() {
-                importFile.click(); // Trigger file input
-            }
-
-            function handleFileImport(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                if (file.type !== 'application/json') {
-                    addNotification("Invalid file type. Please select a JSON file.", "error");
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        const importedData = JSON.parse(e.target.result);
-                        if (!Array.isArray(importedData)) {
-                            throw new Error("Invalid JSON format: Expected an array.");
-                        }
-
-                        // Basic validation of imported tasks
-                        const validTodos = importedData.filter(item => item && item.id && typeof item.text === 'string')
-                           .map(item => ({ // Ensure all required fields exist with defaults
-                                id: item.id,
-                                text: item.text,
-                                completed: item.completed || false,
-                                priority: item.priority || 'medium',
-                                dueDate: item.dueDate || null,
-                                notes: item.notes || '',
-                                timeTracked: typeof item.timeTracked === 'number' ? item.timeTracked : 0,
-                                timerRunning: false, // Ensure timers are not running on import
-                                timerStartTime: null,
-                                createdAt: item.createdAt || new Date().toISOString()
-                           }));
-
-                        if (validTodos.length === 0 && importedData.length > 0) {
-                             throw new Error("No valid tasks found in the file.");
-                        }
-
-                        // Option to merge or replace (here we replace for simplicity)
-                        if (confirm(`Import ${validTodos.length} tasks? This will replace your current tasks.`)) {
-                            todos = validTodos;
-                            selectedTaskIds.clear(); // Clear selection
-                            stopAndRecordActiveTimer(true); // Stop any current timer
-                            saveTodos();
-                            renderAll();
-                            addNotification(`${validTodos.length} tasks imported successfully.`, "success");
-                        }
-                    } catch (error) {
-                        console.error("Import Error:", error);
-                        addNotification(`Import failed: ${error.message}`, "error");
-                    } finally {
-                         // Reset file input to allow importing the same file again
-                         importFile.value = '';
-                    }
-                };
-                reader.onerror = () => {
-                    addNotification('Error reading file.', 'error');
-                    importFile.value = '';
-                };
-                reader.readAsText(file);
-            }
-
-            // --- Notifications ---
-            function addNotification(message, type = 'info', persistent = false) {
-                const notification = createNotificationElement(message, type, persistent);
-                notificationArea.appendChild(notification);
-
-                // Auto-remove non-persistent notifications after a delay
-                if (!persistent) {
-                    setTimeout(() => {
-                        // Check if the notification still exists before removing
-                        if (notification.parentNode === notificationArea) {
-                            notification.style.animation = 'fadeOutNotification 0.5s forwards';
-                            setTimeout(() => notification.remove(), 500);
-                        }
-                    }, 5000); // 5 seconds display time
-                }
-            }
-
-            function createNotificationElement(message, type, persistent) {
-                 const notification = document.createElement('div');
-                 notification.className = `notification ${type}`;
-                 if (persistent) notification.classList.add('persistent');
-
-                 const icon = document.createElement('i');
-                 const iconClass = {
-                     info: 'fa-info-circle',
-                     success: 'fa-check-circle',
-                     warning: 'fa-exclamation-triangle',
-                     error: 'fa-times-circle'
-                 }[type] || 'fa-info-circle';
-                 icon.className = `fas ${iconClass}`;
-
-                 const content = document.createElement('span');
-                 content.className = 'notification-content';
-                 content.textContent = message;
-
-                 notification.appendChild(icon);
-                 notification.appendChild(content);
-
-                 // Add close button for persistent notifications (except undo)
-                 if (persistent && !notification.classList.contains('undo-notification')) {
-                     const closeButton = document.createElement('button');
-                     closeButton.className = 'btn-close';
-                     closeButton.innerHTML = '&times;';
-                     closeButton.setAttribute('aria-label', 'Dismiss notification');
-                     closeButton.onclick = () => {
-                         notification.style.animation = 'fadeOutNotification 0.5s forwards';
-                         setTimeout(() => notification.remove(), 500);
-                     };
-                     // Simple action container for close button
-                     const actionsDiv = document.createElement('div');
-                     actionsDiv.className = 'notification-actions';
-                     actionsDiv.appendChild(closeButton);
-                     notification.appendChild(actionsDiv);
-                 }
-
-                 return notification;
-            }
-
-            // --- Due Date Checking & Notifications ---
-            function checkDueDates() {
-                const now = new Date();
-                const upcomingLimit = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000); // 2 days from now
-
-                todos.forEach(todo => {
-                    if (!todo.completed && todo.dueDate) {
-                        const dueDate = new Date(todo.dueDate);
-                        if (dueDate >= now && dueDate <= upcomingLimit) {
-                            // Check if notification for this task was already shown today
-                            const notifiedToday = localStorage.getItem(`notified_${todo.id}_${now.toISOString().split('T')[0]}`);
-                            if (!notifiedToday) {
-                                addNotification(`Task "${truncate(todo.text)}" is due soon (${formatDate(dueDate, true)})!`, 'warning', true); // Persistent warning
-                                localStorage.setItem(`notified_${todo.id}_${now.toISOString().split('T')[0]}`, 'true'); // Mark as notified for today
-                            }
-                        }
-                    }
-                });
-                 // Also re-render the list to update visual alerts
-                 renderTaskList();
-            }
-
-            // --- Time Tracking ---
-            function toggleTimer(id) {
-                const taskIndex = todos.findIndex(t => t.id === id);
-                if (taskIndex === -1) return;
-
-                const task = todos[taskIndex];
-
-                if (task.timerRunning) {
-                    // Pause the current timer
-                    pauseTimer(id);
-                } else {
-                    // Pause any other running timer first
-                    if (activeTimerTaskId && activeTimerTaskId !== id) {
-                        pauseTimer(activeTimerTaskId);
-                    }
-                    // Start the new timer
-                    startTimer(id);
-                }
-            }
-
-            function startTimer(id) {
-                const taskIndex = todos.findIndex(t => t.id === id);
-                if (taskIndex === -1) return;
-                const task = todos[taskIndex];
-
-                if (task.completed) {
-                    addNotification("Cannot start timer for a completed task.", "warning");
-                    return;
-                }
-
-                task.timerRunning = true;
-                task.timerStartTime = Date.now();
-                activeTimerTaskId = id;
-
-                startTimerInterval(task);
-                updateTaskTimerButton(id, true);
-                updateHeaderTimerVisibility();
-                saveTodos(); // Save timer state
-                addNotification(`Timer started for "${truncate(task.text)}".`, "info");
-            }
-
-            function pauseTimer(id) {
-                const taskIndex = todos.findIndex(t => t.id === id);
-                if (taskIndex === -1 || !todos[taskIndex].timerRunning) return;
-                const task = todos[taskIndex];
-
-                stopAndRecordActiveTimer(true); // Stop, record time, and clear active timer ID
-                updateTaskTimerButton(id, false);
-                updateHeaderTimerVisibility();
-                saveTodos(); // Save timer state
-                addNotification(`Timer paused for "${truncate(task.text)}".`, "info");
-            }
-
-            function stopAndRecordActiveTimer(clearActiveId) {
-                if (activeTimerInterval) {
-                    clearInterval(activeTimerInterval);
-                    activeTimerInterval = null;
-                }
-
-                if (activeTimerTaskId) {
-                    const taskIndex = todos.findIndex(t => t.id === activeTimerTaskId);
-                    if (taskIndex > -1) {
-                        const task = todos[taskIndex];
-                        if (task.timerRunning && task.timerStartTime) {
-                            const elapsed = (Date.now() - task.timerStartTime) / 1000; // Elapsed seconds
-                            task.timeTracked += elapsed;
-                            task.timerRunning = false;
-                            task.timerStartTime = null;
-                             // Update display immediately after stopping
-                             updateTimerDisplay(task.id, task.timeTracked);
-                        }
-                    }
-                     if (clearActiveId) {
-                         activeTimerTaskId = null;
-                     }
-                }
-            }
-
-            function startTimerInterval(task) {
-                // Clear any existing interval first
-                if (activeTimerInterval) {
-                    clearInterval(activeTimerInterval);
-                }
-
-                activeTimerInterval = setInterval(() => {
-                    if (task.timerRunning && task.timerStartTime) {
-                        const elapsed = (Date.now() - task.timerStartTime) / 1000;
-                        const totalTime = task.timeTracked + elapsed;
-                        updateTimerDisplay(task.id, totalTime);
-                        // Update header timer as well
-                        if (activeTimerTaskId === task.id) {
-                            headerTimerDisplay.textContent = formatTime(totalTime);
-                            headerTimerTask.textContent = truncate(task.text, 20); // Shorter truncation for header
-                        }
-                    } else {
-                        // If task state changed unexpectedly, clear interval
-                         clearInterval(activeTimerInterval);
-                         activeTimerInterval = null;
-                         activeTimerTaskId = null;
-                         updateHeaderTimerVisibility();
-                    }
-                }, 1000); // Update every second
-            }
-
-            function updateTimerDisplay(taskId, totalSeconds) {
-                const displayElement = taskList.querySelector(`.task-timer-display[data-task-id="${taskId}"]`);
-                if (displayElement) {
-                    displayElement.textContent = formatTime(totalSeconds);
-                }
-                 // Also update header if this is the active task
-                 if (taskId === activeTimerTaskId) {
-                     headerTimerDisplay.textContent = formatTime(totalSeconds);
-                 }
-            }
-
-            function updateTaskTimerButton(taskId, isRunning) {
-                const taskItem = taskList.querySelector(`.task-item[data-id="${taskId}"]`);
-                if (taskItem) {
-                    const timerBtn = taskItem.querySelector('.task-timer-btn');
-                    if (timerBtn) {
-                        timerBtn.innerHTML = `<i class="fas ${isRunning ? 'fa-pause-circle' : 'fa-play-circle'}"></i>`;
-                        timerBtn.setAttribute('aria-label', isRunning ? 'Pause timer' : 'Start timer');
-                    }
-                }
-            }
-
-             function updateHeaderTimerVisibility() {
-                 if (activeTimerTaskId) {
-                     const task = todos.find(t => t.id === activeTimerTaskId);
-                     if (task && task.timerRunning) {
-                         headerTimerTask.textContent = truncate(task.text, 20);
-                         headerTimerDisplay.textContent = formatTime(task.timeTracked + (Date.now() - (task.timerStartTime || Date.now())) / 1000);
-                         headerTimeTracker.classList.add('visible');
-                         return;
-                     }
-                 }
-                 // Hide if no active timer or task not found/not running
-                 headerTimeTracker.classList.remove('visible');
-             }
-
-
-            function resetDailyTimers() {
-                 const today = new Date().toISOString().split('T')[0];
-                 const lastResetDate = localStorage.getItem('lastTimerResetDate');
-
-                 if (lastResetDate !== today) {
-                     console.log(`Performing daily timer reset for ${today}...`);
-                     let resetOccurred = false;
-                     todos.forEach(task => {
-                         if (task.timeTracked > 0) {
-                             task.timeTracked = 0;
-                             // If timer was running, stop it and reset
-                             if (task.timerRunning) {
-                                 task.timerRunning = false;
-                                 task.timerStartTime = null;
-                                 updateTaskTimerButton(task.id, false); // Update button icon
-                                 if (task.id === activeTimerTaskId) {
-                                     stopAndRecordActiveTimer(true); // Stop interval and clear active ID
-                                 }
-                             }
-                             updateTimerDisplay(task.id, 0); // Update display
-                             resetOccurred = true;
-                         }
-                     });
-
-                     localStorage.setItem('lastTimerResetDate', today);
-
-                     if (resetOccurred) {
-                         saveTodos(); // Save the reset times
-                         updateHeaderTimerVisibility(); // Update header in case active timer was reset
-                         addNotification("Daily tracked times have been reset.", "info");
-                         console.log("Daily timer reset complete.");
-                     } else {
-                          console.log("No timers needed reset.");
-                     }
-                 }
-             }
-
-            // --- Drag and Drop (SortableJS) ---
-            function initializeSortable() {
-                 if (sortableInstance) {
-                     sortableInstance.destroy(); // Destroy previous instance if exists
-                 }
-                 sortableInstance = new Sortable(taskList, {
-                     animation: 150, // Animation speed
-                     ghostClass: 'sortable-ghost', // Class for the drop placeholder
-                     chosenClass: 'sortable-chosen', // Class for the chosen item
-                     handle: '.task-item', // Specify handle if needed, otherwise whole item is handle
-                     // Element dragging ended
-                     onEnd: function (evt) {
-                         const itemEl = evt.item; // dragged HTMLElement
-                         const oldIndex = evt.oldDragnIndex; // Correct property for SortableJS v1.15+
-                         const newIndex = evt.newDragnIndex; // Correct property for SortableJS v1.15+
-
-                         if (oldIndex === undefined || newIndex === undefined || oldIndex === newIndex) {
-                            // console.log("Sortable: No change in position.");
-                             return; // No change or invalid indices
-                         }
-
-                         // Get the current visual order of task IDs from the DOM
-                         const currentOrderIds = Array.from(taskList.children).map(li => li.dataset.id);
-
-                         // Reorder the `todos` array based on the new visual order
-                         const reorderedTodos = currentOrderIds.map(id => todos.find(t => t.id === id)).filter(Boolean); // Filter out potential nulls
-
-                         // Check if the reordering actually changed the underlying data order needed for saving
-                         if (JSON.stringify(todos.map(t => t.id)) !== JSON.stringify(reorderedTodos.map(t => t.id))) {
-                             todos = reorderedTodos;
-                             saveTodos(); // Save the new order
-                             // No need to re-render here, SortableJS handles the visual change
-                             addNotification("Task order updated.", "info");
-                         } else {
-                             //console.log("Sortable: Visual order matches data order, no save needed.");
-                         }
-                     },
-                 });
-            }
-
-
-            // --- Utility Functions ---
-            function formatDate(dateString, includeTime = false) {
-                if (!dateString) return 'No due date';
-                try {
-                    const date = new Date(dateString);
-                    const options = {
-                        year: 'numeric', month: 'short', day: 'numeric',
-                        hour: includeTime ? 'numeric' : undefined,
-                        minute: includeTime ? 'numeric' : undefined,
-                        hour12: includeTime ? true : undefined,
-                    };
-                    return date.toLocaleDateString(undefined, options);
-                } catch (e) {
-                    return 'Invalid Date';
-                }
-            }
-
-            function formatTime(totalSeconds) {
-                totalSeconds = Math.max(0, Math.floor(totalSeconds)); // Ensure non-negative integer
-                const hours = Math.floor(totalSeconds / 3600);
-                const minutes = Math.floor((totalSeconds % 3600) / 60);
-                const seconds = totalSeconds % 60;
-                return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            }
-
-            function truncate(str, maxLength = 30) {
-                return str.length > maxLength ? str.substring(0, maxLength) + '...' : str;
-            }
-
-            // --- Event Listeners ---
-            addTaskBtn.addEventListener('click', openModalForAdd);
-            closeModalBtn.addEventListener('click', closeModal);
-            taskModal.addEventListener('click', (e) => { // Close modal on overlay click
-                if (e.target === taskModal) closeModal();
-            });
-            taskForm.addEventListener('submit', handleFormSubmit);
-
-            filterPriority.addEventListener('change', renderTaskList);
-            filterStatus.addEventListener('change', renderTaskList);
-            sortTasks.addEventListener('change', renderTaskList);
-
-            multiCompleteBtn.addEventListener('click', () => completeMultipleTasks(selectedTaskIds));
-            multiDeleteBtn.addEventListener('click', () => {
-                if (confirm(`Are you sure you want to delete ${selectedTaskIds.size} selected tasks?`)) {
-                    deleteMultipleTasks(selectedTaskIds);
-                }
-            });
-            multiDeselectBtn.addEventListener('click', deselectAllTasks);
-
-            exportBtn.addEventListener('click', exportTasks);
-            importBtn.addEventListener('click', importTasks);
-            importFile.addEventListener('change', handleFileImport);
-
-            // Logout Placeholder Action
-            logoutBtn.addEventListener('click', () => {
-                addNotification("Logout functionality requires a backend.", "info");
-                // In a real app: clear user session, redirect to login page
-            });
-
-            // Close modal on Escape key
-            window.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && taskModal.classList.contains('show')) {
-                    closeModal();
-                }
-            });
-
-            // Stop timers before unloading page (important for accuracy)
-            window.addEventListener('beforeunload', () => {
-                stopAndRecordActiveTimer(false); // Record time but don't clear ID (handled by saveTodos)
-                saveTodos(); // Ensure latest state is saved
-            });
-
-        }); // End DOMContentLoaded
-    </script>
+      );
+    };
+
+    // Task List Component
+    const TaskList = () => {
+      const { tasks, updateTask, deleteTask, reorderTasks } = useContext(TaskContext);
+      const [filter, setFilter] = useState('All');
+      const [sort, setSort] = useState('Due Date');
+      const [search, setSearch] = useState('');
+      const [selectedTasks, setSelectedTasks] = useState([]);
+      const [draggedTask, setDraggedTask] = useState(null);
+
+      const filteredTasks = tasks
+        .filter((task) => {
+          if (filter === 'Active') return !task.completed;
+          if (filter === 'Completed') return task.completed;
+          return true;
+        })
+        .filter((task) => task.title.toLowerCase().includes(search.toLowerCase()) || task.description.toLowerCase().includes(search.toLowerCase()))
+        .sort((a, b) => {
+          if (sort === 'Due Date') return new Date(a.dueDate) - new Date(b.dueDate);
+          if (sort === 'Priority') {
+            const priorityOrder = { High: 3, Medium: 2, Low: 1 };
+            return priorityOrder[b.priority] - priorityOrder[a.priority];
+          }
+          return 0;
+        });
+
+      const handleDragStart = (task) => {
+        setDraggedTask(task);
+      };
+
+      const handleDragOver = (e) => {
+        e.preventDefault();
+      };
+
+      const handleDrop = (targetTask) => {
+        if (!draggedTask || draggedTask.id === targetTask.id) return;
+        const reordered = [...tasks];
+        const draggedIndex = tasks.findIndex((t) => t.id === draggedTask.id);
+        const targetIndex = tasks.findIndex((t) => t.id === targetTask.id);
+        reordered.splice(draggedIndex, 1);
+        reordered.splice(targetIndex, 0, draggedTask);
+        reorderTasks(reordered);
+        setDraggedTask(null);
+      };
+
+      return (
+        <div>
+          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            <input
+              type="text"
+              placeholder="Search tasks..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="p-2 border rounded dark:bg-gray-700 dark:text-white flex-1"
+            />
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="p-2 border rounded dark:bg-gray-700 dark:text-white"
+            >
+              <option>All</option>
+              <option>Active</option>
+              <option>Completed</option>
+            </select>
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className="p-2 border rounded dark:bg-gray-700 dark:text-white"
+            >
+              <option>Due Date</option>
+              <option>Priority</option>
+            </select>
+          </div>
+          <div className="space-y-4">
+            {filteredTasks.map((task) => (
+              <div
+                key={task.id}
+                draggable
+                onDragStart={() => handleDragStart(task)}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(task)}
+                className="task-enter task-enter-active bg-white dark:bg-gray-800 p-4 rounded-lg shadow flex items-center gap-4"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedTasks.includes(task.id)}
+                  onChange={() => setSelectedTasks((prev) => prev.includes(task.id) ? prev.filter((id) => id !== task.id) : [...prev, task.id])}
+                  className="h-5 w-5"
+                />
+                <input
+                  type="checkbox"
+                  checked={task.completed}
+                  onChange={() => updateTask(task.id, { completed: !task.completed })}
+                  className="h-5 w-5"
+                />
+                <div className="flex-1">
+                  <h3 className={`text-lg ${task.completed ? 'line-through text-gray-500' : 'text-gray-900 dark:text-white'}`}>
+                    {task.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{task.description}</p>
+                  <p className="text-sm text-gray-500">Due: {task.dueDate || 'No due date'}</p>
+                  <p className="text-sm text-gray-500">Category: {task.category}</p>
+                  <p className="text-sm text-gray-500">Priority: {task.priority}</p>
+                </div>
+                <button
+                  onClick={() => deleteTask(task.id)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    // Login Component
+    const Login = () => {
+      const { login } = useContext(AuthContext);
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+
+      const handleLogin = () => {
+        login(email, password);
+      };
+
+      return (
+        <div className="max-w-md mx-auto mt-10 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+          <h2 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">Login</h2>
+          <div className="space-y-4">
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+            />
+            <button
+              onClick={handleLogin}
+              className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            >
+              Login
+            </button>
+          </div>
+        </div>
+      );
+    };
+
+    // Main App Component
+    const App = () => {
+      const { user, logout } = useContext(AuthContext);
+      const { undoLastAction, batchDelete, batchComplete } = useContext(TaskContext);
+      const [theme, setTheme] = useState('light');
+
+      useEffect(() => {
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+      }, [theme]);
+
+      const handleExport = () => {
+        const data = JSON.stringify(loadFromLocalStorage('tasks'));
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'tasks.json';
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+
+      const handleImport = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const tasks = JSON.parse(event.target.result);
+          saveToLocalStorage('tasks', tasks);
+          window.location.reload();
+        };
+        reader.readAsText(file);
+      };
+
+      if (!user) return <Login />;
+
+      return (
+        <div className="max-w-4xl mx-auto p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Todo App</h1>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                className="p-2 rounded bg-gray-200 dark:bg-gray-700"
+              >
+                {theme === 'light' ? '🌙' : '☀️'}
+              </button>
+              <button onClick={handleExport} className="p-2 rounded bg-blue-500 text-white">
+                Export
+              </button>
+              <label className="p-2 rounded bg-blue-500 text-white cursor-pointer">
+                Import
+                <input type="file" accept=".json" onChange={handleImport} className="hidden" />
+              </label>
+              <button onClick={logout} className="p-2 rounded bg-red-500 text-white">
+                Logout
+              </button>
+            </div>
+          </div>
+          <TaskForm />
+          <div className="flex gap-4 mb-4">
+            <button
+              onClick={undoLastAction}
+              className="p-2 rounded bg-yellow-500 text-white"
+            >
+              Undo
+            </button>
+            <button
+              onClick={() => batchDelete([])}
+              className="p-2 rounded bg-red-500 text-white"
+            >
+              Delete Selected
+            </button>
+            <button
+              onClick={() => batchComplete([])}
+              className="p-2 rounded bg-green-500 text-white"
+            >
+              Complete Selected
+            </button>
+          </div>
+          <TaskList />
+        </div>
+      );
+    };
+
+    // Render App
+    const Root = () => (
+      <AuthProvider>
+        <TaskProvider>
+          <App />
+        </TaskProvider>
+      </AuthProvider>
+    );
+
+    ReactDOM.render(<Root />, document.getElementById('root'));
+  </script>
 </body>
 </html>
