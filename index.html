@@ -1,209 +1,208 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en" class="dark"> {/* Default to dark mode */}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Todo App</title>
+    <title>Advanced Todo App - Dark Red</title>
+    {/* Tailwind CSS CDN */}
     <script src="https://cdn.tailwindcss.com"></script>
+    {/* Font Awesome for Icons */}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    {/* Google Font: Inter */}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {/* Chart.js CDN */}
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    {/* date-fns for easier date manipulation */}
     <script src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0/cdn.min.js"></script>
 
 
     <style>
-        /* Basic Styling & Theme Variables */
+        /* Basic Styling */
         body {
             font-family: 'Inter', sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Light Theme (Default) */
+        /* Light Theme Variables (Kept for toggle functionality, but dark is default) */
         :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f3f4f6; /* gray-100 */
-            --bg-tertiary: #e5e7eb; /* gray-200 */
-            --text-primary: #111827; /* gray-900 */
-            --text-secondary: #6b7280; /* gray-500 */
-            --text-tertiary: #4b5563; /* gray-600 */
-            --border-color: #e5e7eb; /* gray-200 */
-            --accent-color: #3b82f6; /* blue-500 */
-            --accent-hover: #2563eb; /* blue-600 */
-            --danger-color: #ef4444; /* red-500 */
-            --danger-hover: #dc2626; /* red-600 */
-            --warning-color: #f59e0b; /* amber-500 */
-            --success-color: #22c55e; /* green-500 */
-            --info-color: #60a5fa; /* blue-400 */
+            --bg-primary-light: #ffffff;
+            --bg-secondary-light: #f3f4f6; /* gray-100 */
+            --bg-tertiary-light: #e5e7eb; /* gray-200 */
+            --text-primary-light: #111827; /* gray-900 */
+            --text-secondary-light: #6b7280; /* gray-500 */
+            --text-tertiary-light: #4b5563; /* gray-600 */
+            --border-color-light: #e5e7eb; /* gray-200 */
+            --accent-color-light: #3b82f6; /* blue-500 */
+            --accent-hover-light: #2563eb; /* blue-600 */
+            --danger-color-light: #ef4444; /* red-500 */
+            --danger-hover-light: #dc2626; /* red-600 */
+            --warning-color-light: #f59e0b; /* amber-500 */
+            --success-color-light: #22c55e; /* green-500 */
+            --info-color-light: #60a5fa; /* blue-400 */
         }
 
-        /* Dark Theme */
+        /* Dark Red Theme Variables (Applied via html.dark) */
         html.dark {
-            --bg-primary: #1f2937; /* gray-800 */
-            --bg-secondary: #374151; /* gray-700 */
-            --bg-tertiary: #4b5563; /* gray-600 */
-            --text-primary: #f9fafb; /* gray-50 */
-            --text-secondary: #9ca3af; /* gray-400 */
-            --text-tertiary: #d1d5db; /* gray-300 */
-            --border-color: #4b5563; /* gray-600 */
-            /* Keep accent/status colors or adjust if needed */
+            --bg-primary: #450a0a;       /* Tailwind red-950 */
+            --bg-secondary: #7f1d1d;     /* Tailwind red-900 */
+            --bg-tertiary: #991b1b;      /* Tailwind red-800 */
+            --text-primary: #fef2f2;     /* Tailwind red-50 */
+            --text-secondary: #fecaca;   /* Tailwind red-200 */
+            --text-tertiary: #fda4af;   /* Tailwind red-300 */
+            --border-color: #991b1b;      /* Tailwind red-800 */
+            /* Keep accent colors vibrant for status, adjust if needed */
+            --accent-color: #60a5fa;     /* Tailwind blue-400 */
+            --accent-hover: #3b82f6;     /* Tailwind blue-500 */
+            --danger-color: #f87171;     /* Tailwind red-400 */
+            --danger-hover: #ef4444;     /* Tailwind red-500 */
+            --warning-color: #fbbf24;     /* Tailwind amber-400 */
+            --success-color: #4ade80;     /* Tailwind green-400 */
+            --info-color: #93c5fd;       /* Tailwind blue-300 */
         }
 
-        /* Apply Theme Variables */
+        /* Apply Theme Variables Dynamically */
         .bg-primary { background-color: var(--bg-primary); }
+        html:not(.dark) .bg-primary { background-color: var(--bg-primary-light); }
+
         .bg-secondary { background-color: var(--bg-secondary); }
+        html:not(.dark) .bg-secondary { background-color: var(--bg-secondary-light); }
+
         .bg-tertiary { background-color: var(--bg-tertiary); }
+        html:not(.dark) .bg-tertiary { background-color: var(--bg-tertiary-light); }
+
         .text-primary { color: var(--text-primary); }
+        html:not(.dark) .text-primary { color: var(--text-primary-light); }
+
         .text-secondary { color: var(--text-secondary); }
+        html:not(.dark) .text-secondary { color: var(--text-secondary-light); }
+
         .text-tertiary { color: var(--text-tertiary); }
+        html:not(.dark) .text-tertiary { color: var(--text-tertiary-light); }
+
         .border-themed { border-color: var(--border-color); }
-        .accent-button { background-color: var(--accent-color); color: white; }
+        html:not(.dark) .border-themed { border-color: var(--border-color-light); }
+
+        /* Button Styles (adjusting for dark red theme contrast) */
+        .accent-button { background-color: var(--accent-color); color: #111827; /* Dark text on light blue */ }
+        html:not(.dark) .accent-button { background-color: var(--accent-color-light); color: white; }
         .accent-button:hover { background-color: var(--accent-hover); }
-        .danger-button { background-color: var(--danger-color); color: white; }
+        html:not(.dark) .accent-button:hover { background-color: var(--accent-hover-light); }
+
+        .danger-button { background-color: var(--danger-color); color: #111827; /* Dark text on light red */ }
+        html:not(.dark) .danger-button { background-color: var(--danger-color-light); color: white; }
         .danger-button:hover { background-color: var(--danger-hover); }
-        .info-button { background-color: var(--info-color); color: white; }
-        .info-button:hover { background-color: #3b82f6; } /* blue-500 */
-        .secondary-button { background-color: var(--bg-tertiary); color: var(--text-tertiary); }
-        .secondary-button:hover { background-color: var(--border-color); }
+        html:not(.dark) .danger-button:hover { background-color: var(--danger-hover-light); }
+
+        .info-button { background-color: var(--info-color); color: #111827; /* Dark text */ }
+        html:not(.dark) .info-button { background-color: var(--info-color-light); color: white; }
+        .info-button:hover { background-color: var(--accent-color); } /* Use accent color for hover */
+        html:not(.dark) .info-button:hover { background-color: var(--accent-color-light); }
+
+        .secondary-button { background-color: var(--bg-tertiary); color: var(--text-primary); } /* Use primary text for better contrast */
+        html:not(.dark) .secondary-button { background-color: var(--bg-tertiary-light); color: var(--text-tertiary-light); }
+        .secondary-button:hover { filter: brightness(1.1); } /* Slightly brighten on hover */
+        html:not(.dark) .secondary-button:hover { background-color: var(--border-color-light); }
 
 
         /* Custom Styles */
-        .task-item {
-            transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-            cursor: grab;
-        }
-        .task-item:active {
-            cursor: grabbing;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transform: scale(1.02);
-            background-color: var(--bg-tertiary); /* Slightly change bg on grab */
-        }
-        .task-item.dragging {
-            opacity: 0.5;
-            border: 2px dashed var(--accent-color);
-        }
-        .task-item.completed .task-title {
-            text-decoration: line-through;
-            color: var(--text-secondary);
-        }
+        .task-item { transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; cursor: grab; }
+        .task-item:active { cursor: grabbing; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1); transform: scale(1.02); background-color: var(--bg-tertiary); }
+        .task-item.dragging { opacity: 0.5; border: 2px dashed var(--accent-color); }
+        .task-item.completed .task-title { text-decoration: line-through; color: var(--text-secondary); }
         .priority-high { border-left: 4px solid var(--danger-color); }
         .priority-medium { border-left: 4px solid var(--warning-color); }
         .priority-low { border-left: 4px solid var(--success-color); }
 
         /* Custom Checkbox */
-        .custom-checkbox {
-            appearance: none; -webkit-appearance: none;
-            height: 1.25rem; width: 1.25rem;
-            border: 2px solid var(--border-color); border-radius: 0.25rem;
-            display: inline-block; position: relative; cursor: pointer;
-            margin-right: 0.5rem; vertical-align: middle; flex-shrink: 0;
-        }
+        .custom-checkbox { appearance: none; -webkit-appearance: none; height: 1.25rem; width: 1.25rem; border: 2px solid var(--border-color); border-radius: 0.25rem; display: inline-block; position: relative; cursor: pointer; margin-right: 0.5rem; vertical-align: middle; flex-shrink: 0; }
         .custom-checkbox:checked { background-color: var(--accent-color); border-color: var(--accent-color); }
-        .custom-checkbox:checked::after {
-            content: ''; position: absolute; left: 5px; top: 1px;
-            width: 5px; height: 10px; border: solid white;
-            border-width: 0 2px 2px 0; transform: rotate(45deg);
-        }
+        .custom-checkbox:checked::after { content: ''; position: absolute; left: 5px; top: 1px; width: 5px; height: 10px; border: solid var(--bg-primary); /* Use background color for checkmark */ border-width: 0 2px 2px 0; transform: rotate(45deg); }
 
         /* Modal Styling */
-        .modal { display: none; position: fixed; z-index: 50; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
+        .modal { display: none; position: fixed; z-index: 50; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center; }
         .modal.active { display: flex; }
         .modal-content { max-width: 500px; width: 90%; animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
         /* Notification Styling */
         #notification-area { position: fixed; bottom: 1rem; right: 1rem; z-index: 100; display: flex; flex-direction: column; gap: 0.5rem; }
-        .notification { padding: 0.75rem 1rem; border-radius: 0.375rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); opacity: 0; transform: translateX(100%); transition: opacity 0.3s ease, transform 0.3s ease; }
+        .notification { padding: 0.75rem 1rem; border-radius: 0.375rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); opacity: 0; transform: translateX(100%); transition: opacity 0.3s ease, transform 0.3s ease; color: #111827; /* Dark text for notifications */ }
         .notification.show { opacity: 1; transform: translateX(0); }
-        .notification-success { background-color: var(--success-color); color: white; }
-        .notification-error { background-color: var(--danger-color); color: white; }
-        .notification-info { background-color: var(--info-color); color: white; }
-        .notification-warning { background-color: var(--warning-color); color: #1f2937; } /* Dark text on yellow */
+        .notification-success { background-color: var(--success-color); }
+        .notification-error { background-color: var(--danger-color); }
+        .notification-info { background-color: var(--info-color); }
+        .notification-warning { background-color: var(--warning-color); }
 
         /* Loading Spinner */
         .loader { border: 4px solid var(--bg-secondary); border-top: 4px solid var(--accent-color); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 2rem auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* Drag placeholder */
-        .drag-over { border-top: 2px dashed var(--accent-color); background-color: rgba(59, 130, 246, 0.1); }
+        .drag-over { border-top: 2px dashed var(--accent-color); background-color: rgba(96, 165, 250, 0.1); /* Light blue bg for placeholder */ }
 
-        /* View Switcher & Graph Container */
-        .view-container { display: block; } /* Default view */
-        .view-container.hidden { display: none; }
-        #graph-view { min-height: 400px; /* Ensure canvas has height */ }
+        /* View Switcher & Graph Container - Enhanced Transition */
+        .view-container {
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+            width: 100%; /* Ensure full width for transform */
+        }
+        .view-container.hidden {
+            opacity: 0;
+            transform: translateX(20px); /* Slide out slightly */
+            position: absolute; /* Prevent layout shift during transition */
+            top: 0; /* Align hidden view with the top of the section */
+            left: 0;
+            pointer-events: none; /* Disable interaction when hidden */
+            display: block !important; /* Override potential display: none from Tailwind */
+        }
+        #graph-view { min-height: 400px; }
+        /* Ensure the parent section can contain the absolutely positioned hidden view */
+        #app-container section {
+            position: relative;
+            overflow: hidden; /* Hide the sliding out element */
+        }
+
 
         /* Batch Action Bar */
-        #batch-action-bar {
-            position: fixed;
-            bottom: -100px; /* Start hidden below screen */
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 60;
-            transition: bottom 0.3s ease-in-out;
-            width: calc(100% - 2rem); /* Responsive width */
-            max-width: 600px;
-        }
-        #batch-action-bar.active {
-            bottom: 1rem; /* Slide in */
-        }
+        #batch-action-bar { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); z-index: 60; transition: bottom 0.3s ease-in-out; width: calc(100% - 2rem); max-width: 600px; }
+        #batch-action-bar.active { bottom: 1rem; }
 
         /* Date Filter Buttons */
-        .date-filter-btn {
-             transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-             border: 1px solid transparent;
-        }
-        .date-filter-btn.active {
-            background-color: var(--accent-color);
-            color: white;
-            border-color: var(--accent-hover);
-        }
-        .date-filter-btn:not(.active) {
-             background-color: var(--bg-tertiary);
-             color: var(--text-tertiary);
-             border-color: var(--border-color);
-        }
-         .date-filter-btn:not(.active):hover {
-             background-color: var(--border-color);
-         }
+        .date-filter-btn { transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; border: 1px solid transparent; }
+        .date-filter-btn.active { background-color: var(--accent-color); color: #111827; border-color: var(--accent-hover); }
+        .date-filter-btn:not(.active) { background-color: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color); }
+        .date-filter-btn:not(.active):hover { filter: brightness(1.1); }
 
         /* Inline Due Date Alert */
-        .due-date-alert {
-            display: inline-block;
-            width: 0.6rem;
-            height: 0.6rem;
-            border-radius: 50%;
-            margin-left: 0.3rem;
-            vertical-align: middle;
-        }
+        .due-date-alert { display: inline-block; width: 0.6rem; height: 0.6rem; border-radius: 50%; margin-left: 0.3rem; vertical-align: middle; }
         .due-date-alert.expired { background-color: var(--danger-color); }
         .due-date-alert.soon { background-color: var(--warning-color); }
         .due-date-alert.ontime { background-color: var(--success-color); }
 
         /* Time Tracker */
-        .time-tracker-btn {
-            background: none; border: none; padding: 0; cursor: pointer;
-            color: var(--text-secondary);
-            transition: color 0.2s ease;
-            width: 1.5rem; /* Fixed width */
-            height: 1.5rem; /* Fixed height */
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-         .time-tracker-btn:hover { color: var(--accent-color); }
-         .time-tracker-btn.tracking { color: var(--danger-color); } /* Red when tracking */
-         .time-tracker-btn.tracking:hover { color: var(--danger-hover); }
+        .time-tracker-btn { background: none; border: none; padding: 0; cursor: pointer; color: var(--text-secondary); transition: color 0.2s ease; width: 1.5rem; height: 1.5rem; display: inline-flex; align-items: center; justify-content: center; }
+        .time-tracker-btn:hover { color: var(--accent-color); }
+        .time-tracker-btn.tracking { color: var(--danger-color); }
+        .time-tracker-btn.tracking:hover { color: var(--danger-hover); }
+        #global-timer-display { min-width: 80px; text-align: right; }
 
-         #global-timer-display {
-             min-width: 80px; /* Ensure space for time */
-             text-align: right;
-         }
+        /* Login Button Glow Animation */
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px var(--accent-color), 0 0 10px var(--accent-color); }
+            50% { box-shadow: 0 0 15px var(--accent-color), 0 0 25px var(--accent-color); }
+        }
+        #login-form button[type="submit"] {
+            position: relative; /* Needed for potential pseudo-elements if used */
+            animation: glow 2.5s infinite ease-in-out;
+            border: 1px solid var(--accent-hover); /* Add a base border */
+        }
 
     </style>
 </head>
 <body class="bg-primary text-primary">
 
+    {/* Login Screen */}
     <div id="login-screen" class="fixed inset-0 bg-primary z-50 flex items-center justify-center p-4">
         <div class="w-full max-w-md p-8 bg-secondary rounded-lg shadow-lg border border-themed">
             <h2 class="text-2xl font-bold text-center text-primary mb-6">Login to Todo App</h2>
@@ -214,16 +213,19 @@
                 </div>
                 <div class="mb-6">
                     <label for="password" class="block text-sm font-medium text-secondary mb-1">Password</label>
-                    <input type="password" id="password" name="password" required class="w-full px-3 py-2 bg-primary border border-themed rounded-md focus:outline-none focus:ring-2 focus:ring-accent-color text-primary" placeholder="e.g., password">
+                    <input type="password" id="password" name="password" required class="w-full px-3 py-2 bg-primary border border-themed rounded-md focus:outline-none focus:ring-2 focus:ring-accent-color text-primary" placeholder="Enter any password">
                 </div>
+                {/* Login button with glow animation applied via CSS */}
                 <button type="submit" class="w-full accent-button font-semibold py-2 px-4 rounded-md transition duration-150 ease-in-out">Login</button>
                 <p class="text-xs text-secondary text-center mt-4">Use any username/password (e.g., demo/demo) - data is stored locally per username.</p>
             </form>
         </div>
     </div>
 
+    {/* Main App Container */}
     <div id="app-container" class="hidden min-h-screen flex flex-col">
 
+        {/* Header */}
         <header class="bg-secondary border-b border-themed shadow-sm p-4 sticky top-0 z-40">
             <div class="container mx-auto flex justify-between items-center">
                 <h1 class="text-xl md:text-2xl font-bold text-primary">My Todo App</h1>
@@ -233,22 +235,27 @@
                         --:--:--
                     </div>
                     <button id="theme-toggle-btn" class="p-2 rounded-md hover:bg-primary border border-transparent hover:border-themed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-color" aria-label="Toggle theme">
+                        {/* Icons will be updated by JS */}
                         <i class="fas fa-sun text-yellow-500"></i> <i class="fas fa-moon text-indigo-400 hidden"></i> </button>
                      <button id="logout-btn" class="text-sm danger-button font-medium py-1 px-3 rounded-md transition duration-150 ease-in-out">Logout</button>
                 </div>
             </div>
         </header>
 
+        {/* Main Content */}
         <main class="container mx-auto p-4 flex-grow flex flex-col md:flex-row gap-6">
 
-            <aside class="w-full md:w-1/4 lg:w-1/5 bg-secondary p-4 rounded-lg border border-themed shadow-sm h-fit md:sticky md:top-20"> {/* Sticky sidebar */}
+            {/* Sidebar/Filters */}
+            <aside class="w-full md:w-1/4 lg:w-1/5 bg-secondary p-4 rounded-lg border border-themed shadow-sm h-fit md:sticky md:top-20">
                 <h2 class="text-lg font-semibold mb-4 text-primary">Filters & Sort</h2>
 
+                {/* Search Input */}
                 <div class="mb-4">
                     <label for="search-input" class="block text-sm font-medium text-secondary mb-1">Search Tasks</label>
                     <input type="search" id="search-input" placeholder="Search title/desc..." class="w-full px-3 py-2 bg-primary border border-themed rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-accent-color text-primary">
                 </div>
 
+                {/* Status Filter */}
                 <div class="mb-4">
                     <label for="filter-status" class="block text-sm font-medium text-secondary mb-1">Status</label>
                     <select id="filter-status" class="w-full px-3 py-2 bg-primary border border-themed rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-accent-color text-primary">
@@ -258,6 +265,7 @@
                     </select>
                 </div>
 
+                {/* Priority Filter */}
                 <div class="mb-4">
                     <label for="filter-priority" class="block text-sm font-medium text-secondary mb-1">Priority</label>
                     <select id="filter-priority" class="w-full px-3 py-2 bg-primary border border-themed rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-accent-color text-primary">
@@ -268,13 +276,16 @@
                     </select>
                 </div>
 
-                 <div class="mb-4">
+                 {/* Category Filter */}
+                <div class="mb-4">
                     <label for="filter-category" class="block text-sm font-medium text-secondary mb-1">Category</label>
                     <select id="filter-category" class="w-full px-3 py-2 bg-primary border border-themed rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-accent-color text-primary">
                         <option value="all">All Categories</option>
+                        {/* Options populated by JS */}
                         </select>
                 </div>
 
+                {/* Sort Options */}
                 <div class="mb-4">
                     <label for="sort-tasks" class="block text-sm font-medium text-secondary mb-1">Sort by</label>
                     <select id="sort-tasks" class="w-full px-3 py-2 bg-primary border border-themed rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-accent-color text-primary">
@@ -283,22 +294,25 @@
                         <option value="dueDateDesc">Due Date (Desc)</option>
                         <option value="priority">Priority (High-Low)</option>
                         <option value="titleAsc">Title (A-Z)</option>
-                        <option value="timeTrackedDesc">Time Tracked (Desc)</option> {/* New Sort Option */}
+                        <option value="timeTrackedDesc">Time Tracked (Desc)</option>
                     </select>
                 </div>
 
+                 {/* View Switcher */}
                  <div class="mt-6 border-t border-themed pt-4">
                      <h3 class="text-md font-semibold mb-2 text-primary">View</h3>
                      <div class="flex gap-2">
-                         <button id="list-view-btn" class="flex-1 secondary-button text-sm font-medium py-1.5 px-3 rounded-md transition duration-150 ease-in-out active"><i class="fas fa-list mr-1"></i> List</button>
+                         {/* Active class handled by JS */}
+                         <button id="list-view-btn" class="flex-1 secondary-button text-sm font-medium py-1.5 px-3 rounded-md transition duration-150 ease-in-out"><i class="fas fa-list mr-1"></i> List</button>
                          <button id="graph-view-btn" class="flex-1 secondary-button text-sm font-medium py-1.5 px-3 rounded-md transition duration-150 ease-in-out"><i class="fas fa-chart-pie mr-1"></i> Graph</button>
                      </div>
                  </div>
-
             </aside>
 
-            <section class="w-full md:w-3/4 lg:w-4/5">
+            {/* Task List & Graph Area */}
+            <section class="w-full md:w-3/4 lg:w-4/5 relative"> {/* Added relative positioning for view transition */}
 
+                {/* Action Buttons */}
                 <div class="mb-4 flex flex-wrap gap-2 justify-between items-center">
                      <div class="flex flex-wrap gap-2">
                         <button id="add-task-btn" class="accent-button font-semibold py-2 px-4 rounded-md transition duration-150 ease-in-out text-sm"><i class="fas fa-plus mr-1"></i>Add Task</button>
@@ -314,62 +328,74 @@
                      </div>
                 </div>
 
+                {/* Date Filter Buttons */}
                 <div class="mb-4 flex flex-wrap gap-2">
-                    <button data-filter="overall" class="date-filter-btn text-xs font-medium py-1 px-3 rounded-md active">Overall</button>
+                    {/* Active class handled by JS */}
+                    <button data-filter="overall" class="date-filter-btn text-xs font-medium py-1 px-3 rounded-md">Overall</button>
                     <button data-filter="today" class="date-filter-btn text-xs font-medium py-1 px-3 rounded-md">Today</button>
                     <button data-filter="week" class="date-filter-btn text-xs font-medium py-1 px-3 rounded-md">This Week</button>
                     <button data-filter="month" class="date-filter-btn text-xs font-medium py-1 px-3 rounded-md">This Month</button>
                 </div>
 
 
+                {/* List View Container */}
                 <div id="list-view" class="view-container">
                     <div id="loading-indicator" class="hidden">
                         <div class="loader"></div>
                     </div>
                     <ul id="task-list" class="space-y-3">
-                        <p id="no-tasks-message" class="text-center text-secondary py-6">No tasks found. Add one to get started!</p>
+                        {/* Message updated by JS */}
+                        <p id="no-tasks-message" class="text-center text-secondary py-6">Loading tasks...</p>
                     </ul>
                 </div>
 
+                {/* Graph View Container */}
                 <div id="graph-view" class="view-container hidden bg-secondary p-4 rounded-lg border border-themed shadow-sm">
                     <h2 class="text-xl font-semibold text-primary mb-4 text-center">Task Overview</h2>
-                     <div class="max-w-sm mx-auto"> {/* Limit chart size */}
+                     <div class="max-w-sm mx-auto h-64 md:h-80"> {/* Added height */}
                         <canvas id="task-chart"></canvas>
                     </div>
                     <p id="graph-message" class="text-center text-secondary mt-4 text-sm"></p>
                 </div>
 
             </section>
-
         </main>
 
+        {/* Footer */}
         <footer class="bg-secondary border-t border-themed mt-8 py-4">
             <div class="container mx-auto text-center text-xs text-secondary">
                 Todo App &copy; 2025 | Data stored locally. Time tracker resets daily (00:00 UTC).
             </div>
         </footer>
 
-    </div> <div id="task-modal" class="modal">
+    </div> {/* End App Container */}
+
+    {/* Add/Edit Task Modal */}
+    <div id="task-modal" class="modal">
         <div class="modal-content bg-primary p-6 rounded-lg shadow-xl border border-themed">
             <form id="task-form">
                 <input type="hidden" id="task-id">
                 <h3 id="modal-title" class="text-xl font-semibold mb-4 text-primary">Add New Task</h3>
 
+                {/* Title */}
                 <div class="mb-4">
-                    <label for="task-title" class="block text-sm font-medium text-secondary mb-1">Title <span class="text-red-500">*</span></label>
+                    <label for="task-title" class="block text-sm font-medium text-secondary mb-1">Title <span class="text-red-400">*</span></label> {/* Adjusted required color */}
                     <input type="text" id="task-title" required class="w-full px-3 py-2 bg-primary border border-themed rounded-md focus:outline-none focus:ring-2 focus:ring-accent-color text-primary" placeholder="e.g., Buy groceries">
                 </div>
 
+                {/* Description / Notes */}
                 <div class="mb-4">
                     <label for="task-description" class="block text-sm font-medium text-secondary mb-1">Description / Notes</label>
                     <textarea id="task-description" rows="3" class="w-full px-3 py-2 bg-primary border border-themed rounded-md focus:outline-none focus:ring-2 focus:ring-accent-color text-primary" placeholder="Add details or notes here..."></textarea>
                 </div>
 
+                {/* Due Date */}
                 <div class="mb-4">
                     <label for="task-due-date" class="block text-sm font-medium text-secondary mb-1">Due Date</label>
-                    <input type="date" id="task-due-date" class="w-full px-3 py-2 bg-primary border border-themed rounded-md focus:outline-none focus:ring-2 focus:ring-accent-color text-primary">
+                    <input type="date" id="task-due-date" class="w-full px-3 py-2 bg-primary border border-themed rounded-md focus:outline-none focus:ring-2 focus:ring-accent-color text-primary" style="color-scheme: dark;"> {/* Hint for dark date picker */}
                 </div>
 
+                {/* Priority */}
                 <div class="mb-4">
                     <label for="task-priority" class="block text-sm font-medium text-secondary mb-1">Priority</label>
                     <select id="task-priority" class="w-full px-3 py-2 bg-primary border border-themed rounded-md focus:outline-none focus:ring-2 focus:ring-accent-color text-primary">
@@ -379,6 +405,7 @@
                     </select>
                 </div>
 
+                {/* Category */}
                 <div class="mb-4">
                     <label for="task-category" class="block text-sm font-medium text-secondary mb-1">Category</label>
                     <div class="flex gap-2">
@@ -388,6 +415,7 @@
                     </div>
                 </div>
 
+                {/* Buttons */}
                 <div class="flex justify-end gap-3 mt-6">
                     <button type="button" id="cancel-task-btn" class="secondary-button font-semibold py-2 px-4 rounded-md transition duration-150 ease-in-out">Cancel</button>
                     <button type="submit" id="save-task-btn" class="accent-button font-semibold py-2 px-4 rounded-md transition duration-150 ease-in-out">Save Task</button>
@@ -396,7 +424,8 @@
         </div>
     </div>
 
-    <div id="batch-action-bar" class="bg-secondary dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-themed flex items-center justify-between gap-4">
+    {/* Batch Action Bar */}
+    <div id="batch-action-bar" class="bg-secondary p-3 rounded-lg shadow-lg border border-themed flex items-center justify-between gap-4">
         <span id="batch-count" class="text-sm font-medium text-primary">X items selected</span>
         <div class="flex gap-2">
             <button id="batch-complete-btn" class="info-button text-xs font-medium py-1 px-3 rounded-md transition duration-150 ease-in-out"><i class="fas fa-check-double mr-1"></i>Complete</button>
@@ -405,14 +434,16 @@
     </div>
 
 
+    {/* Notification Area */}
     <div id="notification-area"></div>
 
+    {/* JavaScript */}
     <script>
-        // Make date-fns available globally for easier use
+        // Make date-fns available globally
         const { format, differenceInDays, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, parseISO, isBefore, isEqual, isAfter, getUnixTime, fromUnixTime, formatDistanceToNow, getUTCDay, getUTCDate, getUTCMonth, getUTCFullYear, startOfToday } = dateFns;
 
         document.addEventListener('DOMContentLoaded', () => {
-            // --- DOM Elements ---
+            // --- DOM Elements (Ensure all IDs match HTML) ---
             const loginScreen = document.getElementById('login-screen');
             const loginForm = document.getElementById('login-form');
             const appContainer = document.getElementById('app-container');
@@ -456,7 +487,7 @@
             const batchCountSpan = document.getElementById('batch-count');
             const batchDeleteBtn = document.getElementById('batch-delete-btn');
             const batchCompleteBtn = document.getElementById('batch-complete-btn');
-            const dateFilterButtons = document.querySelectorAll('.date-filter-btn');
+            const dateFilterButtonsContainer = document.querySelector('.mb-4.flex.flex-wrap.gap-2'); // Container for date filters
             const globalTimerDisplay = document.getElementById('global-timer-display');
 
 
@@ -465,43 +496,34 @@
             let categories = new Set();
             let currentUser = null;
             let lastState = null;
-            let currentFilters = {
-                status: 'all',
-                priority: 'all',
-                category: 'all',
-                searchTerm: '',
-                dateRange: 'overall' // 'today', 'week', 'month', 'overall'
-            };
+            let currentFilters = { status: 'all', priority: 'all', category: 'all', searchTerm: '', dateRange: 'overall' };
             let currentSort = 'default';
-            let currentView = 'list'; // 'list' or 'graph'
-            let taskChart = null; // Chart.js instance
+            let currentView = 'list';
+            let taskChart = null;
             let draggedItem = null;
-            let globalTimerInterval = null; // Interval ID for the header timer
-            let currentlyTrackingTaskId = null; // ID of the task being tracked
-            let trackingStartTime = null; // Timestamp (ms) when tracking started
+            let globalTimerInterval = null;
+            let currentlyTrackingTaskId = null;
+            let trackingStartTime = null;
 
             // --- Constants ---
-            const LOCAL_STORAGE_PREFIX = 'todoApp_v2_'; // Updated prefix for potentially breaking changes
-            const DUE_SOON_DAYS = 2; // How many days before due date counts as "soon"
+            const LOCAL_STORAGE_PREFIX = 'todoApp_v2_darkred_'; // New prefix for this version
+            const DUE_SOON_DAYS = 2;
 
             // --- Utility Functions ---
             const generateId = () => `task_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
             const getLocalStorageKey = (key) => `${LOCAL_STORAGE_PREFIX}${currentUser}_${key}`;
-
             const showNotification = (message, type = 'info', duration = 3000) => {
                 const notification = document.createElement('div');
-                notification.className = `notification notification-${type} text-sm`; // Added text-sm
+                notification.className = `notification notification-${type} text-sm`;
                 notification.textContent = message;
                 notificationArea.appendChild(notification);
-                notification.offsetHeight; // Trigger reflow
+                notification.offsetHeight; // Reflow
                 notification.classList.add('show');
                 setTimeout(() => {
                     notification.classList.remove('show');
                     setTimeout(() => notification.remove(), 300);
                 }, duration);
             };
-
-            // Format seconds into HH:MM:SS
             const formatTime = (totalSeconds) => {
                 if (isNaN(totalSeconds) || totalSeconds < 0) return '00:00:00';
                 const hours = Math.floor(totalSeconds / 3600);
@@ -509,82 +531,66 @@
                 const seconds = Math.floor(totalSeconds % 60);
                 return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             };
-
-            // Get current date in YYYY-MM-DD format (UTC)
             const getTodayUTCString = () => {
                 const now = new Date();
                 return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')}`;
             };
 
-
-            // --- Local Storage & State Management ---
+            // --- Local Storage & State ---
             const saveState = () => {
                 if (!currentUser) return;
                 try {
                     localStorage.setItem(getLocalStorageKey('tasks'), JSON.stringify(tasks));
                     localStorage.setItem(getLocalStorageKey('categories'), JSON.stringify(Array.from(categories)));
                     localStorage.setItem('todoApp_theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-                    // Save time tracking state
                     localStorage.setItem(getLocalStorageKey('currentlyTrackingTaskId'), currentlyTrackingTaskId || '');
                     localStorage.setItem(getLocalStorageKey('trackingStartTime'), trackingStartTime ? trackingStartTime.toString() : '');
-                    localStorage.setItem(getLocalStorageKey('lastResetDateUTC'), getTodayUTCString()); // Store last reset date
-
-                } catch (e) {
-                    console.error("Error saving state:", e);
-                    showNotification("Error saving data.", "error");
-                }
+                    localStorage.setItem(getLocalStorageKey('lastResetDateUTC'), getTodayUTCString());
+                } catch (e) { console.error("Error saving state:", e); showNotification("Error saving data.", "error"); }
             };
 
             const loadState = () => {
                 if (!currentUser) return;
                 setLoading(true);
                 try {
-                    // Load theme first
-                    loadTheme();
+                    loadTheme(); // Load theme preference first
+                    resetDailyTrackedTimeIfNeeded(); // Check for daily reset
 
-                    // Check for daily reset
-                    resetDailyTrackedTimeIfNeeded();
-
-                    // Load Tasks and Categories
                     const storedTasks = localStorage.getItem(getLocalStorageKey('tasks'));
                     const storedCategories = localStorage.getItem(getLocalStorageKey('categories'));
                     tasks = storedTasks ? JSON.parse(storedTasks) : [];
                     const loadedCats = storedCategories ? JSON.parse(storedCategories) : ['Work', 'Personal', 'Shopping'];
                     categories = new Set(loadedCats);
 
-                    // Add default tasks if none exist for the user
+                    // Add sample tasks if storage is empty for this user
                     if (tasks.length === 0) {
-                        addSampleTasks();
+                        addSampleTasks(); // This now saves state internally
+                    } else {
+                        // Ensure existing tasks have necessary properties (migration)
+                        tasks.forEach(task => {
+                            if (!task.id) task.id = generateId();
+                            if (task.completed === undefined) task.completed = false;
+                            if (!task.priority) task.priority = 'medium';
+                            if (!task.category) task.category = 'Uncategorized';
+                            if (task.trackedTime === undefined) task.trackedTime = 0;
+                            if (task.isTracking !== undefined) delete task.isTracking;
+                        });
                     }
 
-                    // Data Migration/Defaults (ensure all tasks have needed properties)
-                    tasks.forEach(task => {
-                        if (!task.id) task.id = generateId();
-                        if (task.completed === undefined) task.completed = false;
-                        if (!task.priority) task.priority = 'medium';
-                        if (!task.category) task.category = 'Uncategorized';
-                        if (task.trackedTime === undefined) task.trackedTime = 0; // Initialize tracked time
-                        if (task.isTracking !== undefined) delete task.isTracking; // Remove obsolete property if present
-                    });
-
-                    // Load time tracking state
+                    // Load and resume time tracking state
                     currentlyTrackingTaskId = localStorage.getItem(getLocalStorageKey('currentlyTrackingTaskId')) || null;
                     const storedStartTime = localStorage.getItem(getLocalStorageKey('trackingStartTime'));
                     trackingStartTime = storedStartTime ? parseInt(storedStartTime, 10) : null;
-
-                    // Resume timer if a task was being tracked
                     if (currentlyTrackingTaskId && trackingStartTime) {
                         startGlobalTimer(currentlyTrackingTaskId, trackingStartTime);
                     } else {
-                        currentlyTrackingTaskId = null;
-                        trackingStartTime = null;
-                         updateGlobalTimerDisplay(0); // Display 0 if nothing is tracked
+                        currentlyTrackingTaskId = null; trackingStartTime = null; updateGlobalTimerDisplay(0);
                     }
 
-
                     updateCategoryFilters();
-                    renderTasks(); // Initial render
-                    switchView(currentView); // Apply current view (usually list)
+                    updateActiveDateFilterButton(); // Set initial active date filter button
+                    renderTasks(); // Render based on loaded state
+                    switchView(currentView); // Ensure correct view is shown
 
                 } catch (e) {
                     console.error("Error loading state:", e);
@@ -596,988 +602,369 @@
                 }
             };
 
-             // --- Sample Data ---
+            // --- Sample Data ---
             const addSampleTasks = () => {
+                console.log("Adding sample tasks as none were found for user:", currentUser);
                 const today = new Date();
-                const sampleTasks = [
-                    { title: "Final Project Report", description: "Complete Section 3 and 4", dueDate: format(dateFns.addDays(today, 5), 'yyyy-MM-dd'), priority: "high", category: "Work", completed: false },
-                    { title: "Grocery Shopping", description: "Milk, Eggs, Bread, Coffee", dueDate: format(dateFns.addDays(today, 1), 'yyyy-MM-dd'), priority: "medium", category: "Personal", completed: false },
-                    { title: "Schedule Dentist Appointment", description: "", dueDate: null, priority: "low", category: "Personal", completed: false },
-                    { title: "Read Chapter 5 of JS Book", description: "Focus on async/await", dueDate: format(dateFns.addDays(today, 3), 'yyyy-MM-dd'), priority: "medium", category: "Learning", completed: true },
-                    { title: "Pay Electricity Bill", description: "Due next week", dueDate: format(dateFns.addDays(today, 7), 'yyyy-MM-dd'), priority: "high", category: "Bills", completed: false },
-                    { title: "Plan Weekend Trip", description: "Look up destinations and hotels", dueDate: format(dateFns.addDays(today, 10), 'yyyy-MM-dd'), priority: "medium", category: "Personal", completed: false },
-                    { title: "Fix Bug #123", description: "Issue reported by QA team", dueDate: format(dateFns.subDays(today, 1), 'yyyy-MM-dd'), priority: "high", category: "Work", completed: false }, // Overdue
-                    { title: "Call Mom", description: "", dueDate: format(today, 'yyyy-MM-dd'), priority: "medium", category: "Personal", completed: false }, // Due today
-                    { title: "Prepare Presentation Slides", description: "For Monday meeting", dueDate: format(dateFns.addDays(today, 4), 'yyyy-MM-dd'), priority: "high", category: "Work", completed: false },
-                    { title: "Water the Plants", description: "", dueDate: null, priority: "low", category: "Home", completed: true },
+                const sampleTasksData = [
+                    { title: "Review Dark Red Theme", description: "Check contrast and readability", dueDate: format(today, 'yyyy-MM-dd'), priority: "high", category: "Project", completed: false },
+                    { title: "Implement Login Glow", description: "Add CSS animation to login button", dueDate: format(today, 'yyyy-MM-dd'), priority: "medium", category: "Project", completed: false },
+                    { title: "Test View Transitions", description: "Ensure smooth switch between list and graph", dueDate: format(dateFns.addDays(today, 1), 'yyyy-MM-dd'), priority: "medium", category: "Project", completed: false },
+                    { title: "Buy Coffee Beans", description: "Dark roast preferred", dueDate: null, priority: "low", category: "Shopping", completed: false },
+                    { title: "Schedule Team Sync", description: "Discuss project milestones", dueDate: format(dateFns.addDays(today, 2), 'yyyy-MM-dd'), priority: "high", category: "Work", completed: false },
+                    { title: "Read date-fns Docs", description: "Understand formatting options", dueDate: format(dateFns.addDays(today, 3), 'yyyy-MM-dd'), priority: "medium", category: "Learning", completed: true },
+                    { title: "Pay Internet Bill", description: "Due end of week", dueDate: format(dateFns.endOfWeek(today, { weekStartsOn: 1 }), 'yyyy-MM-dd'), priority: "high", category: "Bills", completed: false },
+                    { title: "Plan Weekend Hike", description: "Check weather forecast", dueDate: format(dateFns.addDays(today, 5), 'yyyy-MM-dd'), priority: "medium", category: "Personal", completed: false },
+                    { title: "Fix CSS Bug on Mobile", description: "Sidebar alignment issue", dueDate: format(dateFns.subDays(today, 1), 'yyyy-MM-dd'), priority: "high", category: "Project", completed: false }, // Overdue
+                    { title: "Organize Desk", description: "", dueDate: null, priority: "low", category: "Home", completed: true },
                 ];
 
-                sampleTasks.forEach(taskData => {
+                sampleTasksData.forEach(taskData => {
                     const newTask = {
-                        id: generateId(),
-                        ...taskData,
+                        id: generateId(), ...taskData,
                         createdAt: new Date().toISOString(),
-                        trackedTime: Math.floor(Math.random() * 3600) // Add some random tracked time (0 to 1 hr)
+                        trackedTime: Math.floor(Math.random() * 1800) // 0 to 30 mins random time
                     };
-                    tasks.push(newTask); // Add to end for initial load
-                    addCategory(taskData.category);
+                    tasks.push(newTask);
+                    addCategory(taskData.category); // addCategory handles uniqueness and saving state
                 });
-                saveState(); // Save the sample tasks
-                showNotification("Added sample tasks to get you started!", "info");
-            };
-
-
-            const saveLastState = () => {
-                lastState = JSON.stringify({ tasks, categories: Array.from(categories) });
-                undoBtn.disabled = false;
-            };
-
-            const restoreLastState = () => {
-                if (!lastState) return;
-                // Stop any active timer before restoring state
-                if (currentlyTrackingTaskId) {
-                    pauseTimeTracker(currentlyTrackingTaskId, false); // Pause without saving last state again
-                }
-                const previousState = JSON.parse(lastState);
-                tasks = previousState.tasks;
-                categories = new Set(previousState.categories);
-                lastState = null;
-                undoBtn.disabled = true;
+                // Note: addCategory calls saveState, so we don't strictly need another save here,
+                // but explicitly saving ensures the tasks array itself is saved.
                 saveState();
-                updateCategoryFilters();
-                renderTasks(); // Render the restored state
+                showNotification("Added 10 sample tasks.", "info");
+            };
+
+            // --- Undo Logic ---
+            const saveLastState = () => { /* ... (no change needed) ... */
+                 lastState = JSON.stringify({ tasks, categories: Array.from(categories) }); undoBtn.disabled = false;
+            };
+            const restoreLastState = () => { /* ... (no change needed) ... */
+                if (!lastState) return;
+                if (currentlyTrackingTaskId) pauseTimeTracker(currentlyTrackingTaskId, false);
+                const previousState = JSON.parse(lastState);
+                tasks = previousState.tasks; categories = new Set(previousState.categories);
+                lastState = null; undoBtn.disabled = true;
+                saveState(); updateCategoryFilters(); renderTasks();
                 showNotification("Last action undone.", "info");
-                // Re-evaluate batch action bar state
                 updateBatchActionBar();
-                 // Re-evaluate time tracking state (though it should be stopped)
-                if (currentlyTrackingTaskId) {
-                     startGlobalTimer(currentlyTrackingTaskId, trackingStartTime);
-                } else {
-                     stopGlobalTimer();
-                     updateGlobalTimerDisplay(0);
-                }
+                if (currentlyTrackingTaskId) startGlobalTimer(currentlyTrackingTaskId, trackingStartTime); else { stopGlobalTimer(); updateGlobalTimerDisplay(0); }
             };
 
             // --- Theme Management ---
-            const applyTheme = (theme) => {
+            const applyTheme = (theme) => { /* ... (no change needed, handles dark/light toggle) ... */
                 const isDark = theme === 'dark';
                 document.documentElement.classList.toggle('dark', isDark);
                 themeToggleBtn.querySelector('.fa-sun').classList.toggle('hidden', isDark);
                 themeToggleBtn.querySelector('.fa-moon').classList.toggle('hidden', !isDark);
-                // Update chart theme if chart exists
-                if (taskChart) {
-                    taskChart.options.color = isDark ? 'rgba(249, 250, 251, 0.8)' : 'rgba(55, 65, 81, 0.8)'; // text-gray-50 / text-gray-700 with opacity
-                    taskChart.options.scales.x.grid.color = isDark ? 'rgba(75, 85, 99, 0.3)' : 'rgba(229, 231, 235, 0.5)'; // gray-600 / gray-200
-                    taskChart.options.scales.y.grid.color = isDark ? 'rgba(75, 85, 99, 0.3)' : 'rgba(229, 231, 235, 0.5)';
-                    taskChart.options.scales.x.ticks.color = isDark ? 'rgba(209, 213, 219, 0.8)' : 'rgba(107, 114, 128, 0.8)'; // gray-300 / gray-500
-                    taskChart.options.scales.y.ticks.color = isDark ? 'rgba(209, 213, 219, 0.8)' : 'rgba(107, 114, 128, 0.8)';
+                if (taskChart) { /* ... (chart color updates) ... */
+                    taskChart.options.color = isDark ? 'rgba(254, 242, 242, 0.8)' : 'rgba(55, 65, 81, 0.8)'; // red-50 / gray-700
+                    const chartGridColor = isDark ? 'rgba(153, 27, 27, 0.5)' : 'rgba(229, 231, 235, 0.5)'; // red-800 / gray-200
+                    const chartTickColor = isDark ? 'rgba(254, 202, 202, 0.8)' : 'rgba(107, 114, 128, 0.8)'; // red-200 / gray-500
+                    // Check if scales exist before trying to set colors (pie charts might not have them displayed)
+                    if (taskChart.options.scales.x) {
+                        taskChart.options.scales.x.grid.color = chartGridColor;
+                        taskChart.options.scales.x.ticks.color = chartTickColor;
+                    }
+                     if (taskChart.options.scales.y) {
+                        taskChart.options.scales.y.grid.color = chartGridColor;
+                        taskChart.options.scales.y.ticks.color = chartTickColor;
+                    }
+                    taskChart.options.plugins.legend.labels.color = chartTickColor;
+                    taskChart.options.plugins.title.color = isDark ? 'var(--text-primary)' : 'var(--text-primary-light)'; // Use primary text color
+                    taskChart.data.datasets[0].borderColor = [ // Update border color based on theme
+                        isDark ? 'var(--bg-secondary)' : 'var(--bg-primary-light)',
+                        isDark ? 'var(--bg-secondary)' : 'var(--bg-primary-light)'
+                    ];
                     taskChart.update();
                 }
             };
-            const toggleTheme = () => {
-                const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-                applyTheme(newTheme);
-                saveState();
+            const toggleTheme = () => { /* ... (no change needed) ... */
+                 const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark'; applyTheme(newTheme); saveState();
             };
-            const loadTheme = () => applyTheme(localStorage.getItem('todoApp_theme') || 'light');
+            const loadTheme = () => applyTheme(localStorage.getItem('todoApp_theme') || 'dark'); // Default to dark
 
 
             // --- UI Rendering ---
-            const setLoading = (isLoading) => {
+            const setLoading = (isLoading) => { /* ... (no change needed) ... */
                 loadingIndicator.classList.toggle('hidden', !isLoading);
-                if (currentView === 'list') {
-                    taskListUl.classList.toggle('hidden', isLoading);
-                    noTasksMessage.classList.toggle('hidden', isLoading);
-                } else {
-                    graphViewContainer.classList.toggle('opacity-50', isLoading); // Dim graph view
-                }
+                if (currentView === 'list') { taskListUl.classList.toggle('hidden', isLoading); noTasksMessage.classList.toggle('hidden', isLoading); }
+                 else { graphViewContainer.classList.toggle('opacity-50', isLoading); }
             };
 
             // --- Task Element Creation ---
-            const createTaskElement = (task) => {
+            const createTaskElement = (task) => { /* ... (no change needed) ... */
                 const li = document.createElement('li');
                 li.className = `task-item bg-secondary p-4 rounded-lg border border-themed shadow-sm flex items-start gap-3 priority-${task.priority} ${task.completed ? 'completed opacity-60' : ''}`;
-                li.dataset.id = task.id;
-                li.draggable = true;
-
-                // Left side (Checkbox + Content)
-                const leftDiv = document.createElement('div');
-                leftDiv.className = 'flex-grow flex items-start gap-3';
-
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.checked = task.completed;
-                checkbox.className = 'custom-checkbox mt-1 batch-select';
-                checkbox.addEventListener('change', () => {
-                    toggleTaskComplete(task.id);
-                    updateBatchActionBar(); // Update bar on check/uncheck
-                });
-
-                const contentDiv = document.createElement('div');
-                contentDiv.className = 'flex-grow';
-
-                const titleSpan = document.createElement('span');
-                titleSpan.textContent = task.title;
-                titleSpan.className = 'task-title font-medium text-primary block';
-
-                const detailsDiv = document.createElement('div');
-                detailsDiv.className = 'text-sm text-secondary mt-1 space-y-1';
-
-                if (task.description) {
-                    const descP = document.createElement('p');
-                    descP.textContent = task.description.length > 100 ? task.description.substring(0, 97) + '...' : task.description; // Truncate long descriptions slightly
-                    descP.title = task.description; // Show full on hover
-                    detailsDiv.appendChild(descP);
-                }
-
-                const metaDiv = document.createElement('div');
-                metaDiv.className = 'flex flex-wrap gap-x-3 gap-y-1 items-center text-xs'; // Smaller meta text
-
-                // Category
-                if (task.category && task.category !== 'Uncategorized') {
-                    const categorySpan = document.createElement('span');
-                    categorySpan.innerHTML = `<i class="fas fa-tag mr-1 opacity-75"></i>${task.category}`;
-                    categorySpan.className = 'bg-tertiary dark:bg-gray-600 px-1.5 py-0.5 rounded';
-                    metaDiv.appendChild(categorySpan);
-                }
-
-                 // Due Date & Alert
-                if (task.dueDate) {
-                    const dateSpan = document.createElement('span');
-                    try {
-                         // Use UTC midnight for comparisons to avoid timezone issues with just dates
-                        const dueDate = parseISO(task.dueDate + 'T00:00:00Z'); // Treat as UTC
-                        const today = startOfToday(); // Local start of today
-                        const diff = differenceInDays(dueDate, today); // Days remaining
-
-                        const formattedDate = format(dueDate, 'MMM d, yyyy');
-                        let alertClass = '';
-                        let alertTitle = '';
-
-                        if (!task.completed) {
-                            if (isBefore(dueDate, today)) {
-                                alertClass = 'expired'; // Red
-                                alertTitle = 'Overdue';
-                            } else if (diff >= 0 && diff <= DUE_SOON_DAYS) {
-                                alertClass = 'soon'; // Yellow
-                                alertTitle = `Due in ${formatDistanceToNow(dueDate, { addSuffix: true })}`;
-                            } else {
-                                alertClass = 'ontime'; // Green
-                                alertTitle = `Due ${formatDistanceToNow(dueDate, { addSuffix: true })}`;
-                            }
-                        }
-
-                        dateSpan.innerHTML = `<i class="fas fa-calendar-alt mr-1 opacity-75"></i>${formattedDate}`;
-                        if (alertClass) {
-                            dateSpan.innerHTML += `<span class="due-date-alert ${alertClass}" title="${alertTitle}"></span>`;
-                        }
-                        if (alertClass === 'expired') {
-                            dateSpan.classList.add('text-red-500', 'font-medium');
-                        } else if (alertClass === 'soon') {
-                             dateSpan.classList.add('text-amber-600', 'dark:text-amber-400');
-                        }
-
-                    } catch (e) {
-                        console.error("Error parsing date:", task.dueDate, e);
-                        dateSpan.innerHTML = `<i class="fas fa-calendar-alt mr-1 opacity-75"></i>Invalid Date`;
-                    }
-                    metaDiv.appendChild(dateSpan);
-                }
-
-                // Tracked Time
-                const timeSpan = document.createElement('span');
-                timeSpan.innerHTML = `<i class="fas fa-stopwatch mr-1 opacity-75"></i>${formatTime(task.trackedTime || 0)}`;
-                timeSpan.className = 'text-xs';
-                timeSpan.id = `time-${task.id}`; // ID for updating time display
-                metaDiv.appendChild(timeSpan);
-
-
-                detailsDiv.appendChild(metaDiv);
-                contentDiv.appendChild(titleSpan);
-                contentDiv.appendChild(detailsDiv);
-
-                leftDiv.appendChild(checkbox);
-                leftDiv.appendChild(contentDiv);
-
-                // Right side (Actions + Timer)
-                const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'flex flex-col items-end gap-1 md:gap-2 ml-auto pl-2 flex-shrink-0';
-
-                // Time Tracker Button
-                const timerBtn = document.createElement('button');
-                const isCurrentlyTrackingThis = currentlyTrackingTaskId === task.id;
-                timerBtn.innerHTML = `<i class="fas ${isCurrentlyTrackingThis ? 'fa-pause' : 'fa-play'}"></i>`;
-                timerBtn.className = `time-tracker-btn ${isCurrentlyTrackingThis ? 'tracking' : ''}`;
-                timerBtn.title = isCurrentlyTrackingThis ? "Pause Timer" : "Start Timer";
-                timerBtn.dataset.taskId = task.id;
-                timerBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    handleTimeTrackerToggle(task.id);
-                });
-
-                // Action Buttons (Edit, Delete)
-                const actionBtnsDiv = document.createElement('div');
-                actionBtnsDiv.className = 'flex items-center gap-1 md:gap-2 mt-1';
-
-                const editBtn = document.createElement('button');
-                editBtn.innerHTML = '<i class="fas fa-pencil-alt"></i>';
-                editBtn.className = 'text-blue-500 hover:text-blue-700 p-1 text-sm';
-                editBtn.title = "Edit Task";
-                editBtn.addEventListener('click', (e) => { e.stopPropagation(); openEditModal(task.id); });
-
-                const deleteBtn = document.createElement('button');
-                deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-                deleteBtn.className = 'text-red-500 hover:text-red-700 p-1 text-sm';
-                deleteBtn.title = "Delete Task";
-                deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); if (confirm(`Delete task: "${task.title}"?`)) deleteTask(task.id); });
-
-                actionBtnsDiv.appendChild(editBtn);
-                actionBtnsDiv.appendChild(deleteBtn);
-
-                actionsDiv.appendChild(timerBtn);
-                actionsDiv.appendChild(actionBtnsDiv);
-
-
-                li.appendChild(leftDiv);
-                li.appendChild(actionsDiv);
-
-                // Drag and Drop Listeners
-                li.addEventListener('dragstart', handleDragStart);
-                li.addEventListener('dragover', handleDragOver);
-                li.addEventListener('dragleave', handleDragLeave);
-                li.addEventListener('drop', handleDrop);
-                li.addEventListener('dragend', handleDragEnd);
-
+                li.dataset.id = task.id; li.draggable = true;
+                const leftDiv = document.createElement('div'); leftDiv.className = 'flex-grow flex items-start gap-3';
+                const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = task.completed; checkbox.className = 'custom-checkbox mt-1 batch-select';
+                checkbox.addEventListener('change', () => { toggleTaskComplete(task.id); updateBatchActionBar(); });
+                const contentDiv = document.createElement('div'); contentDiv.className = 'flex-grow';
+                const titleSpan = document.createElement('span'); titleSpan.textContent = task.title; titleSpan.className = 'task-title font-medium text-primary block';
+                const detailsDiv = document.createElement('div'); detailsDiv.className = 'text-sm text-secondary mt-1 space-y-1';
+                if (task.description) { const descP = document.createElement('p'); descP.textContent = task.description.length > 100 ? task.description.substring(0, 97) + '...' : task.description; descP.title = task.description; detailsDiv.appendChild(descP); }
+                const metaDiv = document.createElement('div'); metaDiv.className = 'flex flex-wrap gap-x-3 gap-y-1 items-center text-xs';
+                if (task.category && task.category !== 'Uncategorized') { const categorySpan = document.createElement('span'); categorySpan.innerHTML = `<i class="fas fa-tag mr-1 opacity-75"></i>${task.category}`; categorySpan.className = 'bg-tertiary px-1.5 py-0.5 rounded'; metaDiv.appendChild(categorySpan); }
+                if (task.dueDate) { const dateSpan = document.createElement('span'); try { const dueDate = parseISO(task.dueDate + 'T00:00:00Z'); const today = startOfToday(); const diff = differenceInDays(dueDate, today); const formattedDate = format(dueDate, 'MMM d, yyyy'); let alertClass = ''; let alertTitle = ''; if (!task.completed) { if (isBefore(dueDate, today)) { alertClass = 'expired'; alertTitle = 'Overdue'; } else if (diff >= 0 && diff <= DUE_SOON_DAYS) { alertClass = 'soon'; alertTitle = `Due in ${formatDistanceToNow(dueDate, { addSuffix: true })}`; } else { alertClass = 'ontime'; alertTitle = `Due ${formatDistanceToNow(dueDate, { addSuffix: true })}`; } } dateSpan.innerHTML = `<i class="fas fa-calendar-alt mr-1 opacity-75"></i>${formattedDate}`; if (alertClass) { dateSpan.innerHTML += `<span class="due-date-alert ${alertClass}" title="${alertTitle}"></span>`; } if (alertClass === 'expired') dateSpan.classList.add('text-danger-color', 'font-medium'); else if (alertClass === 'soon') dateSpan.classList.add('text-warning-color'); } catch (e) { console.error("Date parse error:", e); dateSpan.innerHTML = `<i class="fas fa-calendar-alt mr-1 opacity-75"></i>Invalid Date`; } metaDiv.appendChild(dateSpan); }
+                const timeSpan = document.createElement('span'); timeSpan.innerHTML = `<i class="fas fa-stopwatch mr-1 opacity-75"></i>${formatTime(task.trackedTime || 0)}`; timeSpan.className = 'text-xs'; timeSpan.id = `time-${task.id}`; metaDiv.appendChild(timeSpan);
+                detailsDiv.appendChild(metaDiv); contentDiv.appendChild(titleSpan); contentDiv.appendChild(detailsDiv); leftDiv.appendChild(checkbox); leftDiv.appendChild(contentDiv);
+                const actionsDiv = document.createElement('div'); actionsDiv.className = 'flex flex-col items-end gap-1 md:gap-2 ml-auto pl-2 flex-shrink-0';
+                const timerBtn = document.createElement('button'); const isCurrentlyTrackingThis = currentlyTrackingTaskId === task.id; timerBtn.innerHTML = `<i class="fas ${isCurrentlyTrackingThis ? 'fa-pause' : 'fa-play'}"></i>`; timerBtn.className = `time-tracker-btn ${isCurrentlyTrackingThis ? 'tracking' : ''}`; timerBtn.title = isCurrentlyTrackingThis ? "Pause Timer" : "Start Timer"; timerBtn.dataset.taskId = task.id; timerBtn.addEventListener('click', (e) => { e.stopPropagation(); handleTimeTrackerToggle(task.id); });
+                const actionBtnsDiv = document.createElement('div'); actionBtnsDiv.className = 'flex items-center gap-1 md:gap-2 mt-1';
+                const editBtn = document.createElement('button'); editBtn.innerHTML = '<i class="fas fa-pencil-alt"></i>'; editBtn.className = 'text-accent-color hover:text-accent-hover p-1 text-sm'; editBtn.title = "Edit Task"; editBtn.addEventListener('click', (e) => { e.stopPropagation(); openEditModal(task.id); });
+                const deleteBtn = document.createElement('button'); deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>'; deleteBtn.className = 'text-danger-color hover:text-danger-hover p-1 text-sm'; deleteBtn.title = "Delete Task"; deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); if (confirm(`Delete task: "${task.title}"?`)) deleteTask(task.id); });
+                actionBtnsDiv.appendChild(editBtn); actionBtnsDiv.appendChild(deleteBtn); actionsDiv.appendChild(timerBtn); actionsDiv.appendChild(actionBtnsDiv);
+                li.appendChild(leftDiv); li.appendChild(actionsDiv);
+                li.addEventListener('dragstart', handleDragStart); li.addEventListener('dragover', handleDragOver); li.addEventListener('dragleave', handleDragLeave); li.addEventListener('drop', handleDrop); li.addEventListener('dragend', handleDragEnd);
                 return li;
-            };
+             };
 
 
             // --- Main Render Function ---
-            const renderTasks = () => {
-                if (currentView === 'list') {
-                    renderListView();
-                } else if (currentView === 'graph') {
-                    renderGraphView();
-                }
-                updateBatchActionBar(); // Update bar visibility after render
+            const renderTasks = () => { /* ... (no change needed) ... */
+                 if (currentView === 'list') renderListView(); else if (currentView === 'graph') renderGraphView(); updateBatchActionBar();
             };
-
 
             // --- List View Rendering ---
-            const renderListView = () => {
-                taskListUl.innerHTML = '';
-                setLoading(true);
-
-                const filteredTasks = getFilteredAndSortedTasks();
-
-                if (filteredTasks.length === 0) {
-                    noTasksMessage.classList.remove('hidden');
-                    noTasksMessage.textContent = (currentFilters.searchTerm || currentFilters.status !== 'all' || currentFilters.priority !== 'all' || currentFilters.category !== 'all' || currentFilters.dateRange !== 'overall')
-                        ? 'No tasks match your current filters.'
-                        : 'No tasks yet. Add one to get started!';
-                } else {
-                    noTasksMessage.classList.add('hidden');
-                    filteredTasks.forEach(task => {
-                        const taskElement = createTaskElement(task);
-                        taskListUl.appendChild(taskElement);
-                    });
-                }
-
-                taskCountSpan.textContent = `${filteredTasks.length} task(s)`;
-                setLoading(false);
+            const renderListView = () => { /* ... (no change needed) ... */
+                taskListUl.innerHTML = ''; setLoading(true); const filteredTasks = getFilteredAndSortedTasks();
+                if (filteredTasks.length === 0) { noTasksMessage.classList.remove('hidden'); noTasksMessage.textContent = (currentFilters.searchTerm || currentFilters.status !== 'all' || currentFilters.priority !== 'all' || currentFilters.category !== 'all' || currentFilters.dateRange !== 'overall') ? 'No tasks match your current filters.' : 'No tasks yet. Add one to get started!'; }
+                 else { noTasksMessage.classList.add('hidden'); filteredTasks.forEach(task => { const taskElement = createTaskElement(task); taskListUl.appendChild(taskElement); }); }
+                taskCountSpan.textContent = `${filteredTasks.length} task(s)`; setLoading(false);
             };
 
-             // --- Filtering and Sorting Logic ---
-            const getFilteredAndSortedTasks = () => {
-                 // Apply basic filters first
-                let filtered = tasks.filter(task => {
-                    const statusMatch = currentFilters.status === 'all' ||
-                                        (currentFilters.status === 'completed' && task.completed) ||
-                                        (currentFilters.status === 'active' && !task.completed);
-                    const priorityMatch = currentFilters.priority === 'all' || task.priority === currentFilters.priority;
-                    const categoryMatch = currentFilters.category === 'all' || task.category === currentFilters.category;
-                    const searchMatch = !currentFilters.searchTerm ||
-                                        task.title.toLowerCase().includes(currentFilters.searchTerm) ||
-                                        (task.description && task.description.toLowerCase().includes(currentFilters.searchTerm));
-                    return statusMatch && priorityMatch && categoryMatch && searchMatch;
-                });
-
-                // Apply date range filter
-                if (currentFilters.dateRange !== 'overall') {
-                    let startDate, endDate;
-                    const today = startOfToday(); // Local time start of day
-
-                    switch (currentFilters.dateRange) {
-                        case 'today':
-                            startDate = today;
-                            endDate = endOfDay(today);
-                            break;
-                        case 'week':
-                            startDate = startOfWeek(today, { weekStartsOn: 1 }); // Assuming week starts Monday
-                            endDate = endOfWeek(today, { weekStartsOn: 1 });
-                            break;
-                        case 'month':
-                            startDate = startOfMonth(today);
-                            endDate = endOfMonth(today);
-                            break;
-                    }
-
-                    if (startDate && endDate) {
-                        filtered = filtered.filter(task => {
-                            if (!task.dueDate) return false; // Exclude tasks without due dates
-                            try {
-                                // Parse task due date as local time for comparison with local ranges
-                                const dueDate = parseISO(task.dueDate);
-                                return !isBefore(dueDate, startDate) && !isAfter(dueDate, endDate);
-                            } catch {
-                                return false; // Invalid date format
-                            }
-                        });
-                    }
-                }
-
-
-                // Apply sorting
-                filtered.sort((a, b) => {
-                    switch (currentSort) {
-                        case 'dueDateAsc':
-                            if (!a.dueDate) return 1; if (!b.dueDate) return -1;
-                            return differenceInDays(parseISO(a.dueDate), parseISO(b.dueDate));
-                        case 'dueDateDesc':
-                             if (!a.dueDate) return 1; if (!b.dueDate) return -1;
-                            return differenceInDays(parseISO(b.dueDate), parseISO(a.dueDate));
-                        case 'priority':
-                            const priorityOrder = { high: 1, medium: 2, low: 3 };
-                            return (priorityOrder[a.priority] || 4) - (priorityOrder[b.priority] || 4);
-                        case 'titleAsc':
-                            return a.title.localeCompare(b.title);
-                        case 'timeTrackedDesc':
-                             return (b.trackedTime || 0) - (a.trackedTime || 0);
-                        case 'default':
-                        default:
-                            // Use original tasks array index for default/manual order
-                            return tasks.findIndex(t => t.id === a.id) - tasks.findIndex(t => t.id === b.id);
-                    }
-                });
-
+            // --- Filtering and Sorting Logic ---
+            const getFilteredAndSortedTasks = () => { /* ... (no change needed) ... */
+                let filtered = tasks.filter(task => { const statusMatch = currentFilters.status === 'all' || (currentFilters.status === 'completed' && task.completed) || (currentFilters.status === 'active' && !task.completed); const priorityMatch = currentFilters.priority === 'all' || task.priority === currentFilters.priority; const categoryMatch = currentFilters.category === 'all' || task.category === currentFilters.category; const searchMatch = !currentFilters.searchTerm || task.title.toLowerCase().includes(currentFilters.searchTerm) || (task.description && task.description.toLowerCase().includes(currentFilters.searchTerm)); return statusMatch && priorityMatch && categoryMatch && searchMatch; });
+                if (currentFilters.dateRange !== 'overall') { let startDate, endDate; const today = startOfToday(); switch (currentFilters.dateRange) { case 'today': startDate = today; endDate = endOfDay(today); break; case 'week': startDate = startOfWeek(today, { weekStartsOn: 1 }); endDate = endOfWeek(today, { weekStartsOn: 1 }); break; case 'month': startDate = startOfMonth(today); endDate = endOfMonth(today); break; } if (startDate && endDate) { filtered = filtered.filter(task => { if (!task.dueDate) return false; try { const dueDate = parseISO(task.dueDate); return !isBefore(dueDate, startDate) && !isAfter(dueDate, endDate); } catch { return false; } }); } }
+                filtered.sort((a, b) => { switch (currentSort) { case 'dueDateAsc': if (!a.dueDate) return 1; if (!b.dueDate) return -1; return differenceInDays(parseISO(a.dueDate), parseISO(b.dueDate)); case 'dueDateDesc': if (!a.dueDate) return 1; if (!b.dueDate) return -1; return differenceInDays(parseISO(b.dueDate), parseISO(a.dueDate)); case 'priority': const priorityOrder = { high: 1, medium: 2, low: 3 }; return (priorityOrder[a.priority] || 4) - (priorityOrder[b.priority] || 4); case 'titleAsc': return a.title.localeCompare(b.title); case 'timeTrackedDesc': return (b.trackedTime || 0) - (a.trackedTime || 0); case 'default': default: return tasks.findIndex(t => t.id === a.id) - tasks.findIndex(t => t.id === b.id); } });
                 return filtered;
-            };
-
+             };
 
             // --- Graph View Rendering ---
-            const renderGraphView = () => {
+            const renderGraphView = () => { /* ... (Update chart colors for dark red theme) ... */
                 setLoading(true);
-                const filteredTasks = getFilteredAndSortedTasks(); // Get tasks based on current filters
-
+                const filteredTasks = getFilteredAndSortedTasks();
                 const statusCounts = { active: 0, completed: 0 };
-                const priorityCounts = { high: 0, medium: 0, low: 0 };
-                const categoryCounts = {};
+                filteredTasks.forEach(task => { if (task.completed) statusCounts.completed++; else statusCounts.active++; });
 
-                filteredTasks.forEach(task => {
-                    // Status
-                    if (task.completed) statusCounts.completed++; else statusCounts.active++;
-                    // Priority
-                    priorityCounts[task.priority] = (priorityCounts[task.priority] || 0) + 1;
-                    // Category
-                    const cat = task.category || 'Uncategorized';
-                    categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
-                });
-
-                 // Determine if dark mode is active for chart colors
                 const isDarkMode = document.documentElement.classList.contains('dark');
-                const textColor = isDarkMode ? 'rgba(249, 250, 251, 0.8)' : 'rgba(55, 65, 81, 0.8)';
-                const gridColor = isDarkMode ? 'rgba(75, 85, 99, 0.3)' : 'rgba(229, 231, 235, 0.5)';
-                const tickColor = isDarkMode ? 'rgba(209, 213, 219, 0.8)' : 'rgba(107, 114, 128, 0.8)';
+                const textColor = isDarkMode ? 'var(--text-secondary)' : 'var(--text-secondary-light)'; // Use secondary text for labels
+                const titleColor = isDarkMode ? 'var(--text-primary)' : 'var(--text-primary-light)'; // Use primary text for title
+                const chartBorderColor = isDarkMode ? 'var(--bg-secondary)' : 'var(--bg-primary-light)'; // Use bg colors for border
 
-                // Chart Configuration (Example: Pie chart for status)
                 const chartData = {
                     labels: ['Active', 'Completed'],
                     datasets: [{
                         label: 'Task Status',
                         data: [statusCounts.active, statusCounts.completed],
-                        backgroundColor: [
-                            'rgba(245, 158, 11, 0.7)',  // amber-500 with opacity
-                            'rgba(34, 197, 94, 0.7)'   // green-500 with opacity
-                        ],
-                        borderColor: [
-                             isDarkMode ? 'rgba(55, 65, 81, 1)' : 'rgba(255, 255, 255, 1)', // gray-700 / white
-                             isDarkMode ? 'rgba(55, 65, 81, 1)' : 'rgba(255, 255, 255, 1)'
-                        ],
+                        backgroundColor: [ 'rgba(251, 191, 36, 0.7)', 'rgba(74, 222, 128, 0.7)' ], // amber-400, green-400 with opacity
+                        borderColor: [ chartBorderColor, chartBorderColor ],
                         borderWidth: 1
                     }]
                 };
-
                 const chartOptions = {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: { color: textColor }
-                        },
-                        title: {
-                            display: true,
-                            text: `Status Overview (${filteredTasks.length} tasks)`,
-                            color: textColor,
-                            font: { size: 16 }
-                        }
+                        legend: { position: 'top', labels: { color: textColor } },
+                        title: { display: true, text: `Status Overview (${filteredTasks.length} tasks)`, color: titleColor, font: { size: 16 } }
                     },
-                     // Scales are not typically used for pie charts, but keep for consistency if changing chart type
-                    scales: {
-                        x: { display: false, grid: { color: gridColor }, ticks: { color: tickColor } },
-                        y: { display: false, grid: { color: gridColor }, ticks: { color: tickColor } }
-                    },
-                    color: textColor // Default text color for chart elements
+                    scales: { x: { display: false }, y: { display: false } }, // Hide scales for pie chart
+                    color: textColor
                 };
 
-                // Destroy previous chart instance if it exists
-                if (taskChart) {
-                    taskChart.destroy();
-                }
-
-                // Create new chart
-                 if (taskChartCanvas) {
+                if (taskChart) taskChart.destroy();
+                if (taskChartCanvas) {
                     const ctx = taskChartCanvas.getContext('2d');
-                    taskChart = new Chart(ctx, {
-                        type: 'pie', // Or 'bar', 'doughnut' etc.
-                        data: chartData,
-                        options: chartOptions
-                    });
-                 } else {
-                    console.error("Chart canvas element not found");
-                 }
+                    taskChart = new Chart(ctx, { type: 'pie', data: chartData, options: chartOptions });
+                } else { console.error("Chart canvas not found"); }
 
-
-                graphMessage.textContent = filteredTasks.length > 0
-                    ? `Showing overview for ${filteredTasks.length} tasks matching current filters.`
-                    : 'No tasks match current filters to display in the graph.';
-
+                graphMessage.textContent = filteredTasks.length > 0 ? `Overview for ${filteredTasks.length} tasks matching filters.` : 'No tasks match filters.';
                 setLoading(false);
             };
 
             // --- View Switching ---
-            const switchView = (view) => {
+            const switchView = (view) => { /* ... (Enhanced CSS handles transition) ... */
                 currentView = view;
                 const isList = view === 'list';
 
-                // Toggle button active states
                 listViewBtn.classList.toggle('active', isList);
-                listViewBtn.classList.toggle('secondary-button', !isList); // Use secondary style when inactive
-                listViewBtn.classList.toggle('accent-button', isList); // Use accent style when active
+                listViewBtn.classList.toggle('secondary-button', !isList);
+                listViewBtn.classList.toggle('accent-button', isList);
 
                 graphViewBtn.classList.toggle('active', !isList);
                 graphViewBtn.classList.toggle('secondary-button', isList);
                 graphViewBtn.classList.toggle('accent-button', !isList);
 
+                 // Ensure correct view is displayed and rendered if needed
+                const listWasHidden = listViewContainer.classList.contains('hidden');
+                const graphWasHidden = graphViewContainer.classList.contains('hidden');
 
-                // Show/hide containers with transition (optional simple fade)
-                listViewContainer.style.transition = 'opacity 0.3s ease';
-                graphViewContainer.style.transition = 'opacity 0.3s ease';
+                // Toggle hidden classes first
+                listViewContainer.classList.toggle('hidden', !isList);
+                graphViewContainer.classList.toggle('hidden', isList);
 
-                if (isList) {
-                    listViewContainer.classList.remove('hidden');
-                    graphViewContainer.classList.add('hidden');
-                    renderListView(); // Re-render list view
-                } else {
-                    listViewContainer.classList.add('hidden');
-                    graphViewContainer.classList.remove('hidden');
-                    renderGraphView(); // Render graph view
+                // Render the view if it was previously hidden
+                if (isList && listWasHidden) {
+                    renderListView();
+                } else if (!isList && graphWasHidden) {
+                    renderGraphView();
                 }
             };
-
 
             // --- Task Operations ---
-            const addTask = (taskData) => {
-                saveLastState();
-                const newTask = {
-                    id: generateId(),
-                    ...taskData,
-                    completed: false,
-                    createdAt: new Date().toISOString(),
-                    trackedTime: 0 // Initialize tracked time
-                };
-                tasks.unshift(newTask);
-                addCategory(taskData.category);
-                saveState();
-                renderTasks();
-                showNotification(`Task "${newTask.title}" added.`, "success");
+            const addTask = (taskData) => { /* ... (no change needed) ... */
+                 saveLastState(); const newTask = { id: generateId(), ...taskData, completed: false, createdAt: new Date().toISOString(), trackedTime: 0 }; tasks.unshift(newTask); addCategory(taskData.category); saveState(); renderTasks(); showNotification(`Task "${newTask.title}" added.`, "success");
             };
-
-            const editTask = (id, updatedData) => {
-                saveLastState();
-                const taskIndex = tasks.findIndex(task => task.id === id);
-                if (taskIndex > -1) {
-                    // Preserve existing trackedTime and createdAt
-                    const originalTask = tasks[taskIndex];
-                    tasks[taskIndex] = {
-                        ...originalTask, // Keep original properties like id, createdAt, trackedTime
-                        ...updatedData   // Apply updates
-                    };
-                    addCategory(updatedData.category);
-                    saveState();
-                    renderTasks();
-                    showNotification(`Task "${updatedData.title}" updated.`, "success");
-                }
+            const editTask = (id, updatedData) => { /* ... (no change needed) ... */
+                 saveLastState(); const taskIndex = tasks.findIndex(task => task.id === id); if (taskIndex > -1) { const originalTask = tasks[taskIndex]; tasks[taskIndex] = { ...originalTask, ...updatedData }; addCategory(updatedData.category); saveState(); renderTasks(); showNotification(`Task "${updatedData.title}" updated.`, "success"); }
             };
-
-            const deleteTask = (id) => {
-                 // If the task being deleted is currently tracked, stop the timer first
-                if (currentlyTrackingTaskId === id) {
-                    pauseTimeTracker(id, false); // Pause without saving state again
-                }
-                saveLastState();
-                const taskToDelete = tasks.find(task => task.id === id);
-                tasks = tasks.filter(task => task.id !== id);
-                saveState();
-                renderTasks();
-                if (taskToDelete) {
-                    showNotification(`Task "${taskToDelete.title}" deleted.`, "info");
-                }
+            const deleteTask = (id) => { /* ... (no change needed) ... */
+                 if (currentlyTrackingTaskId === id) pauseTimeTracker(id, false); saveLastState(); const taskToDelete = tasks.find(task => task.id === id); tasks = tasks.filter(task => task.id !== id); saveState(); renderTasks(); if (taskToDelete) showNotification(`Task "${taskToDelete.title}" deleted.`, "info");
             };
-
-            const toggleTaskComplete = (id) => {
-                saveLastState();
-                const taskIndex = tasks.findIndex(task => task.id === id);
-                if (taskIndex > -1) {
-                    tasks[taskIndex].completed = !tasks[taskIndex].completed;
-                     // If completing a task that is being tracked, stop the timer
-                    if (tasks[taskIndex].completed && currentlyTrackingTaskId === id) {
-                        pauseTimeTracker(id, false); // Pause without saving state again
-                    }
-                    saveState();
-                    renderTasks();
-                    const status = tasks[taskIndex].completed ? 'completed' : 'marked active';
-                    showNotification(`Task "${tasks[taskIndex].title}" ${status}.`, "info");
-                }
+            const toggleTaskComplete = (id) => { /* ... (no change needed) ... */
+                 saveLastState(); const taskIndex = tasks.findIndex(task => task.id === id); if (taskIndex > -1) { tasks[taskIndex].completed = !tasks[taskIndex].completed; if (tasks[taskIndex].completed && currentlyTrackingTaskId === id) pauseTimeTracker(id, false); saveState(); renderTasks(); const status = tasks[taskIndex].completed ? 'completed' : 'marked active'; showNotification(`Task "${tasks[taskIndex].title}" ${status}.`, "info"); }
             };
 
             // --- Category Management ---
-            const addCategory = (categoryName) => {
-                const trimmedName = categoryName?.trim(); // Handle potential null/undefined
-                if (trimmedName && !categories.has(trimmedName)) {
-                    categories.add(trimmedName);
-                    updateCategoryFilters();
-                    updateCategoryDatalist();
-                    saveState();
-                }
+            const addCategory = (categoryName) => { /* ... (no change needed) ... */
+                 const trimmedName = categoryName?.trim(); if (trimmedName && !categories.has(trimmedName)) { categories.add(trimmedName); updateCategoryFilters(); updateCategoryDatalist(); saveState(); }
             };
-            const updateCategoryFilters = () => {
-                const currentFilterValue = filterCategorySelect.value;
-                filterCategorySelect.innerHTML = '<option value="all">All Categories</option>';
-                const sortedCategories = Array.from(categories).sort((a, b) => a.localeCompare(b));
-                sortedCategories.forEach(cat => {
-                    const option = document.createElement('option');
-                    option.value = cat; option.textContent = cat;
-                    filterCategorySelect.appendChild(option);
-                });
-                if (categories.has(currentFilterValue)) filterCategorySelect.value = currentFilterValue;
-                 else { filterCategorySelect.value = 'all'; currentFilters.category = 'all'; }
+            const updateCategoryFilters = () => { /* ... (no change needed) ... */
+                 const currentFilterValue = filterCategorySelect.value; filterCategorySelect.innerHTML = '<option value="all">All Categories</option>'; const sortedCategories = Array.from(categories).sort((a, b) => a.localeCompare(b)); sortedCategories.forEach(cat => { const option = document.createElement('option'); option.value = cat; option.textContent = cat; filterCategorySelect.appendChild(option); }); if (categories.has(currentFilterValue)) filterCategorySelect.value = currentFilterValue; else { filterCategorySelect.value = 'all'; currentFilters.category = 'all'; }
             };
-            const updateCategoryDatalist = () => {
-                categoryDatalist.innerHTML = '';
-                const sortedCategories = Array.from(categories).sort((a, b) => a.localeCompare(b));
-                sortedCategories.forEach(cat => {
-                    const option = document.createElement('option'); option.value = cat;
-                    categoryDatalist.appendChild(option);
-                });
+            const updateCategoryDatalist = () => { /* ... (no change needed) ... */
+                 categoryDatalist.innerHTML = ''; const sortedCategories = Array.from(categories).sort((a, b) => a.localeCompare(b)); sortedCategories.forEach(cat => { const option = document.createElement('option'); option.value = cat; categoryDatalist.appendChild(option); });
             };
-
 
             // --- Modal Handling ---
-            const openTaskModal = (mode = 'add', taskId = null) => {
-                taskForm.reset(); taskIdInput.value = ''; taskCategoryInput.value = '';
-                if (mode === 'edit' && taskId) {
-                    const task = tasks.find(t => t.id === taskId);
-                    if (task) {
-                        modalTitle.textContent = 'Edit Task'; saveTaskBtn.textContent = 'Update Task';
-                        taskIdInput.value = task.id; taskTitleInput.value = task.title;
-                        taskDescriptionInput.value = task.description || '';
-                        taskDueDateInput.value = task.dueDate || '';
-                        taskPriorityInput.value = task.priority || 'medium';
-                        taskCategoryInput.value = task.category || '';
-                    } else { console.error("Task not found:", taskId); showNotification("Task not found.", "error"); return; }
-                } else {
-                    modalTitle.textContent = 'Add New Task'; saveTaskBtn.textContent = 'Save Task';
-                    taskPriorityInput.value = 'medium';
-                }
-                updateCategoryDatalist();
-                taskModal.classList.add('active');
-                taskTitleInput.focus();
+            const openTaskModal = (mode = 'add', taskId = null) => { /* ... (no change needed) ... */
+                 taskForm.reset(); taskIdInput.value = ''; taskCategoryInput.value = ''; if (mode === 'edit' && taskId) { const task = tasks.find(t => t.id === taskId); if (task) { modalTitle.textContent = 'Edit Task'; saveTaskBtn.textContent = 'Update Task'; taskIdInput.value = task.id; taskTitleInput.value = task.title; taskDescriptionInput.value = task.description || ''; taskDueDateInput.value = task.dueDate || ''; taskPriorityInput.value = task.priority || 'medium'; taskCategoryInput.value = task.category || ''; } else { console.error("Task not found:", taskId); showNotification("Task not found.", "error"); return; } } else { modalTitle.textContent = 'Add New Task'; saveTaskBtn.textContent = 'Save Task'; taskPriorityInput.value = 'medium'; } updateCategoryDatalist(); taskModal.classList.add('active'); taskTitleInput.focus();
             };
-            const openEditModal = (taskId) => openTaskModal('edit', taskId); // Alias for clarity
+            const openEditModal = (taskId) => openTaskModal('edit', taskId);
             const closeTaskModal = () => taskModal.classList.remove('active');
 
             // --- Event Handlers ---
-            const handleLoginFormSubmit = (e) => {
-                e.preventDefault();
-                const username = loginForm.username.value.trim();
+            const handleLoginFormSubmit = (e) => { /* ... (Reviewed login logic - seems OK) ... */
+                e.preventDefault(); // Prevent default form submission
+                const usernameInput = loginForm.username; // Get input element
+                const username = usernameInput.value.trim(); // Get trimmed value
+
+                // Basic check: Ensure username is not empty
                 if (username) {
-                    currentUser = username;
-                    loginScreen.style.display = 'none';
-                    appContainer.classList.remove('hidden');
-                    welcomeMessage.textContent = `Welcome, ${currentUser}!`;
-                    loadState(); // Load theme, check reset, load data, resume timer
-                } else { showNotification("Please enter a username.", "error"); }
-            };
-            const handleLogout = () => {
-                if (confirm("Logout? Active timer will stop. Data is saved locally.")) {
-                     if (currentlyTrackingTaskId) pauseTimeTracker(currentlyTrackingTaskId, false); // Stop timer before logout
-                    currentUser = null; tasks = []; categories = new Set(); lastState = null;
-                    appContainer.classList.add('hidden'); loginScreen.style.display = 'flex';
-                    welcomeMessage.textContent = '';
-                    stopGlobalTimer(); // Clear header timer display
-                    updateGlobalTimerDisplay(0);
+                    console.log("Login attempt for user:", username);
+                    currentUser = username; // Set the current user
+                    loginScreen.style.display = 'none'; // Hide the login screen
+                    appContainer.classList.remove('hidden'); // Show the main app container
+                    welcomeMessage.textContent = `Welcome, ${currentUser}!`; // Display welcome message
+
+                    // CRITICAL: Load user state *after* setting currentUser
+                    loadState();
+
+                    console.log("Login successful, app shown for:", currentUser);
+                } else {
+                    // Handle empty username case
+                    showNotification("Username cannot be empty.", "error");
+                    usernameInput.focus(); // Focus the username input for correction
+                    console.log("Login failed: Username empty.");
                 }
+                // Note: Password is intentionally not checked in this mock login.
             };
-            const handleTaskFormSubmit = (e) => {
-                e.preventDefault();
-                const id = taskIdInput.value;
-                const taskData = {
-                    title: taskTitleInput.value.trim(),
-                    description: taskDescriptionInput.value.trim(),
-                    dueDate: taskDueDateInput.value || null,
-                    priority: taskPriorityInput.value,
-                    category: taskCategoryInput.value.trim() || 'Uncategorized'
-                };
-                if (!taskData.title) { showNotification("Task title is required.", "error"); taskTitleInput.focus(); return; }
-                if (id) editTask(id, taskData); else addTask(taskData);
-                closeTaskModal();
+            const handleLogout = () => { /* ... (no change needed) ... */
+                 if (confirm("Logout? Active timer will stop. Data is saved locally.")) { if (currentlyTrackingTaskId) pauseTimeTracker(currentlyTrackingTaskId, false); currentUser = null; tasks = []; categories = new Set(); lastState = null; appContainer.classList.add('hidden'); loginScreen.style.display = 'flex'; welcomeMessage.textContent = ''; stopGlobalTimer(); updateGlobalTimerDisplay(0); }
             };
-            const handleFilterChange = () => {
-                currentFilters.status = filterStatusSelect.value;
-                currentFilters.priority = filterPrioritySelect.value;
-                currentFilters.category = filterCategorySelect.value;
-                currentFilters.searchTerm = searchInput.value.trim().toLowerCase();
-                renderTasks(); // Re-render based on filters
+            const handleTaskFormSubmit = (e) => { /* ... (no change needed) ... */
+                 e.preventDefault(); const id = taskIdInput.value; const taskData = { title: taskTitleInput.value.trim(), description: taskDescriptionInput.value.trim(), dueDate: taskDueDateInput.value || null, priority: taskPriorityInput.value, category: taskCategoryInput.value.trim() || 'Uncategorized' }; if (!taskData.title) { showNotification("Task title is required.", "error"); taskTitleInput.focus(); return; } if (id) editTask(id, taskData); else addTask(taskData); closeTaskModal();
             };
-             const handleDateFilterChange = (event) => {
-                const button = event.target.closest('.date-filter-btn');
-                if (!button) return;
+            const handleFilterChange = () => { /* ... (no change needed) ... */
+                 currentFilters.status = filterStatusSelect.value; currentFilters.priority = filterPrioritySelect.value; currentFilters.category = filterCategorySelect.value; currentFilters.searchTerm = searchInput.value.trim().toLowerCase(); renderTasks();
+            };
+            const handleDateFilterChange = (event) => { /* ... (no change needed) ... */
+                 const button = event.target.closest('.date-filter-btn'); if (!button) return;
+                 // Update active state on all buttons within the container
+                 dateFilterButtonsContainer.querySelectorAll('.date-filter-btn').forEach(btn => {
+                    btn.classList.remove('active', 'accent-button');
+                    btn.classList.add('secondary-button'); // Ensure inactive style
+                 });
+                 button.classList.add('active', 'accent-button');
+                 button.classList.remove('secondary-button'); // Remove inactive style
 
-                // Update active state
-                dateFilterButtons.forEach(btn => btn.classList.remove('active', 'accent-button'));
-                button.classList.add('active', 'accent-button');
-
-                currentFilters.dateRange = button.dataset.filter;
-                renderTasks();
+                 currentFilters.dateRange = button.dataset.filter; renderTasks();
             };
+             const updateActiveDateFilterButton = () => { // Helper to set initial active state
+                 dateFilterButtonsContainer.querySelectorAll('.date-filter-btn').forEach(btn => {
+                     const isActive = btn.dataset.filter === currentFilters.dateRange;
+                     btn.classList.toggle('active', isActive);
+                     btn.classList.toggle('accent-button', isActive);
+                     btn.classList.toggle('secondary-button', !isActive);
+                 });
+             };
 
-            const handleSortChange = () => { currentSort = sortTasksSelect.value; renderTasks(); };
-            const handleAddCategory = () => {
-                const categoryName = taskCategoryInput.value.trim();
-                if (categoryName) { addCategory(categoryName); showNotification(`Category "${categoryName}" added/selected.`, "info"); }
-                 else { showNotification("Please enter a category name.", "error"); }
+            const handleSortChange = () => { /* ... (no change needed) ... */
+                 currentSort = sortTasksSelect.value; renderTasks();
+            };
+            const handleAddCategory = () => { /* ... (no change needed) ... */
+                 const categoryName = taskCategoryInput.value.trim(); if (categoryName) { addCategory(categoryName); showNotification(`Category "${categoryName}" added/selected.`, "info"); } else { showNotification("Please enter a category name.", "error"); }
             };
 
             // --- Batch Actions ---
             const getSelectedTaskIds = () => Array.from(taskListUl.querySelectorAll('.batch-select:checked')).map(cb => cb.closest('.task-item').dataset.id);
-
-            const updateBatchActionBar = () => {
-                const selectedIds = getSelectedTaskIds();
-                const count = selectedIds.length;
-                if (count > 0) {
-                    batchCountSpan.textContent = `${count} item${count > 1 ? 's' : ''} selected`;
-                    batchActionBar.classList.add('active');
-                } else {
-                    batchActionBar.classList.remove('active');
-                }
+            const updateBatchActionBar = () => { /* ... (no change needed) ... */
+                 const selectedIds = getSelectedTaskIds(); const count = selectedIds.length; if (count > 0) { batchCountSpan.textContent = `${count} item${count > 1 ? 's' : ''} selected`; batchActionBar.classList.add('active'); } else { batchActionBar.classList.remove('active'); }
             };
-
-            const handleDeleteSelected = () => {
-                const selectedIds = getSelectedTaskIds();
-                if (selectedIds.length === 0) return;
-                if (confirm(`Delete ${selectedIds.length} selected task(s)?`)) {
-                     // Stop timers for any selected tasks being deleted
-                    selectedIds.forEach(id => {
-                        if (currentlyTrackingTaskId === id) {
-                            pauseTimeTracker(id, false);
-                        }
-                    });
-                    saveLastState();
-                    tasks = tasks.filter(task => !selectedIds.includes(task.id));
-                    saveState();
-                    renderTasks(); // Re-render list
-                    showNotification(`${selectedIds.length} task(s) deleted.`, "info");
-                }
+            const handleDeleteSelected = () => { /* ... (no change needed) ... */
+                 const selectedIds = getSelectedTaskIds(); if (selectedIds.length === 0) return; if (confirm(`Delete ${selectedIds.length} selected task(s)?`)) { selectedIds.forEach(id => { if (currentlyTrackingTaskId === id) pauseTimeTracker(id, false); }); saveLastState(); tasks = tasks.filter(task => !selectedIds.includes(task.id)); saveState(); renderTasks(); showNotification(`${selectedIds.length} task(s) deleted.`, "info"); }
             };
-
-            const handleCompleteSelected = () => {
-                const selectedIds = getSelectedTaskIds();
-                if (selectedIds.length === 0) return;
-                saveLastState();
-                let completedCount = 0;
-                tasks = tasks.map(task => {
-                    if (selectedIds.includes(task.id) && !task.completed) {
-                        task.completed = true;
-                         // Stop timer if completing a tracked task
-                        if (currentlyTrackingTaskId === task.id) {
-                            pauseTimeTracker(task.id, false);
-                        }
-                        completedCount++;
-                    }
-                    return task;
-                });
-                saveState();
-                renderTasks();
-                if (completedCount > 0) showNotification(`${completedCount} task(s) marked complete.`, "info");
-                 else showNotification("Selected tasks already complete.", "info");
+            const handleCompleteSelected = () => { /* ... (no change needed) ... */
+                 const selectedIds = getSelectedTaskIds(); if (selectedIds.length === 0) return; saveLastState(); let completedCount = 0; tasks = tasks.map(task => { if (selectedIds.includes(task.id) && !task.completed) { task.completed = true; if (currentlyTrackingTaskId === task.id) pauseTimeTracker(task.id, false); completedCount++; } return task; }); saveState(); renderTasks(); if (completedCount > 0) showNotification(`${completedCount} task(s) marked complete.`, "info"); else showNotification("Selected tasks already complete.", "info");
             };
-
 
             // --- Import/Export ---
-            const handleExportTasks = () => { /* ... (keep existing implementation) ... */
-                if (tasks.length === 0) { showNotification("No tasks to export.", "info"); return; }
-                try {
-                    const dataToExport = { exportDate: new Date().toISOString(), user: currentUser, tasks: tasks, categories: Array.from(categories) };
-                    const jsonString = JSON.stringify(dataToExport, null, 2);
-                    const blob = new Blob([jsonString], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url; a.download = `todo_app_export_${currentUser}_${new Date().toISOString().split('T')[0]}.json`;
-                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                    showNotification("Tasks exported successfully.", "success");
-                } catch (e) { console.error("Error exporting:", e); showNotification("Failed to export tasks.", "error"); }
+            const handleExportTasks = () => { /* ... (no change needed) ... */
+                 if (tasks.length === 0) { showNotification("No tasks to export.", "info"); return; } try { const dataToExport = { exportDate: new Date().toISOString(), user: currentUser, tasks: tasks, categories: Array.from(categories) }; const jsonString = JSON.stringify(dataToExport, null, 2); const blob = new Blob([jsonString], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `todo_app_export_${currentUser}_${new Date().toISOString().split('T')[0]}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); showNotification("Tasks exported successfully.", "success"); } catch (e) { console.error("Error exporting:", e); showNotification("Failed to export tasks.", "error"); }
             };
-            const handleImportTasks = (event) => { /* ... (keep existing implementation, ensure trackedTime is handled) ... */
-                 const file = event.target.files[0]; if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        const importedData = JSON.parse(e.target.result);
-                        if (!importedData || !Array.isArray(importedData.tasks)) throw new Error("Invalid JSON. Expected 'tasks' array.");
-                        if (confirm(`Import ${importedData.tasks.length} tasks? This REPLACES current tasks for user "${currentUser}".`)) {
-                            if (currentlyTrackingTaskId) pauseTimeTracker(currentlyTrackingTaskId, false); // Stop timer before import
-                            saveLastState();
-                            tasks = importedData.tasks.map(task => ({
-                                id: task.id || generateId(), title: task.title || 'Untitled', description: task.description || '',
-                                dueDate: task.dueDate || null, priority: task.priority || 'medium', category: task.category || 'Uncategorized',
-                                completed: task.completed || false, createdAt: task.createdAt || new Date().toISOString(),
-                                trackedTime: task.trackedTime || 0 // Import tracked time
-                            }));
-                            categories = new Set(); // Reset categories before adding imported/extracted ones
-                            if (Array.isArray(importedData.categories)) importedData.categories.forEach(cat => categories.add(cat));
-                             else tasks.forEach(task => addCategory(task.category)); // Extract from tasks if not present
-                            saveState();
-                            updateCategoryFilters(); renderTasks();
-                            showNotification(`Imported ${importedData.tasks.length} tasks.`, "success");
-                        }
-                    } catch (error) { console.error("Import error:", error); showNotification(`Import failed: ${error.message}`, "error"); }
-                     finally { importJsonInput.value = null; }
-                };
-                reader.onerror = () => { showNotification("Failed to read import file.", "error"); importJsonInput.value = null; };
-                reader.readAsText(file);
+            const handleImportTasks = (event) => { /* ... (no change needed) ... */
+                 const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const importedData = JSON.parse(e.target.result); if (!importedData || !Array.isArray(importedData.tasks)) throw new Error("Invalid JSON. Expected 'tasks' array."); if (confirm(`Import ${importedData.tasks.length} tasks? This REPLACES current tasks for user "${currentUser}".`)) { if (currentlyTrackingTaskId) pauseTimeTracker(currentlyTrackingTaskId, false); saveLastState(); tasks = importedData.tasks.map(task => ({ id: task.id || generateId(), title: task.title || 'Untitled', description: task.description || '', dueDate: task.dueDate || null, priority: task.priority || 'medium', category: task.category || 'Uncategorized', completed: task.completed || false, createdAt: task.createdAt || new Date().toISOString(), trackedTime: task.trackedTime || 0 })); categories = new Set(); if (Array.isArray(importedData.categories)) importedData.categories.forEach(cat => categories.add(cat)); else tasks.forEach(task => addCategory(task.category)); saveState(); updateCategoryFilters(); renderTasks(); showNotification(`Imported ${importedData.tasks.length} tasks.`, "success"); } } catch (error) { console.error("Import error:", error); showNotification(`Import failed: ${error.message}`, "error"); } finally { importJsonInput.value = null; } }; reader.onerror = () => { showNotification("Failed to read import file.", "error"); importJsonInput.value = null; }; reader.readAsText(file);
             };
-
 
             // --- Drag and Drop Handlers ---
-            function handleDragStart(e) { /* ... (keep existing implementation) ... */
-                 draggedItem = this; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', this.dataset.id);
-                 setTimeout(() => this.classList.add('dragging'), 0);
-            }
-            function handleDragOver(e) { /* ... (keep existing implementation) ... */
-                 e.preventDefault(); e.dataTransfer.dropEffect = 'move';
-                 const targetItem = e.target.closest('.task-item');
-                 if (targetItem && targetItem !== draggedItem) {
-                     document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-                     targetItem.classList.add('drag-over');
-                 }
-            }
-            function handleDragLeave(e) { /* ... (keep existing implementation) ... */
-                 const targetItem = e.target.closest('.task-item'); if (targetItem) targetItem.classList.remove('drag-over');
-            }
-            function handleDrop(e) { /* ... (keep existing implementation) ... */
-                 e.preventDefault(); e.stopPropagation();
-                 const targetItem = e.target.closest('.task-item');
-                 document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-                 if (targetItem && draggedItem && targetItem !== draggedItem) {
-                     const draggedId = draggedItem.dataset.id; const targetId = targetItem.dataset.id;
-                     const draggedIndex = tasks.findIndex(t => t.id === draggedId); const targetIndex = tasks.findIndex(t => t.id === targetId);
-                     if (draggedIndex !== -1 && targetIndex !== -1) {
-                         saveLastState();
-                         const [movedTask] = tasks.splice(draggedIndex, 1);
-                         const newTargetIndex = tasks.findIndex(t => t.id === targetId); // Recalculate index after splice
-                         tasks.splice(newTargetIndex, 0, movedTask);
-                         saveState();
-                         // Force sort to default to reflect manual order
-                         sortTasksSelect.value = 'default'; currentSort = 'default';
-                         renderTasks();
-                         showNotification("Task order updated.", "info");
-                     }
-                 }
-                 if (draggedItem) draggedItem.classList.remove('dragging');
-                 draggedItem = null;
-            }
-            function handleDragEnd(e) { /* ... (keep existing implementation) ... */
-                 this.classList.remove('dragging'); document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')); draggedItem = null;
-            }
-
+            function handleDragStart(e) { /* ... (no change needed) ... */
+                 draggedItem = this; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', this.dataset.id); setTimeout(() => this.classList.add('dragging'), 0); }
+            function handleDragOver(e) { /* ... (no change needed) ... */
+                 e.preventDefault(); e.dataTransfer.dropEffect = 'move'; const targetItem = e.target.closest('.task-item'); if (targetItem && targetItem !== draggedItem) { document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')); targetItem.classList.add('drag-over'); } }
+            function handleDragLeave(e) { /* ... (no change needed) ... */
+                 const targetItem = e.target.closest('.task-item'); if (targetItem) targetItem.classList.remove('drag-over'); }
+            function handleDrop(e) { /* ... (no change needed) ... */
+                 e.preventDefault(); e.stopPropagation(); const targetItem = e.target.closest('.task-item'); document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')); if (targetItem && draggedItem && targetItem !== draggedItem) { const draggedId = draggedItem.dataset.id; const targetId = targetItem.dataset.id; const draggedIndex = tasks.findIndex(t => t.id === draggedId); const targetIndex = tasks.findIndex(t => t.id === targetId); if (draggedIndex !== -1 && targetIndex !== -1) { saveLastState(); const [movedTask] = tasks.splice(draggedIndex, 1); const newTargetIndex = tasks.findIndex(t => t.id === targetId); tasks.splice(newTargetIndex, 0, movedTask); saveState(); sortTasksSelect.value = 'default'; currentSort = 'default'; renderTasks(); showNotification("Task order updated.", "info"); } } if (draggedItem) draggedItem.classList.remove('dragging'); draggedItem = null; }
+            function handleDragEnd(e) { /* ... (no change needed) ... */
+                 this.classList.remove('dragging'); document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')); draggedItem = null; }
 
             // --- Keyboard Shortcuts ---
-            const handleKeyPress = (e) => { /* ... (keep existing implementation) ... */
-                if (e.ctrlKey && e.altKey && (e.key === 'n' || e.key === 'N')) { e.preventDefault(); if (!taskModal.classList.contains('active')) openTaskModal('add'); }
-                if (e.key === 'Escape' && taskModal.classList.contains('active')) closeTaskModal();
-                if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); if (!undoBtn.disabled) restoreLastState(); }
-            };
-
+            const handleKeyPress = (e) => { /* ... (no change needed) ... */
+                 if (e.ctrlKey && e.altKey && (e.key === 'n' || e.key === 'N')) { e.preventDefault(); if (!taskModal.classList.contains('active')) openTaskModal('add'); } if (e.key === 'Escape' && taskModal.classList.contains('active')) closeTaskModal(); if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); if (!undoBtn.disabled) restoreLastState(); } };
 
             // --- Time Tracking ---
-
-            // Reset tracked time for all tasks if it's a new day (UTC)
-            const resetDailyTrackedTimeIfNeeded = () => {
-                 const lastResetDateStr = localStorage.getItem(getLocalStorageKey('lastResetDateUTC'));
-                 const todayUTCStr = getTodayUTCString();
-
-                 if (lastResetDateStr !== todayUTCStr) {
-                     console.log(`New day detected (UTC: ${todayUTCStr}). Resetting tracked time.`);
-                     let resetCount = 0;
-                     tasks = tasks.map(task => {
-                         if (task.trackedTime && task.trackedTime > 0) {
-                             task.trackedTime = 0;
-                             resetCount++;
-                         }
-                         return task;
-                     });
-
-                     // Also clear any running timer state from previous day
-                      currentlyTrackingTaskId = null;
-                      trackingStartTime = null;
-                      localStorage.removeItem(getLocalStorageKey('currentlyTrackingTaskId'));
-                      localStorage.removeItem(getLocalStorageKey('trackingStartTime'));
-                      stopGlobalTimer(); // Ensure header timer is stopped
-                      updateGlobalTimerDisplay(0);
-
-
-                     if (resetCount > 0) {
-                         // Save the modified tasks and the new reset date immediately
-                         saveState();
-                         showNotification(`Daily tracked time reset for ${resetCount} task(s).`, "info");
-                     } else {
-                         // Still save the new reset date even if no tasks had time
-                         localStorage.setItem(getLocalStorageKey('lastResetDateUTC'), todayUTCStr);
-                     }
-                 }
-            };
-
-            const updateGlobalTimerDisplay = (totalSeconds) => {
-                globalTimerDisplay.textContent = formatTime(totalSeconds);
-            };
-
-            const startGlobalTimer = (taskId, startTime) => {
-                stopGlobalTimer(); // Clear any existing interval
-
-                const task = tasks.find(t => t.id === taskId);
-                if (!task) return;
-
-                const initialTrackedTime = task.trackedTime || 0;
-
-                globalTimerInterval = setInterval(() => {
-                    const now = Date.now();
-                    const elapsed = Math.floor((now - startTime) / 1000);
-                    const currentTotalSeconds = initialTrackedTime + elapsed;
-                    updateGlobalTimerDisplay(currentTotalSeconds);
-
-                    // Also update the specific task's time display in the list if visible
-                    const taskTimeSpan = document.getElementById(`time-${taskId}`);
-                    if (taskTimeSpan) {
-                        taskTimeSpan.textContent = formatTime(currentTotalSeconds);
-                    }
-
-                }, 1000);
-
-                 // Update button state
-                 updateTimerButton(taskId, true);
-            };
-
-            const stopGlobalTimer = () => {
-                if (globalTimerInterval) {
-                    clearInterval(globalTimerInterval);
-                    globalTimerInterval = null;
-                }
-                 // Update button state (find the previously tracked task)
-                if (currentlyTrackingTaskId) {
-                    updateTimerButton(currentlyTrackingTaskId, false);
-                }
-                 // Don't reset display here, pauseTimeTracker handles final update
-            };
-
-             const updateTimerButton = (taskId, isTracking) => {
-                const timerBtn = taskListUl.querySelector(`.time-tracker-btn[data-task-id="${taskId}"]`);
-                 if (timerBtn) {
-                    timerBtn.innerHTML = `<i class="fas ${isTracking ? 'fa-pause' : 'fa-play'}"></i>`;
-                    timerBtn.classList.toggle('tracking', isTracking);
-                    timerBtn.title = isTracking ? "Pause Timer" : "Start Timer";
-                }
-            };
-
-
-            const startTimeTracker = (taskId) => {
-                // Pause any currently running timer first
-                if (currentlyTrackingTaskId && currentlyTrackingTaskId !== taskId) {
-                    pauseTimeTracker(currentlyTrackingTaskId);
-                }
-
-                const task = tasks.find(t => t.id === taskId);
-                if (!task || task.completed) {
-                    showNotification("Cannot track time for completed tasks.", "warning");
-                    return;
-                }
-
-                currentlyTrackingTaskId = taskId;
-                trackingStartTime = Date.now(); // Record start time in ms
-
-                startGlobalTimer(taskId, trackingStartTime);
-                saveState(); // Save the new tracking state
-                showNotification(`Timer started for "${task.title}".`, "info");
-            };
-
-            const pauseTimeTracker = (taskId, shouldSaveState = true) => {
-                if (currentlyTrackingTaskId !== taskId || !trackingStartTime) return; // Not tracking this task
-
-                const taskIndex = tasks.findIndex(t => t.id === taskId);
-                if (taskIndex > -1) {
-                    const now = Date.now();
-                    const elapsedSeconds = Math.floor((now - trackingStartTime) / 1000);
-                    tasks[taskIndex].trackedTime = (tasks[taskIndex].trackedTime || 0) + elapsedSeconds;
-
-                    // Update UI immediately before stopping timer
-                    updateGlobalTimerDisplay(tasks[taskIndex].trackedTime);
-                     const taskTimeSpan = document.getElementById(`time-${taskId}`);
-                    if (taskTimeSpan) {
-                        taskTimeSpan.textContent = formatTime(tasks[taskIndex].trackedTime);
-                    }
-
-                    stopGlobalTimer(); // Stop the interval
-
-                    currentlyTrackingTaskId = null;
-                    trackingStartTime = null;
-
-                    if (shouldSaveState) saveState(); // Save updated tracked time and cleared tracking state
-                    showNotification(`Timer paused for "${tasks[taskIndex].title}". Total: ${formatTime(tasks[taskIndex].trackedTime)}`, "info");
-
-                } else {
-                     // Task not found, clear state anyway
-                     stopGlobalTimer();
-                     currentlyTrackingTaskId = null;
-                     trackingStartTime = null;
-                     if (shouldSaveState) saveState();
-                }
-                 updateGlobalTimerDisplay(0); // Reset header timer display after pause
-            };
-
-            const handleTimeTrackerToggle = (taskId) => {
-                if (currentlyTrackingTaskId === taskId) {
-                    pauseTimeTracker(taskId);
-                } else {
-                    startTimeTracker(taskId);
-                }
-            };
-
+            const resetDailyTrackedTimeIfNeeded = () => { /* ... (no change needed) ... */
+                 const lastResetDateStr = localStorage.getItem(getLocalStorageKey('lastResetDateUTC')); const todayUTCStr = getTodayUTCString(); if (lastResetDateStr !== todayUTCStr) { console.log(`New day detected (UTC: ${todayUTCStr}). Resetting tracked time.`); let resetCount = 0; tasks = tasks.map(task => { if (task.trackedTime && task.trackedTime > 0) { task.trackedTime = 0; resetCount++; } return task; }); currentlyTrackingTaskId = null; trackingStartTime = null; localStorage.removeItem(getLocalStorageKey('currentlyTrackingTaskId')); localStorage.removeItem(getLocalStorageKey('trackingStartTime')); stopGlobalTimer(); updateGlobalTimerDisplay(0); if (resetCount > 0) { saveState(); showNotification(`Daily tracked time reset for ${resetCount} task(s).`, "info"); } else { localStorage.setItem(getLocalStorageKey('lastResetDateUTC'), todayUTCStr); } } };
+            const updateGlobalTimerDisplay = (totalSeconds) => { /* ... (no change needed) ... */
+                 globalTimerDisplay.textContent = formatTime(totalSeconds); };
+            const startGlobalTimer = (taskId, startTime) => { /* ... (no change needed) ... */
+                 stopGlobalTimer(); const task = tasks.find(t => t.id === taskId); if (!task) return; const initialTrackedTime = task.trackedTime || 0; globalTimerInterval = setInterval(() => { const now = Date.now(); const elapsed = Math.floor((now - startTime) / 1000); const currentTotalSeconds = initialTrackedTime + elapsed; updateGlobalTimerDisplay(currentTotalSeconds); const taskTimeSpan = document.getElementById(`time-${taskId}`); if (taskTimeSpan) taskTimeSpan.textContent = formatTime(currentTotalSeconds); }, 1000); updateTimerButton(taskId, true); };
+            const stopGlobalTimer = () => { /* ... (no change needed) ... */
+                 if (globalTimerInterval) { clearInterval(globalTimerInterval); globalTimerInterval = null; } if (currentlyTrackingTaskId) updateTimerButton(currentlyTrackingTaskId, false); };
+            const updateTimerButton = (taskId, isTracking) => { /* ... (no change needed) ... */
+                 const timerBtn = taskListUl?.querySelector(`.time-tracker-btn[data-task-id="${taskId}"]`); if (timerBtn) { timerBtn.innerHTML = `<i class="fas ${isTracking ? 'fa-pause' : 'fa-play'}"></i>`; timerBtn.classList.toggle('tracking', isTracking); timerBtn.title = isTracking ? "Pause Timer" : "Start Timer"; } };
+            const startTimeTracker = (taskId) => { /* ... (no change needed) ... */
+                 if (currentlyTrackingTaskId && currentlyTrackingTaskId !== taskId) pauseTimeTracker(currentlyTrackingTaskId); const task = tasks.find(t => t.id === taskId); if (!task || task.completed) { showNotification("Cannot track time for completed tasks.", "warning"); return; } currentlyTrackingTaskId = taskId; trackingStartTime = Date.now(); startGlobalTimer(taskId, trackingStartTime); saveState(); showNotification(`Timer started for "${task.title}".`, "info"); };
+            const pauseTimeTracker = (taskId, shouldSaveState = true) => { /* ... (no change needed) ... */
+                 if (currentlyTrackingTaskId !== taskId || !trackingStartTime) return; const taskIndex = tasks.findIndex(t => t.id === taskId); if (taskIndex > -1) { const now = Date.now(); const elapsedSeconds = Math.floor((now - trackingStartTime) / 1000); tasks[taskIndex].trackedTime = (tasks[taskIndex].trackedTime || 0) + elapsedSeconds; updateGlobalTimerDisplay(tasks[taskIndex].trackedTime); const taskTimeSpan = document.getElementById(`time-${taskId}`); if (taskTimeSpan) taskTimeSpan.textContent = formatTime(tasks[taskIndex].trackedTime); stopGlobalTimer(); currentlyTrackingTaskId = null; trackingStartTime = null; if (shouldSaveState) saveState(); showNotification(`Timer paused for "${tasks[taskIndex].title}". Total: ${formatTime(tasks[taskIndex].trackedTime)}`, "info"); } else { stopGlobalTimer(); currentlyTrackingTaskId = null; trackingStartTime = null; if (shouldSaveState) saveState(); } updateGlobalTimerDisplay(0); };
+            const handleTimeTrackerToggle = (taskId) => { /* ... (no change needed) ... */
+                 if (currentlyTrackingTaskId === taskId) pauseTimeTracker(taskId); else startTimeTracker(taskId); };
 
             // --- Initialization ---
             const init = () => {
                 // Event Listeners
-                loginForm.addEventListener('submit', handleLoginFormSubmit);
+                loginForm.addEventListener('submit', handleLoginFormSubmit); // Ensure this is attached
                 logoutBtn.addEventListener('click', handleLogout);
                 themeToggleBtn.addEventListener('click', toggleTheme);
                 addTaskBtn.addEventListener('click', () => openTaskModal('add'));
@@ -1593,17 +980,17 @@
                 sortTasksSelect.addEventListener('change', handleSortChange);
                 listViewBtn.addEventListener('click', () => switchView('list'));
                 graphViewBtn.addEventListener('click', () => switchView('graph'));
-                document.querySelector('.mb-4.flex.flex-wrap.gap-2').addEventListener('click', handleDateFilterChange); // Delegate date filter clicks
+                if (dateFilterButtonsContainer) { // Check if container exists before adding listener
+                    dateFilterButtonsContainer.addEventListener('click', handleDateFilterChange);
+                } else {
+                    console.error("Date filter buttons container not found!");
+                }
 
 
                 // Batch Action Listeners
                 batchDeleteBtn.addEventListener('click', handleDeleteSelected);
                 batchCompleteBtn.addEventListener('click', handleCompleteSelected);
-                taskListUl.addEventListener('change', (e) => { // Use event delegation for checkboxes
-                    if (e.target.classList.contains('batch-select')) {
-                        updateBatchActionBar();
-                    }
-                });
+                taskListUl.addEventListener('change', (e) => { if (e.target.classList.contains('batch-select')) updateBatchActionBar(); });
 
                 // Import/Export
                 exportJsonBtn.addEventListener('click', handleExportTasks);
@@ -1618,9 +1005,10 @@
                 // Modal closing
                 taskModal.addEventListener('click', (e) => { if (e.target === taskModal) closeTaskModal(); });
 
-                // Initial Load - Load theme immediately, then show login or load user state
-                loadTheme();
-                loginScreen.style.display = 'flex'; // Always show login first
+                // Initial Load
+                loadTheme(); // Load theme preference (defaults to dark now)
+                loginScreen.style.display = 'flex'; // Show login screen initially
+                console.log("App Initialized. Waiting for login.");
 
             };
 
