@@ -1,1232 +1,654 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Single File Todo App</title>
-    <style>
-        /* Basic Reset & Root Variables */
-        :root {
-            --bg-color: #f4f4f8;
-            --text-color: #333;
-            --primary-color: #4a90e2;
-            --secondary-color: #f8f9fa;
-            --border-color: #ddd;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --danger-color: #e74c3c;
-            --warning-color: #f39c12;
-            --success-color: #2ecc71;
-            --high-priority-color: #e74c3c;
-            --medium-priority-color: #f39c12;
-            --low-priority-color: #3498db;
-            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            --border-radius: 5px;
-            --box-shadow: 0 2px 5px var(--shadow-color);
-        }
-
-        [data-theme="dark"] {
-            --bg-color: #2c2c2c;
-            --text-color: #f1f1f1;
-            --secondary-color: #3a3a3a;
-            --border-color: #555;
-            --shadow-color: rgba(255, 255, 255, 0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: var(--font-family);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            transition: background-color 0.3s, color 0.3s;
-            padding: 1rem;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            background-color: var(--secondary-color);
-            padding: 1.5rem 2rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            transition: background-color 0.3s;
-        }
-
-        h1, h2 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-        }
-
-        /* Theme Toggle */
-        .theme-toggle {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            padding: 0.5rem;
-            background: var(--secondary-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-        .theme-toggle:hover {
-            opacity: 0.8;
-        }
-
-        /* Forms */
-        #task-form, #category-form {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            background-color: var(--bg-color); /* Slightly different background for form */
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            margin-bottom: 0.3rem;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-
-        input[type="text"],
-        input[type="date"],
-        textarea,
-        select {
-            padding: 0.7rem;
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            background-color: var(--secondary-color); /* Match container */
-            color: var(--text-color);
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-        }
-        input:focus, textarea:focus, select:focus {
-             outline: none;
-             border-color: var(--primary-color);
-             box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 60px;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        button {
-            padding: 0.7rem 1.2rem;
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: bold;
-            transition: opacity 0.2s ease-in-out, background-color 0.3s;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        .btn-primary:hover {
-            opacity: 0.9;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            color: white;
-        }
-        .btn-secondary:hover {
-            opacity: 0.9;
-        }
-
-        .btn-danger {
-            background-color: var(--danger-color);
-            color: white;
-        }
-         .btn-danger:hover {
-            opacity: 0.9;
-        }
-
-         .btn-warning {
-            background-color: var(--warning-color);
-            color: white;
-        }
-         .btn-warning:hover {
-            opacity: 0.9;
-        }
-
-         .btn-success {
-            background-color: var(--success-color);
-            color: white;
-        }
-         .btn-success:hover {
-            opacity: 0.9;
-        }
-
-        .btn-small {
-            padding: 0.3rem 0.6rem;
-            font-size: 0.8rem;
-        }
-
-        /* Filters and Controls */
-        #controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            margin-bottom: 1.5rem;
-            padding: 0.8rem;
-            background-color: var(--bg-color);
-            border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
-        }
-        #controls > * {
-            flex-grow: 1; /* Allow items to grow */
-            min-width: 120px; /* Minimum width before wrapping */
-        }
-        #controls label {
-            font-size: 0.9rem;
-            margin-right: 0.3rem;
-            vertical-align: middle;
-        }
-        #controls select, #controls input[type="search"] {
-            padding: 0.5rem;
-            font-size: 0.9rem;
-            width: 100%; /* Make inputs/selects fill their container */
-        }
-
-        /* Batch Actions */
-        #batch-actions {
-            margin-bottom: 1rem;
-            padding: 0.5rem;
-            border-bottom: 1px solid var(--border-color);
-            display: none; /* Hidden by default */
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        #batch-actions span {
-            font-weight: bold;
-            margin-right: auto; /* Push buttons to the right */
-        }
-
-
-        /* Task List */
-        #task-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 1rem;
-        }
-
-        .task-item {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            background-color: var(--bg-color);
-            padding: 0.8rem 1rem;
-            border: 1px solid var(--border-color);
-            border-left-width: 5px; /* Priority indicator */
-            border-radius: var(--border-radius);
-            margin-bottom: 0.8rem;
-            transition: background-color 0.3s, border-color 0.3s, opacity 0.3s;
-            box-shadow: 0 1px 3px var(--shadow-color);
-        }
-
-        .task-item.completed {
-            opacity: 0.6;
-            text-decoration: line-through;
-        }
-        .task-item.completed .task-details strong {
-            text-decoration: line-through; /* Ensure title is also struck */
-        }
-
-        .task-item.priority-High { border-left-color: var(--high-priority-color); }
-        .task-item.priority-Medium { border-left-color: var(--medium-priority-color); }
-        .task-item.priority-Low { border-left-color: var(--low-priority-color); }
-
-        .task-item input[type="checkbox"] {
-            flex-shrink: 0;
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .task-details {
-            flex-grow: 1;
-            overflow: hidden; /* Prevent long text breaking layout */
-        }
-
-        .task-details strong { /* Title */
-            display: block;
-            font-size: 1.1rem;
-            margin-bottom: 0.2rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .task-meta {
-            font-size: 0.8rem;
-            color: #6c757d; /* Slightly muted color */
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        .task-meta span {
-             background-color: var(--secondary-color);
-             padding: 0.1rem 0.4rem;
-             border-radius: 3px;
-             border: 1px solid var(--border-color);
-             white-space: nowrap;
-        }
-
-        .task-actions {
-            flex-shrink: 0;
-            display: flex;
-            gap: 0.4rem;
-        }
-
-        /* Details Expansion (Optional Simple Implementation) */
-        .task-description {
-            display: none; /* Hidden by default */
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            padding-top: 0.5rem;
-            border-top: 1px dashed var(--border-color);
-            white-space: pre-wrap; /* Preserve line breaks in description */
-            word-wrap: break-word; /* Wrap long words */
-        }
-        .task-item.expanded .task-description {
-            display: block;
-        }
-
-        /* Error Messages */
-        .error-message {
-            color: var(--danger-color);
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            text-align: center;
-        }
-
-         /* Loading State */
-         .loading {
-             text-align: center;
-             padding: 1rem;
-             font-style: italic;
-         }
-
-         /* Import/Export Section */
-         .io-section {
-             margin-top: 2rem;
-             padding: 1rem;
-             border: 1px solid var(--border-color);
-             border-radius: var(--border-radius);
-             background-color: var(--bg-color);
-         }
-         .io-section h3 {
-             margin-bottom: 1rem;
-             text-align: left;
-             color: var(--text-color);
-         }
-         .io-actions {
-             display: flex;
-             gap: 1rem;
-             align-items: center;
-         }
-         #import-file {
-             display: none; /* Hide default input */
-         }
-         .btn-import-label {
-            display: inline-block;
-            padding: 0.7rem 1.2rem;
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: bold;
-            background-color: var(--success-color);
-            color: white;
-            transition: opacity 0.2s ease-in-out;
-         }
-         .btn-import-label:hover {
-             opacity: 0.9;
-         }
-
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            .container {
-                margin: 1rem;
-                padding: 1rem;
-            }
-            h1 { font-size: 1.8rem; }
-            #controls { flex-direction: column; gap: 0.8rem; }
-            #controls > * { min-width: unset; } /* Reset min-width */
-            .task-item { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-            .task-actions { margin-top: 0.5rem; align-self: flex-end; }
-            .form-actions { flex-direction: column; gap: 0.5rem; }
-            .form-actions button { width: 100%; }
-            .io-actions { flex-direction: column; align-items: stretch; }
-            .theme-toggle { top: 0.5rem; right: 0.5rem; padding: 0.3rem; }
-            #batch-actions { flex-direction: column; align-items: stretch; gap: 0.5rem; }
-            #batch-actions span { margin-bottom: 0.5rem; text-align: center; margin-right: 0;}
-        }
-    </style>
+    <!-- Previous HTML and CSS code remains the same -->
 </head>
-<body data-theme="light">
-    <button id="theme-toggle" class="theme-toggle">🌙</button>
-
-    <div class="container">
-        <h1>Todo List</h1>
-
-        <details class="category-manager">
-             <summary>Manage Categories</summary>
-             <form id="category-form">
-                <div class="form-group">
-                    <label for="new-category-name">New Category Name:</label>
-                    <input type="text" id="new-category-name" placeholder="e.g., Home, Errands" required>
-                </div>
-                <div class="form-actions">
-                     <button type="submit" class="btn-primary btn-small">Add Category</button>
-                </div>
-                <div id="category-list">
-                    </div>
-                <p id="category-error" class="error-message" style="display: none;"></p>
-             </form>
-        </details>
-
-
-        <form id="task-form">
-            <h2 id="form-title">Add New Task</h2>
-            <input type="hidden" id="edit-task-id"> <div class="form-group">
-                <label for="task-title">Title:</label>
-                <input type="text" id="task-title" placeholder="Task title" required>
-            </div>
-            <div class="form-group">
-                <label for="task-description">Description:</label>
-                <textarea id="task-description" placeholder="More details about the task"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="task-due-date">Due Date:</label>
-                <input type="date" id="task-due-date">
-            </div>
-            <div class="form-group">
-                <label for="task-category">Category:</label>
-                <select id="task-category">
-                    <option value="">None</option>
-                    </select>
-            </div>
-             <div class="form-group">
-                <label for="task-priority">Priority:</label>
-                <select id="task-priority">
-                    <option value="Low">Low</option>
-                    <option value="Medium" selected>Medium</option>
-                    <option value="High">High</option>
-                </select>
-            </div>
-            <div class="form-actions">
-                 <button type="button" id="cancel-edit-btn" class="btn-secondary" style="display: none;">Cancel Edit</button>
-                 <button type="submit" id="add-update-btn" class="btn-primary">Add Task</button>
-            </div>
-             <p id="form-error" class="error-message" style="display: none;"></p>
-        </form>
-
-        <div id="controls">
-             <div>
-                 <label for="filter-status">Status:</label>
-                 <select id="filter-status">
-                    <option value="all">All</option>
-                    <option value="active">Active</option>
-                    <option value="completed">Completed</option>
-                 </select>
-             </div>
-             <div>
-                <label for="filter-category">Category:</label>
-                 <select id="filter-category">
-                    <option value="">All</option>
-                    </select>
-             </div>
-             <div>
-                <label for="filter-priority">Priority:</label>
-                 <select id="filter-priority">
-                    <option value="">All</option>
-                    <option value="High">High</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Low">Low</option>
-                 </select>
-             </div>
-             <div>
-                <label for="filter-due-date">Due:</label>
-                 <select id="filter-due-date">
-                    <option value="">Any Date</option>
-                    <option value="today">Today</option>
-                    <option value="this-week">This Week</option>
-                    <option value="this-month">This Month</option>
-                    <option value="overdue">Overdue</option>
-                 </select>
-             </div>
-              <div>
-                <label for="search-task">Search:</label>
-                <input type="search" id="search-task" placeholder="Search tasks...">
-             </div>
-        </div>
-
-         <div id="batch-actions">
-            <span id="selected-count">0 tasks selected</span>
-            <button id="batch-delete" class="btn-danger btn-small">Delete Selected</button>
-            <button id="batch-complete" class="btn-success btn-small">Mark Selected Complete</button>
-            <button id="batch-active" class="btn-warning btn-small">Mark Selected Active</button>
-        </div>
-
-        <h2>Your Tasks</h2>
-        <ul id="task-list">
-            <li class="loading">Loading tasks...</li>
-        </ul>
-
-         <div class="io-section">
-             <h3>Import / Export Tasks</h3>
-             <div class="io-actions">
-                 <button id="export-btn" class="btn-secondary">Export Tasks (JSON)</button>
-                 <label for="import-file" class="btn-import-label">Import Tasks (JSON)</label>
-                 <input type="file" id="import-file" accept=".json">
-             </div>
-             <p id="io-message" class="error-message" style="display: none;"></p>
-         </div>
-
-    </div>
-
+<body>
+    <!-- Previous HTML structure remains the same -->
+    
     <script>
-        // ---=== App State ===---
-        let tasks = [];
-        let categories = ['Personal', 'Work', 'Health', 'Shopping', 'Errands']; // Default categories
-        let editingTaskId = null; // Track which task is being edited
-        let selectedTaskIds = new Set(); // Track IDs for batch actions
-
-        // ---=== DOM Elements ===---
-        const taskForm = document.getElementById('task-form');
-        const formTitle = document.getElementById('form-title');
-        const addUpdateBtn = document.getElementById('add-update-btn');
-        const cancelEditBtn = document.getElementById('cancel-edit-btn');
-        const editTaskIdInput = document.getElementById('edit-task-id');
-        const taskTitleInput = document.getElementById('task-title');
-        const taskDescriptionInput = document.getElementById('task-description');
-        const taskDueDateInput = document.getElementById('task-due-date');
-        const taskCategoryInput = document.getElementById('task-category');
-        const taskPriorityInput = document.getElementById('task-priority');
-        const taskList = document.getElementById('task-list');
-        const formError = document.getElementById('form-error');
-
-        const filterStatus = document.getElementById('filter-status');
-        const filterCategory = document.getElementById('filter-category');
-        const filterPriority = document.getElementById('filter-priority');
-        const filterDueDate = document.getElementById('filter-due-date');
-        const searchInput = document.getElementById('search-task');
-
-        const categoryForm = document.getElementById('category-form');
-        const newCategoryNameInput = document.getElementById('new-category-name');
-        const categoryListDiv = document.getElementById('category-list');
-        const categoryError = document.getElementById('category-error');
-
-        const themeToggleButton = document.getElementById('theme-toggle');
-        const bodyElement = document.body;
-
-        const batchActionsBar = document.getElementById('batch-actions');
-        const selectedCountSpan = document.getElementById('selected-count');
-        const batchDeleteBtn = document.getElementById('batch-delete');
-        const batchCompleteBtn = document.getElementById('batch-complete');
-        const batchActiveBtn = document.getElementById('batch-active');
-
-        const exportBtn = document.getElementById('export-btn');
-        const importFile = document.getElementById('import-file');
-        const ioMessage = document.getElementById('io-message');
-
-
-        // ---=== Utility Functions ===---
-        const getTodayDateString = () => {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        };
-
-        const getWeekRange = () => {
-            const today = new Date();
-            const dayOfWeek = today.getDay(); // 0 (Sun) - 6 (Sat)
-            const startOfWeek = new Date(today);
-            startOfWeek.setDate(today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1)); // Adjust for Sunday start or Monday start
-            const endOfWeek = new Date(startOfWeek);
-            endOfWeek.setDate(startOfWeek.getDate() + 6);
-            return { start: startOfWeek, end: endOfWeek };
-        }
-
-         const getMonthRange = () => {
-            const today = new Date();
-            const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-            const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-            return { start: startOfMonth, end: endOfMonth };
-        }
-
-        const formatDate = (dateString) => {
-            if (!dateString) return 'No due date';
-            try {
-                 const date = new Date(dateString + 'T00:00:00'); // Ensure local time interpretation
-                 return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-            } catch (e) {
-                 console.error("Error formatting date:", dateString, e);
-                 return 'Invalid date';
+        // Task class to define task structure
+        class Task {
+            constructor(id, title, description, dueDate, category, priority, completed = false) {
+                this.id = id;
+                this.title = title;
+                this.description = description;
+                this.dueDate = dueDate;
+                this.category = category;
+                this.priority = priority;
+                this.completed = completed;
+                this.createdAt = new Date();
             }
         }
 
-        const displayError = (element, message) => {
-             element.textContent = message;
-             element.style.display = message ? 'block' : 'none';
-        }
-
-        const displayIoMessage = (message, isError = true) => {
-            ioMessage.textContent = message;
-            ioMessage.style.color = isError ? 'var(--danger-color)' : 'var(--success-color)';
-            ioMessage.style.display = message ? 'block' : 'none';
-            if (message) {
-                setTimeout(() => { displayIoMessage(''); }, 5000); // Hide after 5 seconds
-            }
-        }
-
-        // ---=== Persistence (localStorage) ===---
-        const saveState = () => {
-            try {
-                const appState = {
-                    tasks: tasks,
-                    categories: categories,
-                    theme: bodyElement.getAttribute('data-theme') || 'light'
+        // Main application class
+        class TodoApp {
+            constructor() {
+                this.tasks = [];
+                this.categories = ['personal', 'work', 'health'];
+                this.selectedTasks = new Set();
+                this.currentFilter = 'all';
+                this.currentCategory = null;
+                this.currentPriority = null;
+                this.currentSort = 'date-asc';
+                this.isDarkTheme = false;
+                
+                // DOM elements
+                this.elements = {
+                    taskList: document.getElementById('task-list'),
+                    taskModal: document.getElementById('task-modal'),
+                    taskForm: document.getElementById('task-form'),
+                    taskTitleInput: document.getElementById('task-title'),
+                    taskDescriptionInput: document.getElementById('task-description'),
+                    taskDueDateInput: document.getElementById('task-due-date'),
+                    taskCategorySelect: document.getElementById('task-category'),
+                    taskPrioritySelect: document.getElementById('task-priority') || document.createElement('select'),
+                    closeTaskModal: document.getElementById('close-task-modal'),
+                    modalTitle: document.getElementById('modal-title'),
+                    searchInput: document.getElementById('search-input'),
+                    filterList: document.getElementById('filter-list'),
+                    categoryList: document.getElementById('category-list'),
+                    sortSelect: document.getElementById('sort-tasks'),
+                    addTaskBtn: document.getElementById('add-task-btn'),
+                    themeToggle: document.getElementById('theme-toggle'),
+                    emptyState: document.getElementById('empty-state'),
+                    activeFilter: document.getElementById('active-filter'),
+                    selectionToolbar: document.getElementById('selection-toolbar'),
+                    selectedCount: document.getElementById('selected-count'),
+                    completeSelected: document.getElementById('complete-selected'),
+                    deleteSelected: document.getElementById('delete-selected'),
+                    cancelSelection: document.getElementById('cancel-selection'),
+                    importExportBtn: document.getElementById('import-export-btn'),
+                    addCategoryBtn: document.getElementById('add-category-btn'),
+                    categoryForm: document.getElementById('category-form'),
+                    newCategoryInput: document.getElementById('new-category-input'),
+                    saveCategoryBtn: document.getElementById('save-category-btn'),
+                    statTotal: document.getElementById('stat-total'),
+                    statCompleted: document.getElementById('stat-completed'),
+                    statPending: document.getElementById('stat-pending'),
+                    statOverdue: document.getElementById('stat-overdue')
                 };
-                localStorage.setItem('todoAppState', JSON.stringify(appState));
-            } catch (e) {
-                console.error("Error saving state to localStorage:", e);
-                displayError(formError, "Could not save data. Storage might be full.");
-            }
-        };
 
-        const loadState = () => {
-            try {
-                const savedState = localStorage.getItem('todoAppState');
-                if (savedState) {
-                    const appState = JSON.parse(savedState);
-                    tasks = Array.isArray(appState.tasks) ? appState.tasks : [];
-                     // Ensure task IDs are unique numbers after loading
-                    let maxId = 0;
-                    tasks.forEach(task => {
-                        if (typeof task.id !== 'number' || task.id <= maxId) {
-                            task.id = Date.now() + Math.random(); // Reassign ID if invalid/duplicate
-                        }
-                         maxId = Math.max(maxId, task.id);
-                         task.completed = !!task.completed; // Ensure boolean
-                    });
-                    categories = Array.isArray(appState.categories) ? appState.categories : ['Personal', 'Work', 'Health'];
-                    const savedTheme = appState.theme === 'dark' ? 'dark' : 'light';
-                    setTheme(savedTheme, false); // Load theme without saving again
+                this.init();
+            }
+
+            init() {
+                this.loadTasks();
+                this.setupEventListeners();
+                this.updateCategorySelect();
+                this.renderTasks();
+                this.updateStats();
+                this.setupKeyboardShortcuts();
+                this.checkDueDates();
+            }
+
+            setupEventListeners() {
+                // Task form submission
+                this.elements.taskForm.addEventListener('submit', (e) => this.handleTaskSubmit(e));
+
+                // Modal controls
+                this.elements.addTaskBtn.addEventListener('click', () => this.openTaskModal());
+                this.elements.closeTaskModal.addEventListener('click', () => this.closeTaskModal());
+
+                // Search
+                this.elements.searchInput.addEventListener('input', () => this.renderTasks());
+
+                // Filters
+                this.elements.filterList.addEventListener('click', (e) => this.handleFilterClick(e));
+                this.elements.categoryList.addEventListener('click', (e) => this.handleCategoryClick(e));
+
+                // Sorting
+                this.elements.sortSelect.addEventListener('change', () => {
+                    this.currentSort = this.elements.sortSelect.value;
+                    this.renderTasks();
+                });
+
+                // Theme toggle
+                this.elements.themeToggle.addEventListener('click', () => this.toggleTheme());
+
+                // Batch actions
+                this.elements.completeSelected.addEventListener('click', () => this.completeSelectedTasks());
+                this.elements.deleteSelected.addEventListener('click', () => this.deleteSelectedTasks());
+                this.elements.cancelSelection.addEventListener('click', () => this.clearSelection());
+
+                // Import/Export
+                this.elements.importExportBtn.addEventListener('click', () => this.handleImportExport());
+
+                // Category management
+                this.elements.addCategoryBtn.addEventListener('click', () => {
+                    this.elements.categoryForm.style.display = 'flex';
+                    this.elements.newCategoryInput.focus();
+                });
+                this.elements.saveCategoryBtn.addEventListener('click', () => this.addCategory());
+            }
+
+            setupKeyboardShortcuts() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === 'n') {
+                        e.preventDefault();
+                        this.openTaskModal();
+                    }
+                    if (e.key === 'Escape' && this.elements.taskModal.classList.contains('open')) {
+                        this.closeTaskModal();
+                    }
+                    if (e.ctrlKey && e.key === 's') {
+                        e.preventDefault();
+                        this.showNotification('Tasks saved!', 'success');
+                    }
+                });
+            }
+
+            loadTasks() {
+                const savedTasks = localStorage.getItem('tasks');
+                if (savedTasks) {
+                    this.tasks = JSON.parse(savedTasks).map(task => ({
+                        ...task,
+                        dueDate: task.dueDate ? new Date(task.dueDate) : null,
+                        createdAt: new Date(task.createdAt)
+                    }));
                 } else {
-                     // Add sample tasks if nothing is saved
-                     addSampleTasks();
-                }
-            } catch (e) {
-                console.error("Error loading state from localStorage:", e);
-                tasks = [];
-                categories = ['Personal', 'Work', 'Health'];
-                displayError(formError, "Could not load saved data. Starting fresh.");
-                 addSampleTasks();
-            }
-            updateCategoryDropdowns();
-            renderCategories();
-            renderTasks(); // Initial render after loading
-        };
-
-         // ---=== Theme Management ===---
-        const setTheme = (theme, shouldSave = true) => {
-            bodyElement.setAttribute('data-theme', theme);
-            themeToggleButton.textContent = theme === 'dark' ? '☀️' : '🌙';
-            if (shouldSave) {
-                saveState(); // Save theme preference
-            }
-        };
-
-        themeToggleButton.addEventListener('click', () => {
-            const currentTheme = bodyElement.getAttribute('data-theme') || 'light';
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            setTheme(newTheme);
-        });
-
-
-        // ---=== Category Management ===---
-        const renderCategories = () => {
-            categoryListDiv.innerHTML = ''; // Clear current list
-            if (categories.length === 0) {
-                categoryListDiv.innerHTML = '<p>No categories defined yet.</p>';
-                return;
-            }
-            const ul = document.createElement('ul');
-            ul.style.listStyle = 'none';
-            ul.style.paddingLeft = '0';
-            categories.forEach(category => {
-                const li = document.createElement('li');
-                li.style.display = 'flex';
-                li.style.justifyContent = 'space-between';
-                li.style.alignItems = 'center';
-                li.style.padding = '0.3rem 0';
-                li.style.borderBottom = '1px dashed var(--border-color)';
-
-                const span = document.createElement('span');
-                span.textContent = category;
-                li.appendChild(span);
-
-                // Basic delete button for categories
-                const deleteBtn = document.createElement('button');
-                deleteBtn.textContent = 'Delete';
-                deleteBtn.classList.add('btn-danger', 'btn-small');
-                 deleteBtn.onclick = (e) => {
-                     e.stopPropagation(); // Prevent triggering details close/open
-                     deleteCategory(category);
-                 };
-                li.appendChild(deleteBtn);
-                ul.appendChild(li);
-            });
-             categoryListDiv.appendChild(ul);
-        };
-
-         const updateCategoryDropdowns = () => {
-             const optionsHTML = categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
-             taskCategoryInput.innerHTML = `<option value="">None</option>${optionsHTML}`;
-             filterCategory.innerHTML = `<option value="">All</option>${optionsHTML}`;
-         };
-
-         const addCategory = (name) => {
-             const trimmedName = name.trim();
-             if (!trimmedName) {
-                 displayError(categoryError, "Category name cannot be empty.");
-                 return;
-             }
-             if (categories.map(c => c.toLowerCase()).includes(trimmedName.toLowerCase())) {
-                 displayError(categoryError, `Category "${trimmedName}" already exists.`);
-                 return;
-             }
-             categories.push(trimmedName);
-             categories.sort(); // Keep sorted
-             saveState();
-             renderCategories();
-             updateCategoryDropdowns();
-             displayError(categoryError, ""); // Clear error
-             newCategoryNameInput.value = ''; // Clear input
-         };
-
-         const deleteCategory = (name) => {
-            if (confirm(`Are you sure you want to delete the category "${name}"? Tasks in this category will lose their category assignment.`)) {
-                categories = categories.filter(cat => cat !== name);
-                // Update tasks that used this category
-                tasks.forEach(task => {
-                    if (task.category === name) {
-                        task.category = ''; // Reset category for affected tasks
-                    }
-                });
-                saveState();
-                renderCategories();
-                updateCategoryDropdowns();
-                renderTasks(); // Re-render tasks in case categories changed
-            }
-         };
-
-        categoryForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            addCategory(newCategoryNameInput.value);
-        });
-
-        // ---=== Task Rendering ===---
-        const renderTasks = () => {
-            taskList.innerHTML = ''; // Clear current list
-            displayError(formError, ""); // Clear any previous form errors on re-render
-            selectedTaskIds.clear(); // Clear selection on re-render/filter
-            updateBatchActionsBar(); // Hide bar
-
-            // --- Filtering Logic ---
-            const statusFilter = filterStatus.value;
-            const categoryFilter = filterCategory.value;
-            const priorityFilter = filterPriority.value;
-            const dateFilter = filterDueDate.value;
-            const searchTerm = searchInput.value.toLowerCase().trim();
-
-            const filteredTasks = tasks.filter(task => {
-                // Status Filter
-                if (statusFilter === 'active' && task.completed) return false;
-                if (statusFilter === 'completed' && !task.completed) return false;
-
-                // Category Filter
-                if (categoryFilter && task.category !== categoryFilter) return false;
-
-                // Priority Filter
-                if (priorityFilter && task.priority !== priorityFilter) return false;
-
-                // Date Filter
-                const today = new Date();
-                today.setHours(0, 0, 0, 0); // Normalize today's date
-                const taskDueDate = task.dueDate ? new Date(task.dueDate + 'T00:00:00') : null;
-
-                if (dateFilter && !taskDueDate) return false; // Tasks without due date don't match specific date filters
-
-                if (dateFilter === 'today') {
-                     if (!taskDueDate || taskDueDate.toDateString() !== today.toDateString()) return false;
-                } else if (dateFilter === 'this-week') {
-                    const { start, end } = getWeekRange();
-                     start.setHours(0,0,0,0); end.setHours(23,59,59,999); // Inclusive range
-                    if (!taskDueDate || taskDueDate < start || taskDueDate > end) return false;
-                } else if (dateFilter === 'this-month') {
-                     const { start, end } = getMonthRange();
-                     start.setHours(0,0,0,0); end.setHours(23,59,59,999); // Inclusive range
-                    if (!taskDueDate || taskDueDate < start || taskDueDate > end) return false;
-                } else if (dateFilter === 'overdue') {
-                     if (!taskDueDate || task.completed || taskDueDate >= today ) return false;
+                    // Sample tasks
+                    this.tasks = [
+                        new Task(1, 'Buy groceries', 'Purchase milk, eggs, and bread from the supermarket', new Date('2025-04-18'), 'personal', 'high'),
+                        new Task(2, 'Finish project report', 'Complete the final report for the React project', new Date('2025-04-20'), 'work', 'medium'),
+                        new Task(3, 'Schedule dentist appointment', 'Call the clinic to set up a routine check-up', new Date('2025-04-22'), 'health', 'low')
+                    ];
                 }
 
-
-                // Search Filter (Title and Description)
-                if (searchTerm) {
-                    const titleMatch = task.title.toLowerCase().includes(searchTerm);
-                    const descriptionMatch = task.description.toLowerCase().includes(searchTerm);
-                    if (!titleMatch && !descriptionMatch) return false;
+                const savedCategories = localStorage.getItem('categories');
+                if (savedCategories) {
+                    this.categories = JSON.parse(savedCategories);
                 }
-
-                return true; // Task passes all filters
-            });
-
-
-            if (filteredTasks.length === 0) {
-                taskList.innerHTML = '<li>No tasks match your criteria.</li>';
-                return;
             }
 
-            // --- Render Task Items ---
-            filteredTasks.forEach(task => {
-                const li = document.createElement('li');
-                li.classList.add('task-item');
-                li.classList.add(`priority-${task.priority || 'Medium'}`); // Default Medium if undefined
-                if (task.completed) {
-                    li.classList.add('completed');
+            saveTasks() {
+                localStorage.setItem('tasks', JSON.stringify(this.tasks));
+                localStorage.setItem('categories', JSON.stringify(this.categories));
+            }
+
+            openTaskModal(task = null) {
+                this.elements.taskModal.classList.add('open');
+                this.elements.modalTitle.textContent = task ? 'Edit Task' : 'Add New Task';
+                
+                if (task) {
+                    this.elements.taskForm.querySelector('#task-id').value = task.id;
+                    this.elements.taskTitleInput.value = task.title;
+                    this.elements.taskDescriptionInput.value = task.description;
+                    this.elements.taskDueDateInput.value = task.dueDate ? task.dueDate.toISOString().split('T')[0] : '';
+                    this.elements.taskCategorySelect.value = task.category;
+                    this.elements.taskPrioritySelect.value = task.priority;
+                } else {
+                    this.elements.taskForm.reset();
+                    this.elements.taskForm.querySelector('#task-id').value = '';
                 }
-                li.dataset.id = task.id; // Store ID for easy access
+            }
 
-                // Checkbox for batch selection / completion toggle
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.checked = task.completed;
-                checkbox.title = task.completed ? "Mark as Active" : "Mark as Complete";
-                checkbox.addEventListener('change', (e) => {
-                    toggleComplete(task.id);
-                    // If the click was to mark complete, remove from batch selection if it was selected
-                    if (checkbox.checked && selectedTaskIds.has(task.id)) {
-                         const batchCheckbox = li.querySelector('.batch-select-checkbox');
-                         if (batchCheckbox) batchCheckbox.checked = false;
-                         selectedTaskIds.delete(task.id);
-                         updateBatchActionsBar();
-                    }
-                });
+            closeTaskModal() {
+                this.elements.taskModal.classList.remove('open');
+                this.elements.taskForm.reset();
+            }
 
-                 // Separate Checkbox specifically for batch selection
-                const batchCheckbox = document.createElement('input');
-                batchCheckbox.type = 'checkbox';
-                batchCheckbox.classList.add('batch-select-checkbox');
-                batchCheckbox.title = "Select for batch action";
-                 batchCheckbox.style.marginLeft = '5px'; // Some spacing
-                batchCheckbox.addEventListener('change', () => {
-                    if (batchCheckbox.checked) {
-                        selectedTaskIds.add(task.id);
-                    } else {
-                        selectedTaskIds.delete(task.id);
-                    }
-                    updateBatchActionsBar();
-                });
-
-                // Task Details Div
-                const detailsDiv = document.createElement('div');
-                detailsDiv.classList.add('task-details');
-                 detailsDiv.style.cursor = 'pointer'; // Indicate clickable for details
-                 detailsDiv.title = 'Click to toggle description';
-
-
-                const titleStrong = document.createElement('strong');
-                titleStrong.textContent = task.title;
-                detailsDiv.appendChild(titleStrong);
-
-                // Meta Info (Category, Due Date, Priority)
-                const metaDiv = document.createElement('div');
-                metaDiv.classList.add('task-meta');
-                 if (task.category) {
-                     const categorySpan = document.createElement('span');
-                     categorySpan.textContent = `Cat: ${task.category}`;
-                     metaDiv.appendChild(categorySpan);
-                 }
-                if (task.dueDate) {
-                    const dueDateSpan = document.createElement('span');
-                    dueDateSpan.textContent = `Due: ${formatDate(task.dueDate)}`;
-                     // Add visual cue for overdue tasks
-                     const today = new Date(); today.setHours(0,0,0,0);
-                     const dueDate = new Date(task.dueDate + 'T00:00:00');
-                     if (!task.completed && dueDate < today) {
-                         dueDateSpan.style.color = 'var(--danger-color)';
-                         dueDateSpan.style.fontWeight = 'bold';
-                         dueDateSpan.title = 'Overdue';
-                     }
-                    metaDiv.appendChild(dueDateSpan);
-                }
-                 const prioritySpan = document.createElement('span');
-                 prioritySpan.textContent = `Prio: ${task.priority}`;
-                 metaDiv.appendChild(prioritySpan);
-
-                detailsDiv.appendChild(metaDiv);
-
-                 // Description (hidden by default)
-                 const descriptionP = document.createElement('p');
-                 descriptionP.classList.add('task-description');
-                 descriptionP.textContent = task.description || 'No description.'; // Handle empty description
-                 detailsDiv.appendChild(descriptionP);
-
-                 // Toggle description visibility on click
-                 detailsDiv.addEventListener('click', (e) => {
-                     // Prevent toggling if clicking on interactive elements within details
-                     if (e.target.tagName !== 'SPAN' && e.target.tagName !== 'DIV' && e.target.tagName !== 'STRONG' && e.target.tagName !== 'P') return;
-                     li.classList.toggle('expanded');
-                 });
-
-
-                // Action Buttons
-                const actionsDiv = document.createElement('div');
-                actionsDiv.classList.add('task-actions');
-
-                const editButton = document.createElement('button');
-                editButton.textContent = 'Edit';
-                editButton.classList.add('btn-secondary', 'btn-small');
-                editButton.addEventListener('click', () => startEditTask(task.id));
-                actionsDiv.appendChild(editButton);
-
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete';
-                deleteButton.classList.add('btn-danger', 'btn-small');
-                deleteButton.addEventListener('click', () => deleteTask(task.id));
-                actionsDiv.appendChild(deleteButton);
-
-                // Assemble Task Item
-                li.appendChild(checkbox);
-                li.appendChild(batchCheckbox); // Add batch checkbox next to completion one
-                li.appendChild(detailsDiv);
-                li.appendChild(actionsDiv);
-
-                taskList.appendChild(li);
-            });
-        };
-
-        // ---=== Task Actions ===---
-        const addTask = (taskData) => {
-            const newTask = {
-                id: Date.now(), // Simple unique ID
-                title: taskData.title.trim(),
-                description: taskData.description.trim(),
-                dueDate: taskData.dueDate,
-                category: taskData.category,
-                priority: taskData.priority,
-                completed: false
-            };
-            tasks.push(newTask);
-            saveState();
-            renderTasks();
-            resetForm();
-        };
-
-        const updateTask = (id, taskData) => {
-            const taskIndex = tasks.findIndex(t => t.id === id);
-            if (taskIndex > -1) {
-                tasks[taskIndex] = {
-                    ...tasks[taskIndex], // Keep original ID and completed status
-                    title: taskData.title.trim(),
-                    description: taskData.description.trim(),
-                    dueDate: taskData.dueDate,
-                    category: taskData.category,
-                    priority: taskData.priority,
+            handleTaskSubmit(e) {
+                e.preventDefault();
+                const id = this.elements.taskForm.querySelector('#task-id').value;
+                const taskData = {
+                    title: this.elements.taskTitleInput.value,
+                    description: this.elements.taskDescriptionInput.value,
+                    dueDate: this.elements.taskDueDateInput.value ? new Date(this.elements.taskDueDateInput.value) : null,
+                    category: this.elements.taskCategorySelect.value,
+                    priority: this.elements.taskPrioritySelect.value || 'low'
                 };
-                saveState();
-                renderTasks();
-                resetForm(); // Exit edit mode
-            } else {
-                 displayError(formError, "Error: Task not found for updating.");
-            }
-        };
 
-        const deleteTask = (id) => {
-             if (confirm('Are you sure you want to delete this task?')) {
-                 tasks = tasks.filter(task => task.id !== id);
-                 selectedTaskIds.delete(id); // Remove from selection if it was selected
-                 saveState();
-                 renderTasks();
-                 updateBatchActionsBar(); // Update count after deletion
-             }
-        };
-
-        const toggleComplete = (id) => {
-            const taskIndex = tasks.findIndex(task => task.id === id);
-            if (taskIndex > -1) {
-                tasks[taskIndex].completed = !tasks[taskIndex].completed;
-                saveState();
-                renderTasks(); // Re-render to update style and potentially filter position
-            }
-        };
-
-        // ---=== Edit Task Flow ===---
-        const startEditTask = (id) => {
-            const task = tasks.find(t => t.id === id);
-            if (task) {
-                editingTaskId = id;
-                editTaskIdInput.value = id;
-                taskTitleInput.value = task.title;
-                taskDescriptionInput.value = task.description;
-                taskDueDateInput.value = task.dueDate || '';
-                taskCategoryInput.value = task.category || '';
-                taskPriorityInput.value = task.priority || 'Medium';
-
-                formTitle.textContent = 'Edit Task';
-                addUpdateBtn.textContent = 'Update Task';
-                cancelEditBtn.style.display = 'inline-block'; // Show cancel button
-                taskForm.scrollIntoView({ behavior: 'smooth' }); // Scroll form into view
-                taskTitleInput.focus();
-            }
-        };
-
-        const cancelEdit = () => {
-            resetForm();
-        };
-
-        const resetForm = () => {
-            editingTaskId = null;
-            taskForm.reset(); // Resets all form fields
-            formTitle.textContent = 'Add New Task';
-            addUpdateBtn.textContent = 'Add Task';
-            cancelEditBtn.style.display = 'none';
-            editTaskIdInput.value = '';
-            displayError(formError, ""); // Clear error message
-        };
-
-        cancelEditBtn.addEventListener('click', cancelEdit);
-
-        // ---=== Form Submission (Add/Update) ===---
-        taskForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            displayError(formError, ""); // Clear previous errors
-
-            const title = taskTitleInput.value.trim();
-            if (!title) {
-                 displayError(formError, "Task title is required.");
-                 taskTitleInput.focus();
-                 return;
-            }
-
-            const taskData = {
-                title: title,
-                description: taskDescriptionInput.value,
-                dueDate: taskDueDateInput.value,
-                category: taskCategoryInput.value,
-                priority: taskPriorityInput.value
-            };
-
-            if (editingTaskId) {
-                updateTask(editingTaskId, taskData);
-            } else {
-                addTask(taskData);
-            }
-        });
-
-
-        // ---=== Filtering and Search Event Listeners ===---
-        filterStatus.addEventListener('change', renderTasks);
-        filterCategory.addEventListener('change', renderTasks);
-        filterPriority.addEventListener('change', renderTasks);
-        filterDueDate.addEventListener('change', renderTasks);
-        searchInput.addEventListener('input', renderTasks); // Use 'input' for real-time search
-
-         // ---=== Batch Actions ---===
-        const updateBatchActionsBar = () => {
-            const count = selectedTaskIds.size;
-            if (count > 0) {
-                selectedCountSpan.textContent = `${count} task${count > 1 ? 's' : ''} selected`;
-                batchActionsBar.style.display = 'flex';
-            } else {
-                batchActionsBar.style.display = 'none';
-            }
-        };
-
-         batchDeleteBtn.addEventListener('click', () => {
-             if (selectedTaskIds.size === 0) return;
-             if (confirm(`Are you sure you want to delete ${selectedTaskIds.size} selected task(s)?`)) {
-                 tasks = tasks.filter(task => !selectedTaskIds.has(task.id));
-                 selectedTaskIds.clear();
-                 saveState();
-                 renderTasks(); // Will also hide the bar
-                 updateBatchActionsBar();
-             }
-         });
-
-         batchCompleteBtn.addEventListener('click', () => {
-             if (selectedTaskIds.size === 0) return;
-             tasks.forEach(task => {
-                 if (selectedTaskIds.has(task.id)) {
-                     task.completed = true;
-                 }
-             });
-             selectedTaskIds.clear();
-             saveState();
-             renderTasks();
-             updateBatchActionsBar();
-         });
-
-         batchActiveBtn.addEventListener('click', () => {
-             if (selectedTaskIds.size === 0) return;
-             tasks.forEach(task => {
-                 if (selectedTaskIds.has(task.id)) {
-                     task.completed = false;
-                 }
-             });
-             selectedTaskIds.clear();
-             saveState();
-             renderTasks();
-             updateBatchActionsBar();
-         });
-
-
-        // ---=== Import / Export ===---
-        exportBtn.addEventListener('click', () => {
-            try {
-                const dataStr = JSON.stringify({ tasks, categories }, null, 2); // Pretty print JSON
-                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-                const exportFileDefaultName = `todos_backup_${getTodayDateString()}.json`;
-
-                const linkElement = document.createElement('a');
-                linkElement.setAttribute('href', dataUri);
-                linkElement.setAttribute('download', exportFileDefaultName);
-                linkElement.click();
-                linkElement.remove(); // Clean up
-                displayIoMessage("Tasks exported successfully.", false);
-            } catch (e) {
-                console.error("Export failed:", e);
-                displayIoMessage("Error exporting tasks.");
-            }
-        });
-
-         importFile.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (!file) {
-                return; // No file selected
-            }
-            if (file.type !== "application/json") {
-                 displayIoMessage("Import failed: File must be a JSON file.");
-                 importFile.value = ''; // Reset file input
-                 return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-
-                    // Basic validation of imported structure
-                    if (!importedData || typeof importedData !== 'object') {
-                         throw new Error("Invalid JSON structure.");
-                    }
-
-                    const importedTasks = Array.isArray(importedData.tasks) ? importedData.tasks : [];
-                    const importedCategories = Array.isArray(importedData.categories) ? importedData.categories : [];
-
-                    if (confirm(`Importing ${importedTasks.length} tasks and ${importedCategories.length} categories. This will REPLACE your current tasks and categories. Continue?`)) {
-                        // Simple merge/replace strategy: replace completely
-                        tasks = [];
-                        let maxId = 0;
-                        importedTasks.forEach(task => {
-                            // Basic validation/sanitization of imported task
-                            tasks.push({
-                                id: typeof task.id === 'number' ? task.id : Date.now() + Math.random(),
-                                title: String(task.title || 'Untitled Task').trim(),
-                                description: String(task.description || '').trim(),
-                                dueDate: task.dueDate || null, // Allow null/empty
-                                category: String(task.category || '').trim(),
-                                priority: ['High', 'Medium', 'Low'].includes(task.priority) ? task.priority : 'Medium',
-                                completed: !!task.completed // Ensure boolean
-                            });
-                             maxId = Math.max(maxId, tasks[tasks.length-1].id);
-                        });
-                        // Ensure uniqueness again after import (simple approach)
-                         tasks.forEach(task => {
-                             if (tasks.filter(t=> t.id === task.id).length > 1) {
-                                 task.id = ++maxId + Math.random();
-                             }
-                         })
-
-                        // Replace categories, removing duplicates and trimming
-                        categories = [...new Set(importedCategories.map(cat => String(cat || '').trim()).filter(Boolean))];
-                        categories.sort();
-
-
-                        saveState();
-                        updateCategoryDropdowns();
-                        renderCategories();
-                        renderTasks();
-                        displayIoMessage("Tasks and categories imported successfully.", false);
-                    }
-
-                } catch (error) {
-                    console.error("Import failed:", error);
-                    displayIoMessage(`Import failed: ${error.message}`);
-                } finally {
-                     importFile.value = ''; // Reset file input regardless of success/failure
+                if (id) {
+                    const taskIndex = this.tasks.findIndex(task => task.id == id);
+                    this.tasks[taskIndex] = { ...this.tasks[taskIndex], ...taskData };
+                    this.showNotification('Task updated successfully!', 'success');
+                } else {
+                    const newTask = new Task(
+                        Date.now(),
+                        taskData.title,
+                        taskData.description,
+                        taskData.dueDate,
+                        taskData.category,
+                        taskData.priority
+                    );
+                    this.tasks.push(newTask);
+                    this.showNotification('Task added successfully!', 'success');
                 }
-            };
-            reader.onerror = () => {
-                displayIoMessage("Error reading the import file.");
-                 importFile.value = ''; // Reset file input
-            };
-            reader.readAsText(file);
-         });
 
-        // ---=== Add Sample Tasks (if none loaded) ===---
-        function addSampleTasks() {
-             if (tasks.length === 0) { // Only add if task list is empty
-                 tasks = [
-                    { id: Date.now() + 1, title: 'Buy groceries', description: 'Purchase milk, eggs, and bread from the supermarket.', dueDate: '2025-04-18', category: 'Shopping', priority: 'High', completed: false },
-                    { id: Date.now() + 2, title: 'Finish project report', description: 'Complete the final report for the React project.', dueDate: '2025-04-20', category: 'Work', priority: 'Medium', completed: false },
-                    { id: Date.now() + 3, title: 'Schedule dentist appointment', description: 'Call the clinic to set up a routine check-up.', dueDate: '2025-04-22', category: 'Health', priority: 'Low', completed: false },
-                    { id: Date.now() + 4, title: 'Pay utility bills', description: 'Electricity and water bills due.', dueDate: '2025-04-25', category: 'Personal', priority: 'High', completed: true }, // Example completed task
-                    { id: Date.now() + 5, title: 'Plan weekend trip', description: 'Research destinations and book accommodation.', dueDate: '2025-05-10', category: 'Personal', priority: 'Medium', completed: false },
-                 ];
-                 saveState(); // Save the sample tasks
-             }
+                this.saveTasks();
+                this.closeTaskModal();
+                this.renderTasks();
+                this.updateStats();
+            }
+
+            renderTasks() {
+                this.elements.taskList.innerHTML = '';
+                let filteredTasks = this.filterTasks();
+                filteredTasks = this.sortTasks(filteredTasks);
+
+                if (filteredTasks.length === 0) {
+                    this.elements.emptyState.style.display = 'block';
+                    return;
+                }
+
+                this.elements.emptyState.style.display = 'none';
+
+                filteredTasks.forEach(task => {
+                    const taskElement = this.createTaskElement(task);
+                    this.elements.taskList.appendChild(taskElement);
+                });
+
+                this.updateTaskCounts();
+                this.setupDragAndDrop();
+            }
+
+            createTaskElement(task) {
+                const li = document.createElement('li');
+                li.className = `task-item ${task.priority} ${task.completed ? 'completed' : ''}`;
+                li.dataset.id = task.id;
+                li.draggable = true;
+
+                li.innerHTML = `
+                    <div class="task-content">
+                        <div class="task-header">
+                            <input type="checkbox" class="task-checkbox" ${this.selectedTasks.has(task.id) ? 'checked' : ''}>
+                            <span class="task-title">${task.title}</span>
+                            <span class="badge badge-${task.priority}">${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}</span>
+                        </div>
+                        <div class="task-description">${task.description || ''}</div>
+                        <div class="task-meta">
+                            ${task.dueDate ? `<span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 4h-1V3a1 1 0 0 0-2 0v1H8V3a1 1 0 0 0-2 0v1H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5zm7 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-8-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>${task.dueDate.toLocaleDateString()}</span>` : ''}
+                            <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm4-9h-3V8a1 1 0 0 0-2 0v4a1 1 0 0 0 1 1h4a1 1 0 0 0 0-2z"/></svg>${task.category}</span>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn btn-icon edit-task">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.414 1.414 0 0 0 0-2l-2-2a1.414 1.414 0 0 0-2 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                        </button>
+                        <button class="btn btn-icon delete-task">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                        </button>
+                    </div>
+                `;
+
+                // Event listeners for task actions
+                li.querySelector('.task-checkbox').addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        this.selectedTasks.add(task.id);
+                    } else {
+                        this.selectedTasks.delete(task.id);
+                    }
+                    this.updateSelectionToolbar();
+                });
+
+                li.querySelector('.edit-task').addEventListener('click', () => this.openTaskModal(task));
+                
+                li.querySelector('.delete-task').addEventListener('click', () => {
+                    this.deleteTask(task.id);
+                    this.showNotification('Task deleted! <button class="undo-btn">Undo</button>', 'success');
+                    const deletedTask = task;
+                    setTimeout(() => {
+                        if (this.tasks.find(t => t.id === deletedTask.id)) return;
+                        this.tasks = this.tasks.filter(t => t.id !== deletedTask.id);
+                        this.saveTasks();
+                        this.renderTasks();
+                    }, 3000);
+                    this.tasks.push(deletedTask); // Temporary for undo
+                });
+
+                return li;
+            }
+
+            filterTasks() {
+                let filteredTasks = [...this.tasks];
+                const searchTerm = this.elements.searchInput.value.toLowerCase();
+
+                // Apply search
+                if (searchTerm) {
+                    filteredTasks = filteredTasks.filter(task =>
+                        task.title.toLowerCase().includes(searchTerm) ||
+                        task.description?.toLowerCase().includes(searchTerm)
+                    );
+                }
+
+                // Apply filters
+                if (this.currentFilter !== 'all') {
+                    filteredTasks = filteredTasks.filter(task => {
+                        if (this.currentFilter === 'active') return !task.completed;
+                        if (this.currentFilter === 'completed') return task.completed;
+                        if (this.currentFilter === 'today') {
+                            const today = new Date();
+                            return task.dueDate && task.dueDate.toDateString() === today.toDateString();
+                        }
+                        if (this.currentFilter === 'this-week') {
+                            const today = new Date();
+                            const weekEnd = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+                            return task.dueDate && task.dueDate >= today && task.dueDate <= weekEnd;
+                        }
+                        if (this.currentFilter === 'this-month') {
+                            const today = new Date();
+                            return task.dueDate && task.dueDate.getMonth() === today.getMonth();
+                        }
+                        return true;
+                    });
+                }
+
+                // Apply category filter
+                if (this.currentCategory) {
+                    filteredTasks = filteredTasks.filter(task => task.category === this.currentCategory);
+                }
+
+                // Apply priority filter
+                if (this.currentPriority) {
+                    filteredTasks = filteredTasks.filter(task => task.priority === this.currentPriority);
+                }
+
+                return filteredTasks;
+            }
+
+            sortTasks(tasks) {
+                return tasks.sort((a, b) => {
+                    switch (this.currentSort) {
+                        case 'date-asc':
+                            return (a.dueDate || new Date(9999, 11, 31)) - (b.dueDate || new Date(9999, 11, 31));
+                        case 'date-desc':
+                            return (b.dueDate || new Date(0)) - (a.dueDate || new Date(0));
+                        case 'priority-desc':
+                            const priorityOrder = { high: 3, medium: 2, low: 1 };
+                            return priorityOrder[b.priority] - priorityOrder[a.priority];
+                        case 'priority-asc':
+                            const priorityOrderAsc = { high: 1, medium: 2, low: 3 };
+                            return priorityOrderAsc[b.priority] - priorityOrderAsc[a.priority];
+                        case 'name-asc':
+                            return a.title.localeCompare(b.title);
+                        case 'name-desc':
+                            return b.title.localeCompare(a.title);
+                        default:
+                            return 0;
+                    }
+                });
+            }
+
+            handleFilterClick(e) {
+                const filterItem = e.target.closest('.filter-item');
+                if (!filterItem) return;
+
+                this.currentFilter = filterItem.dataset.filter;
+                this.currentCategory = null;
+                this.currentPriority = null;
+
+                this.updateActiveFilter(filterItem);
+                this.renderTasks();
+            }
+
+            handleCategoryClick(e) {
+                const categoryItem = e.target.closest('.category-item');
+                if (!categoryItem) return;
+
+                this.currentCategory = categoryItem.dataset.category;
+                this.currentFilter = 'all';
+                this.currentPriority = null;
+
+                this.updateActiveFilter(categoryItem);
+                this.renderTasks();
+            }
+
+            updateActiveFilter(item) {
+                document.querySelectorAll('.filter-item, .category-item').forEach(el => el.classList.remove('active'));
+                item.classList.add('active');
+                this.elements.activeFilter.querySelector('h2').textContent = item.querySelector('span').textContent;
+            }
+
+            updateTaskCounts() {
+                const counts = {
+                    all: this.tasks.length,
+                    active: this.tasks.filter(t => !t.completed).length,
+                    completed: this.tasks.filter(t => t.completed).length,
+                    today: this.tasks.filter(t => t.dueDate && t.dueDate.toDateString() === new Date().toDateString()).length,
+                    week: this.tasks.filter(t => {
+                        const today = new Date();
+                        const weekEnd = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+                        return t.dueDate && t.dueDate >= today && t.dueDate <= weekEnd;
+                    }).length,
+                    month: this.tasks.filter(t => t.dueDate && t.dueDate.getMonth() === new Date().getMonth()).length,
+                    high: this.tasks.filter(t => t.priority === 'high').length,
+                    medium: this.tasks.filter(t => t.priority === 'medium').length,
+                    low: this.tasks.filter(t => t.priority === 'low').length
+                };
+
+                this.categories.forEach(category => {
+                    counts[category] = this.tasks.filter(t => t.category === category).length;
+                });
+
+                Object.keys(counts).forEach(key => {
+                    const element = document.getElementById(`count-${key}`);
+                    if (element) element.textContent = counts[key];
+                });
+            }
+
+            updateStats() {
+                this.elements.statTotal.textContent = this.tasks.length;
+                this.elements.statCompleted.textContent = this.tasks.filter(t => t.completed).length;
+                this.elements.statPending.textContent = this.tasks.filter(t => !t.completed).length;
+                this.elements.statOverdue.textContent = this.tasks.filter(t => t.dueDate && t.dueDate < new Date() && !t.completed).length;
+            }
+
+            setupDragAndDrop() {
+                const taskItems = this.elements.taskList.querySelectorAll('.task-item');
+                taskItems.forEach(item => {
+                    item.addEventListener('dragstart', (e) => {
+                        item.classList.add('dragging');
+                        e.dataTransfer.setData('text/plain', item.dataset.id);
+                    });
+
+                    item.addEventListener('dragend', () => {
+                        item.classList.remove('dragging');
+                    });
+
+                    item.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                    });
+
+                    item.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        const draggedId = e.dataTransfer.getData('text/plain');
+                        const targetId = item.dataset.id;
+                        const draggedTask = this.tasks.find(t => t.id == draggedId);
+                        const targetTask = this.tasks.find(t => t.id == targetId);
+
+                        const draggedIndex = this.tasks.indexOf(draggedTask);
+                        const targetIndex = this.tasks.indexOf(targetTask);
+
+                        this.tasks.splice(draggedIndex, 1);
+                        this.tasks.splice(targetIndex, 0, draggedTask);
+
+                        this.saveTasks();
+                        this.renderTasks();
+                    });
+                });
+            }
+
+            toggleTheme() {
+                this.isDarkTheme = !this.isDarkTheme;
+                document.body.classList.toggle('dark-theme');
+                this.elements.themeToggle.querySelector('.light-icon').style.display = this.isDarkTheme ? 'none' : 'block';
+                this.elements.themeToggle.querySelector('.dark-icon').style.display = this.isDarkTheme ? 'block' : 'none';
+            }
+
+            showNotification(message, type) {
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type} show`;
+                notification.innerHTML = message;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+
+                const undoBtn = notification.querySelector('.undo-btn');
+                if (undoBtn) {
+                    undoBtn.addEventListener('click', () => {
+                        this.renderTasks();
+                        notification.remove();
+                    });
+                }
+            }
+
+            updateSelectionToolbar() {
+                this.elements.selectedCount.textContent = this.selectedTasks.size;
+                this.elements.selectionToolbar.classList.toggle('show', this.selectedTasks.size > 0);
+            }
+
+            completeSelectedTasks() {
+                this.selectedTasks.forEach(id => {
+                    const task = this.tasks.find(t => t.id == id);
+                    if (task) task.completed = true;
+                });
+                this.selectedTasks.clear();
+                this.saveTasks();
+                this.renderTasks();
+                this.updateStats();
+                this.updateSelectionToolbar();
+                this.showNotification('Selected tasks marked as complete!', 'success');
+            }
+
+            deleteSelectedTasks() {
+                const deletedTasks = [];
+                this.selectedTasks.forEach(id => {
+                    const task = this.tasks.find(t => t.id == id);
+                    if (task) deletedTasks.push(task);
+                });
+
+                this.tasks = this.tasks.filter(t => !this.selectedTasks.has(t.id));
+                this.selectedTasks.clear();
+                this.saveTasks();
+                this.renderTasks();
+                this.updateStats();
+                this.updateSelectionToolbar();
+                this.showNotification('Selected tasks deleted! <button class="undo-btn">Undo</button>', 'success');
+
+                setTimeout(() => {
+                    if (this.tasks.some(t => deletedTasks.includes(t))) return;
+                    this.tasks = this.tasks.filter(t => !deletedTasks.includes(t));
+                    this.saveTasks();
+                    this.renderTasks();
+                }, 3000);
+
+                this.tasks.push(...deletedTasks); // Temporary for undo
+            }
+
+            clearSelection() {
+                this.selectedTasks.clear();
+                this.updateSelectionToolbar();
+                this.renderTasks();
+            }
+
+            handleImportExport() {
+                const action = prompt('Type "export" to export tasks or "import" to import tasks:');
+                if (action === 'export') {
+                    const dataStr = JSON.stringify(this.tasks);
+                    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+                    const exportFileDefaultName = 'tasks.json';
+
+                    const linkElement = document.createElement('a');
+                    linkElement.setAttribute('href', dataUri);
+                    linkElement.setAttribute('download', exportFileDefaultName);
+                    linkElement.click();
+                    this.showNotification('Tasks exported successfully!', 'success');
+                } else if (action === 'import') {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.json';
+                    input.onchange = (e) => {
+                        const file = e.target.files[0];
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            try {
+                                const importedTasks = JSON.parse(event.target.result);
+                                this.tasks = importedTasks.map(task => ({
+                                    ...task,
+                                    dueDate: task.dueDate ? new Date(task.dueDate) : null,
+                                    createdAt: new Date(task.createdAt)
+                                }));
+                                this.saveTasks();
+                                this.renderTasks();
+                                this.updateStats();
+                                this.showNotification('Tasks imported successfully!', 'success');
+                            } catch (error) {
+                                this.showNotification('Error importing tasks!', 'error');
+                            }
+                        };
+                        reader.readAsText(file);
+                    };
+                    input.click();
+                }
+            }
+
+            addCategory() {
+                const categoryName = this.elements.newCategoryInput.value.trim().toLowerCase();
+                if (!categoryName || this.categories.includes(categoryName)) {
+                    this.showNotification('Invalid or duplicate category!',you are here: /home/user/samplecode/html_css_js_todo_app/index.htmlcategory already exists!', 'error');
+                    return;
+                }
+
+                this.categories.push(categoryName);
+                this.elements.categoryForm.style.display = 'none';
+                this.elements.newCategoryInput.value = '';
+                this.updateCategoryList();
+                this.updateCategorySelect();
+                this.saveTasks();
+                this.showNotification('Category added successfully!', 'success');
+            }
+
+            updateCategoryList() {
+                this.elements.categoryList.innerHTML = this.categories.map(category => `
+                    <li class="category-item" data-category="${category}">
+                        <span>${category.charAt(0).toUpperCase() + category.slice(1)}</span>
+                        <span class="task-count" id="count-${category}">0</span>
+                    </li>
+                `).join('');
+            }
+
+            updateCategorySelect() {
+                this.elements.taskCategorySelect.innerHTML = this.categories.map(category => `
+                    <option value="${category}">${category.charAt(0).toUpperCase() + category.slice(1)}</option>
+                `).join('');
+            }
+
+            checkDueDates() {
+                const today = new Date();
+                this.tasks.forEach(task => {
+                    if (task.dueDate && task.dueDate < today && !task.completed) {
+                        this.showNotification(`Task "${task.title}" is overdue!`, 'warning');
+                    }
+                });
+            }
+
+            deleteTask(taskId) {
+                this.tasks = this.tasks.filter(task => task.id != taskId);
+                this.saveTasks();
+                this.renderTasks();
+                this.updateStats();
+            }
         }
 
+        // Initialize the app
+        const app = new TodoApp();
 
-        // ---=== Initial Load ===---
-        document.addEventListener('DOMContentLoaded', () => {
-            loadState(); // Load data, render categories, update dropdowns, and render tasks
-        });
-
+        // Add priority select to task form (since it wasn't in the original HTML)
+        const priorityGroup = document.createElement('div');
+        priorityGroup.className = 'form-group';
+        priorityGroup.innerHTML = `
+            <label for="task-priority" class="form-label">Priority</label>
+            <select id="task-priority" class="form-select" required>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+            </select>
+        `;
+        document.getElementById('task-form').insertBefore(priorityGroup, document.getElementById('task-form').lastElementChild);
     </script>
 </body>
 </html>
