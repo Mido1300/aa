@@ -1,623 +1,1927 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Todo List App</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.20.15/babel.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List App</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✅</text></svg>">
+
+    <style>
+        /* Basic Reset & Root Variables */
+        :root {
+            --font-family: 'Inter', sans-serif;
+            --border-radius: 8px;
+            --transition-speed: 0.2s;
+
+            /* Light Theme (Default) */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6; /* gray-100 */
+            --bg-tertiary: #e5e7eb; /* gray-200 */
+            --text-primary: #111827; /* gray-900 */
+            --text-secondary: #6b7280; /* gray-500 */
+            --border-color: #d1d5db; /* gray-300 */
+            --accent-color: #3b82f6; /* blue-500 */
+            --accent-color-dark: #2563eb; /* blue-600 */
+            --danger-color: #ef4444; /* red-500 */
+            --danger-color-dark: #dc2626; /* red-600 */
+            --success-color: #10b981; /* emerald-500 */
+            --warning-color: #f59e0b; /* amber-500 */
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --modal-overlay: rgba(0, 0, 0, 0.5);
+
+             /* Priority Colors */
+            --priority-high: #ef4444; /* red-500 */
+            --priority-medium: #f59e0b; /* amber-500 */
+            --priority-low: #3b82f6; /* blue-500 */
+        }
+
+        /* Dark Theme */
+        html.dark {
+            --bg-primary: #1f2937; /* gray-800 */
+            --bg-secondary: #374151; /* gray-700 */
+            --bg-tertiary: #4b5563; /* gray-600 */
+            --text-primary: #f9fafb; /* gray-50 */
+            --text-secondary: #9ca3af; /* gray-400 */
+            --border-color: #4b5563; /* gray-600 */
+            --accent-color: #60a5fa; /* blue-400 */
+            --accent-color-dark: #3b82f6; /* blue-500 */
+            --danger-color: #f87171; /* red-400 */
+            --danger-color-dark: #ef4444; /* red-500 */
+            --success-color: #34d399; /* emerald-400 */
+            --warning-color: #fbbf24; /* amber-400 */
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --modal-overlay: rgba(0, 0, 0, 0.7);
+
+             /* Priority Colors */
+            --priority-high: #f87171; /* red-400 */
+            --priority-medium: #fbbf24; /* amber-400 */
+            --priority-low: #60a5fa; /* blue-400 */
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Apply Inter font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Utility Classes */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        .hidden { display: none !important; }
+        .sr-only { /* Screen Reader only */
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.6rem 1.2rem;
+            border: 1px solid transparent;
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease, color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--accent-color-dark);
+            border-color: var(--accent-color-dark);
+        }
+        .btn-secondary {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background-color: var(--bg-tertiary);
+        }
+         .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+            border-color: var(--danger-color);
+        }
+        .btn-danger:hover:not(:disabled) {
+            background-color: var(--danger-color-dark);
+            border-color: var(--danger-color-dark);
+        }
+        .btn-icon {
+            padding: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+        }
+        .btn-icon:hover:not(:disabled) {
+            color: var(--text-primary);
+            background-color: var(--bg-tertiary);
+        }
+        .btn-icon.danger:hover:not(:disabled) {
+             color: var(--danger-color);
+             background-color: rgba(239, 68, 68, 0.1); /* Light red background */
+        }
+        html.dark .btn-icon.danger:hover:not(:disabled) {
+             background-color: rgba(248, 113, 113, 0.2); /* Light red background */
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: var(--text-primary);
+            background-color: var(--bg-primary);
+            background-clip: padding-box;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            transition: border-color var(--transition-speed) ease-in-out, box-shadow var(--transition-speed) ease-in-out;
+        }
+        .form-control:focus {
+            border-color: var(--accent-color);
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25); /* blue-500 focus */
+        }
+        textarea.form-control {
+            min-height: 80px;
+            resize: vertical;
+        }
+        select.form-control {
+            appearance: none; /* Remove default arrow */
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e"); /* Custom arrow (gray-400) */
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px 12px;
+            padding-right: 2.5rem; /* Space for arrow */
+        }
+        html.dark select.form-control {
+             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e"); /* Custom arrow (gray-500) */
+        }
+
+        /* Checkbox */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .checkbox-input {
+            height: 1.25em;
+            width: 1.25em;
+            margin-right: 0.5em;
+            cursor: pointer;
+            accent-color: var(--accent-color); /* Style the check itself */
+        }
+
+        /* Header */
+        .app-header {
+            background-color: var(--bg-secondary);
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .app-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .user-info {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            gap: 1.5rem; /* Space between sidebar and task area */
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+
+        /* Sidebar (Filters, Categories) */
+        .sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            background-color: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            align-self: flex-start; /* Stick to top */
+            position: sticky;
+            top: 80px; /* Adjust based on header height */
+            max-height: calc(100vh - 100px); /* Prevent overflow */
+            overflow-y: auto;
+        }
+        .sidebar h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .filter-group, .category-group {
+            margin-bottom: 1.5rem;
+        }
+        .filter-options button, .category-list button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 0.5rem 0.8rem;
+            margin-bottom: 0.3rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-radius: calc(var(--border-radius) / 2);
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+        }
+        .filter-options button:hover, .category-list button:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        .filter-options button.active, .category-list button.active {
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: 500;
+        }
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .category-item button.category-name {
+             flex-grow: 1;
+             margin-right: 0.5rem; /* Space before delete button */
+        }
+        .add-category-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .add-category-form input {
+            flex-grow: 1;
+            padding: 0.4rem 0.6rem;
+            font-size: 0.9rem;
+        }
+        .add-category-form button {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.9rem;
+        }
+
+        /* Task Area */
+        .task-area {
+            flex-grow: 1;
+            min-width: 0; /* Prevent flexbox overflow issues */
+        }
+
+        /* Task Controls (Add, Search, Sort, Batch) */
+        .task-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: center;
+            padding: 1rem;
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius);
+        }
+        .task-controls .form-group {
+            margin-bottom: 0; /* Reset margin for inline elements */
+        }
+        .search-sort-group {
+            display: flex;
+            gap: 1rem;
+            flex-grow: 1; /* Take remaining space */
+        }
+        #search-task {
+            min-width: 200px; /* Ensure search bar has decent width */
+        }
+        .batch-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Task List */
+        #task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .task-item {
+            display: flex;
+            align-items: flex-start; /* Align checkbox with top of text */
+            padding: 1rem 1.2rem;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px var(--shadow-color);
+            transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease, opacity var(--transition-speed) ease, transform var(--transition-speed) ease;
+            cursor: grab; /* For drag and drop */
+        }
+        .task-item.completed {
+            opacity: 0.7;
+            background-color: var(--bg-secondary);
+        }
+        .task-item.completed .task-content .task-title,
+        .task-item.completed .task-content .task-description {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+        .task-item.dragging {
+            opacity: 0.5;
+            border-style: dashed;
+            background-color: var(--bg-tertiary);
+        }
+        .task-item.drag-over {
+            border-bottom: 3px solid var(--accent-color); /* Indicate drop zone */
+        }
+
+        .task-item .checkbox-container {
+            margin-top: 0.15rem; /* Align checkbox nicely */
+            margin-right: 0.8rem;
+            flex-shrink: 0;
+        }
+        .task-content {
+            flex-grow: 1;
+            margin-right: 1rem;
+        }
+        .task-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            word-break: break-word; /* Prevent long titles overflowing */
+        }
+        .task-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            word-break: break-word;
+        }
+        .task-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem; /* Row and column gap */
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .task-meta span {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.2rem 0.5rem;
+            border-radius: calc(var(--border-radius) / 2);
+            background-color: var(--bg-tertiary);
+        }
+        .task-meta .priority-tag {
+            font-weight: 500;
+        }
+        .task-meta .priority-high { color: var(--priority-high); border: 1px solid var(--priority-high); background: none;}
+        .task-meta .priority-medium { color: var(--priority-medium); border: 1px solid var(--priority-medium); background: none;}
+        .task-meta .priority-low { color: var(--priority-low); border: 1px solid var(--priority-low); background: none;}
+        .task-meta .due-date.overdue {
+            color: var(--danger-color);
+            font-weight: 500;
+        }
+        .task-meta .category-tag {
+            background-color: var(--bg-tertiary); /* Default */
+            color: var(--text-secondary);
+        }
+
+        .task-actions {
+            display: flex;
+            flex-direction: column; /* Stack vertically on small screens if needed */
+            gap: 0.3rem;
+            flex-shrink: 0;
+            align-items: center;
+        }
+
+        /* Modals */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: var(--modal-overlay);
+            align-items: center; /* Vertical center */
+            justify-content: center; /* Horizontal center */
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background-color: var(--bg-primary);
+            margin: auto;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 5px 15px var(--shadow-color);
+            animation: fadeIn 0.3s ease-out;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        .modal-close-btn {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .modal-close-btn:hover {
+            color: var(--text-primary);
+        }
+        .modal-footer {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.8rem;
+        }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .toast {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 0.8rem 1.2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px var(--shadow-color);
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(20px);
+            font-size: 0.95rem;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast.success { background-color: var(--success-color); color: white; }
+        .toast.error { background-color: var(--danger-color); color: white; }
+        .toast.info { background-color: var(--accent-color); color: white; }
+
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .main-content {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                position: static; /* Remove sticky positioning */
+                max-height: none;
+                margin-bottom: 1.5rem;
+            }
+            .task-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-sort-group {
+                flex-direction: column;
+                width: 100%;
+            }
+            #search-task {
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            .header-actions {
+                width: 100%;
+                justify-content: space-between; /* Space out buttons */
+            }
+            .task-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .task-item .checkbox-container {
+                margin-bottom: 0.5rem; /* Space below checkbox */
+            }
+            .task-actions {
+                flex-direction: row; /* Actions back in a row */
+                justify-content: flex-end; /* Align actions to the right */
+                margin-top: 0.8rem;
+            }
+            .modal-content {
+                padding: 1.5rem;
+            }
+            .modal-title {
+                font-size: 1.2rem;
+            }
+        }
+
+    </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="text/babel" data-presets="react,typescript">
-    // Types
-    type Task = {
-      id: string;
-      title: string;
-      description?: string;
-      dueDate?: string;
-      category?: string;
-      priority?: 'High' | 'Medium' | 'Low';
-      completed: boolean;
-      userId: string;
-    };
 
-    type Category = {
-      id: string;
-      name: string;
-      userId: string;
-    };
-
-    type User = {
-      id: string;
-      name: string;
-      email: string;
-      password: string;
-    };
-
-    // Context
-    const ThemeContext = React.createContext({
-      theme: 'light',
-      toggleTheme: () => {},
-    });
-
-    const AuthContext = React.createContext({
-      user: null,
-      login: (email, password) => false,
-      register: (user) => false,
-      logout: () => {},
-    });
-
-    // Custom Hooks
-    const useLocalStorage = (key, initialValue) => {
-      const [value, setValue] = React.useState(() => {
-        try {
-          const stored = localStorage.getItem(key);
-          return stored ? JSON.parse(stored) : initialValue;
-        } catch {
-          return initialValue;
-        }
-      });
-
-      React.useEffect(() => {
-        try {
-          localStorage.setItem(key, JSON.stringify(value));
-        } catch {}
-      }, [value]);
-
-      return [value, setValue];
-    };
-
-    // Sample Data
-    const sampleTasks = [
-      { id: '1', title: 'Buy groceries', description: 'Milk, eggs, bread', dueDate: '2025-04-18', category: 'Personal', priority: 'Medium', completed: false, userId: '' },
-      { id: '2', title: 'Finish report', dueDate: '2025-04-17', category: 'Work', priority: 'High', completed: false, userId: '' },
-      { id: '3', title: 'Call mom', category: 'Personal', priority: 'Low', completed: true, userId: '' },
-      { id: '4', title: 'Plan vacation', description: 'Check flights and hotels', dueDate: '2025-04-20', category: 'Personal', priority: 'Medium', completed: false, userId: '' },
-      { id: '5', title: 'Team meeting', dueDate: '2025-04-17', category: 'Work', priority: 'High', completed: false, userId: '' },
-      { id: '6', title: 'Gym session', dueDate: '2025-04-17', category: 'Health', priority: 'Medium', completed: false, userId: '' },
-      { id: '7', title: 'Read book', category: 'Personal', priority: 'Low', completed: false, userId: '' },
-      { id: '8', title: 'Pay bills', dueDate: '2025-04-19', category: 'Finance', priority: 'High', completed: false, userId: '' },
-      { id: '9', title: 'Clean house', category: 'Personal', priority: 'Medium', completed: false, userId: '' },
-      { id: '10', title: 'Update resume', category: 'Work', priority: 'Low', completed: true, userId: '' },
-    ];
-
-    const sampleCategories = [
-      { id: '1', name: 'Personal', userId: '' },
-      { id: '2', name: 'Work', userId: '' },
-      { id: '3', name: 'Health', userId: '' },
-      { id: '4', name: 'Finance', userId: '' },
-    ];
-
-    // Components
-    const TaskItem = ({ task, onToggle, onDelete, onEdit }) => {
-      return (
-        <li className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow mb-2 transition-all">
-          <input
-            type="checkbox"
-            checked={task.completed}
-            onChange={() => onToggle(task.id)}
-            className="mr-4"
-          />
-          <div className="flex-1">
-            <h3 className={`text-lg ${task.completed ? 'line-through text-gray-500' : ''}`}>
-              {task.title}
-            </h3>
-            {task.description && <p className="text-sm text-gray-600 dark:text-gray-400">{task.description}</p>}
-            {task.dueDate && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Due: {new Date(task.dueDate).toLocaleDateString()}
-              </p>
-            )}
-            {task.category && <p className="text-sm text-blue-500">{task.category}</p>}
-            {task.priority && (
-              <p className={`text-sm ${task.priority === 'High' ? 'text-red-500' : task.priority === 'Medium' ? 'text-yellow-500' : 'text-green-500'}`}>
-                Priority: {task.priority}
-              </p>
-            )}
-          </div>
-          <div>
-            <button
-              onClick={() => onEdit(task)}
-              className="text-blue-500 mr-2"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => onDelete(task.id)}
-              className="text-red-500"
-            >
-              Delete
-            </button>
-          </div>
-        </li>
-      );
-    };
-
-    const TaskForm = ({ onSubmit, categories, initialTask, onCancel }) => {
-      const [title, setTitle] = React.useState(initialTask?.title || '');
-      const [description, setDescription] = React.useState(initialTask?.description || '');
-      const [dueDate, setDueDate] = React.useState(initialTask?.dueDate || '');
-      const [category, setCategory] = React.useState(initialTask?.category || '');
-      const [priority, setPriority] = React.useState(initialTask?.priority || '');
-
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!title.trim()) return;
-        onSubmit({ title, description, dueDate, category, priority });
-        if (!initialTask) {
-          setTitle('');
-          setDescription('');
-          setDueDate('');
-          setCategory('');
-          setPriority('');
-        }
-      };
-
-      return (
-        <form onSubmit={handleSubmit} className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg mb-4">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Task title"
-            className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
-            required
-          />
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Description"
-            className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
-          />
-          <input
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
-          />
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
-          >
-            <option value="">Select Category</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.name}>{cat.name}</option>
-            ))}
-          </select>
-          <select
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
-            className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
-          >
-            <option value="">Select Priority</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-          </select>
-          <div className="flex justify-end">
-            {onCancel && (
-              <button
-                type="button"
-                onClick={onCancel}
-                className="mr-2 px-4 py-2 bg-gray-300 rounded"
-              >
-                Cancel
-              </button>
-            )}
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded"
-            >
-              {initialTask ? 'Update' : 'Add'} Task
-            </button>
-          </div>
-        </form>
-      );
-    };
-
-    const RegisterModal = ({ onClose, onRegister }) => {
-      const [name, setName] = React.useState('');
-      const [email, setEmail] = React.useState('');
-      const [password, setPassword] = React.useState('');
-      const [confirmPassword, setConfirmPassword] = React.useState('');
-      const [error, setError] = React.useState('');
-
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!name || !email || !password || !confirmPassword) {
-          setError('All fields are required');
-          return;
-        }
-        if (password !== confirmPassword) {
-          setError('Passwords do not match');
-          return;
-        }
-        if (!/\S+@\S+\.\S+/.test(email)) {
-          setError('Invalid email format');
-          return;
-        }
-        const success = onRegister({ id: Date.now().toString(), name, email, password });
-        if (success) {
-          onClose();
-        } else {
-          setError('Email already exists');
-        }
-      };
-
-      return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md w-full">
-            <h2 className="text-2xl mb-4">Register</h2>
-            {error && <p className="text-red-500 mb-4">{error}</p>}
-            <div>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Name"
-                className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
-                required
-              />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
-                required
-              />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
-                required
-              />
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm Password"
-                className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
-                required
-              />
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="mr-2 px-4 py-2 bg-gray-300 rounded"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSubmit}
-                  className="px-4 py-2 bg-blue-500 text-white rounded"
-                >
-                  Register
-                </button>
-              </div>
+    <header class="app-header">
+        <div class="container header-content">
+            <h1 class="app-title">✅ Todo List</h1>
+            <div class="header-actions">
+                <span id="user-info" class="user-info hidden">Logged in as: <span id="user-email-display"></span></span>
+                <button id="theme-toggle-btn" class="btn btn-secondary" aria-label="Toggle Theme">🌓</button>
+                <button id="login-btn" class="btn btn-primary">Login</button>
+                <button id="logout-btn" class="btn btn-secondary hidden">Logout</button>
+                <button id="undo-btn" class="btn btn-secondary hidden" disabled>Undo</button>
+                 <button id="export-btn" class="btn btn-secondary hidden">Export Tasks</button>
+                <label for="import-file" class="btn btn-secondary hidden" id="import-label">Import Tasks</label>
+                <input type="file" id="import-file" class="hidden" accept=".json">
             </div>
-          </div>
         </div>
-      );
-    };
+    </header>
 
-    const LoginPage = ({ onLogin, onRegisterClick }) => {
-      const [email, setEmail] = React.useState('');
-      const [password, setPassword] = React.useState('');
-      const [error, setError] = React.useState('');
-      const [loading, setLoading] = React.useState(false);
-
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        setError('');
-        if (!email || !password) {
-          setError('All fields are required');
-          return;
-        }
-        setLoading(true);
-        setTimeout(() => {
-          const success = onLogin(email, password);
-          setLoading(false);
-          if (!success) {
-            setError('Invalid email or password');
-          }
-        }, 500);
-      };
-
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h2 className="text-2xl mb-4 text-center">Login</h2>
-            {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
-            <div>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
-                required
-              />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                className="w-full p-2 mb-2 border rounded dark:bg-gray-800 dark:text-white"
-                required
-              />
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="w-full px-4 py-2 bg-blue-500 text-white rounded disabled:bg-blue-300"
-              >
-                {loading ? 'Logging in...' : 'Login'}
-              </button>
+    <div class="container main-content" id="main-app-area" >
+        <aside class="sidebar" id="sidebar-area">
+            <div class="filter-group">
+                <h3>Filters</h3>
+                <div class="filter-options" id="filter-status-options">
+                    <button data-filter="all" class="active">All Tasks</button>
+                    <button data-filter="active">Active</button>
+                    <button data-filter="completed">Completed</button>
+                </div>
+                 <div class="filter-options" id="filter-priority-options">
+                    <label for="filter-priority-select" class="sr-only">Filter by Priority</label>
+                    <select id="filter-priority-select" class="form-control">
+                        <option value="all">All Priorities</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                        <option value="none">None</option>
+                    </select>
+                </div>
+                 <div class="filter-options" id="filter-duedate-options">
+                     <label for="filter-duedate-select" class="sr-only">Filter by Due Date</label>
+                    <select id="filter-duedate-select" class="form-control">
+                        <option value="all">All Due Dates</option>
+                        <option value="today">Due Today</option>
+                        <option value="this_week">Due This Week</option>
+                        <option value="overdue">Overdue</option>
+                    </select>
+                 </div>
             </div>
-            <p className="mt-4 text-center">
-              Don't have an account?{' '}
-              <button
-                onClick={onRegisterClick}
-                className="text-blue-500 underline"
-              >
-                Register
-              </button>
-            </p>
-          </div>
-          {loading && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+
+            <div class="category-group">
+                <h3>Categories</h3>
+                <div class="category-list" id="category-list">
+                    <button data-category-id="all" class="active category-name">All Categories</button>
+                    </div>
+                <form id="add-category-form" class="add-category-form">
+                    <label for="new-category-name" class="sr-only">New category name</label>
+                    <input type="text" id="new-category-name" class="form-control" placeholder="New category..." required>
+                    <button type="submit" class="btn btn-primary">+</button>
+                </form>
             </div>
-          )}
+        </aside>
+
+        <main class="task-area" id="task-area-content">
+            <div class="task-controls">
+                <button id="add-task-btn" class="btn btn-primary">Add New Task</button>
+                <div class="search-sort-group">
+                    <div class="form-group">
+                        <label for="search-task" class="sr-only">Search Tasks</label>
+                        <input type="search" id="search-task" class="form-control" placeholder="Search tasks...">
+                    </div>
+                    <div class="form-group">
+                        <label for="sort-tasks" class="sr-only">Sort Tasks</label>
+                        <select id="sort-tasks" class="form-control">
+                            <option value="createdAt_desc">Date Created (Newest)</option>
+                            <option value="createdAt_asc">Date Created (Oldest)</option>
+                            <option value="dueDate_asc">Due Date (Soonest)</option>
+                            <option value="dueDate_desc">Due Date (Latest)</option>
+                            <option value="priority_desc">Priority (High-Low)</option>
+                            <option value="priority_asc">Priority (Low-High)</option>
+                            <option value="title_asc">Title (A-Z)</option>
+                            <option value="title_desc">Title (Z-A)</option>
+                        </select>
+                    </div>
+                </div>
+                 <div class="batch-actions" id="batch-actions-container" >
+                     <button id="select-all-btn" class="btn btn-secondary btn-sm">Select All</button>
+                     <button id="deselect-all-btn" class="btn btn-secondary btn-sm hidden">Deselect All</button>
+                     <button id="batch-delete-btn" class="btn btn-danger btn-sm hidden">Delete Selected</button>
+                     <button id="batch-complete-btn" class="btn btn-secondary btn-sm hidden">Complete Selected</button>
+                 </div>
+            </div>
+
+            <ul id="task-list">
+                <p id="no-tasks-message">No tasks found. Add one!</p>
+            </ul>
+        </main>
+    </div>
+
+    <div class="container" id="login-screen">
+         <div class="modal-content" style="max-width: 400px; margin: 5rem auto;"> <h2 class="modal-title" style="text-align: center; margin-bottom: 2rem;">Login</h2>
+             <form id="login-form">
+                 <div class="form-group">
+                     <label for="login-email">Email</label>
+                     <input type="email" id="login-email" class="form-control" required>
+                 </div>
+                 <div class="form-group">
+                     <label for="login-password">Password</label>
+                     <input type="password" id="login-password" class="form-control" required>
+                 </div>
+                 <p id="login-error" class="error-message" style="color: var(--danger-color); margin-bottom: 1rem; display: none;"></p>
+                 <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+             </form>
+             <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary);">
+                 Don't have an account? <button id="show-register-modal-btn" class="btn-link" style="background: none; border: none; color: var(--accent-color); cursor: pointer; padding: 0; font-size: inherit;">Register</button>
+             </p>
+         </div>
+    </div>
+
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Register New Account</h3>
+                <button class="modal-close-btn" data-modal-id="register-modal">&times;</button>
+            </div>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-name">Name (Optional)</label>
+                    <input type="text" id="register-name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" class="form-control" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm-password">Confirm Password</label>
+                    <input type="password" id="register-confirm-password" class="form-control" required>
+                </div>
+                 <p id="register-error" class="error-message" style="color: var(--danger-color); margin-bottom: 1rem; display: none;"></p>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-close-btn" data-modal-id="register-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
         </div>
-      );
-    };
+    </div>
 
-    const App = () => {
-      const [theme, setTheme] = useLocalStorage('theme', 'light');
-      const [user, setUser] = useLocalStorage('user', null);
-      const [users, setUsers] = useLocalStorage('users', []);
-      const [tasks, setTasks] = useLocalStorage('tasks', []);
-      const [categories, setCategories] = useLocalStorage('categories', []);
-      const [filter, setFilter] = React.useState('All');
-      const [categoryFilter, setCategoryFilter] = React.useState('');
-      const [priorityFilter, setPriorityFilter] = React.useState('');
-      const [search, setSearch] = React.useState('');
-      const [sort, setSort] = React.useState('title');
-      const [editingTask, setEditingTask] = React.useState(null);
-      const [showRegister, setShowRegister] = React.useState(false);
-      const [loading, setLoading] = React.useState(false);
+    <div id="task-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="task-modal-title">Add New Task</h3>
+                <button class="modal-close-btn" data-modal-id="task-modal">&times;</button>
+            </div>
+            <form id="task-form">
+                <input type="hidden" id="task-id"> <div class="form-group">
+                    <label for="task-title">Title *</label>
+                    <input type="text" id="task-title" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="task-description">Description</label>
+                    <textarea id="task-description" class="form-control"></textarea>
+                </div>
+                 <div class="form-group">
+                    <label for="task-notes">Notes/Details</label>
+                    <textarea id="task-notes" class="form-control"></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <div class="form-group" style="flex: 1 1 150px;">
+                        <label for="task-due-date">Due Date</label>
+                        <input type="date" id="task-due-date" class="form-control">
+                    </div>
+                    <div class="form-group" style="flex: 1 1 150px;">
+                        <label for="task-category">Category</label>
+                        <select id="task-category" class="form-control">
+                            <option value="">-- Select Category --</option>
+                            </select>
+                    </div>
+                    <div class="form-group" style="flex: 1 1 150px;">
+                        <label for="task-priority">Priority</label>
+                        <select id="task-priority" class="form-control">
+                            <option value="none">None</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                 <p id="task-form-error" class="error-message" style="color: var(--danger-color); margin-bottom: 1rem; display: none;"></p>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-close-btn" data-modal-id="task-modal">Cancel</button>
+                    <button type="submit" id="save-task-btn" class="btn btn-primary">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-      React.useEffect(() => {
-        document.documentElement.classList.toggle('dark', theme === 'dark');
-      }, [theme]);
+    <div id="toast-container"></div>
 
-      React.useEffect(() => {
-        if (user && tasks.filter((t) => t.userId === user.id).length === 0) {
-          const userTasks = sampleTasks.map((task) => ({ ...task, userId: user.id }));
-          const userCategories = sampleCategories.map((cat) => ({ ...cat, userId: user.id }));
-          setTasks([...tasks, ...userTasks]);
-          setCategories([...categories, ...userCategories]);
-        }
-      }, [user]);
 
-      const toggleTheme = () => {
-        setTheme(theme === 'light' ? 'dark' : 'light');
-      };
+    <script>
+        // ---=== CORE APPLICATION LOGIC ===---
+        document.addEventListener('DOMContentLoaded', () => {
 
-      const login = (email, password) => {
-        const foundUser = users.find((u) => u.email === email && u.password === password);
-        if (foundUser) {
-          setUser(foundUser);
-          return true;
-        }
-        return false;
-      };
+            // ---=== State Variables ===---
+            let tasks = [];
+            let categories = [];
+            let currentUser = null; // { id: string, email: string, name?: string }
+            let currentFilters = {
+                status: 'all', // 'all', 'active', 'completed'
+                categoryId: 'all', // 'all' or category ID
+                priority: 'all', // 'all', 'low', 'medium', 'high', 'none'
+                dueDate: 'all', // 'all', 'today', 'this_week', 'overdue'
+                searchTerm: '',
+            };
+            let currentSort = {
+                by: 'createdAt',
+                direction: 'desc' // 'asc' or 'desc'
+            };
+            let selectedTaskIds = new Set();
+            let stateHistory = []; // For Undo functionality
+            const MAX_HISTORY = 10; // Max undo steps
 
-      const register = (newUser) => {
-        if (users.some((u) => u.email === newUser.email)) {
-          return false;
-        }
-        setUsers([...users, newUser]);
-        setUser(newUser);
-        return true;
-      };
+            // ---=== DOM Element References ===---
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            const loginBtn = document.getElementById('login-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const userInfoDisplay = document.getElementById('user-info');
+            const userEmailSpan = document.getElementById('user-email-display');
+            const mainAppArea = document.getElementById('main-app-area');
+            const loginScreen = document.getElementById('login-screen');
+            const loginForm = document.getElementById('login-form');
+            const loginError = document.getElementById('login-error');
+            const registerModal = document.getElementById('register-modal');
+            const taskModal = document.getElementById('task-modal');
+            const showRegisterModalBtn = document.getElementById('show-register-modal-btn');
+            const registerForm = document.getElementById('register-form');
+            const registerError = document.getElementById('register-error');
+            const taskForm = document.getElementById('task-form');
+            const taskFormError = document.getElementById('task-form-error');
+            const taskListUl = document.getElementById('task-list');
+            const addTaskBtn = document.getElementById('add-task-btn');
+            const categoryListDiv = document.getElementById('category-list');
+            const addCategoryForm = document.getElementById('add-category-form');
+            const filterStatusOptions = document.getElementById('filter-status-options');
+            const filterPrioritySelect = document.getElementById('filter-priority-select');
+            const filterDueDateSelect = document.getElementById('filter-duedate-select');
+            const searchInput = document.getElementById('search-task');
+            const sortSelect = document.getElementById('sort-tasks');
+            const noTasksMessage = document.getElementById('no-tasks-message');
+            const taskModalTitle = document.getElementById('task-modal-title');
+            const taskCategorySelect = document.getElementById('task-category'); // In modal
+            const modalCloseBtns = document.querySelectorAll('.modal-close-btn');
+            const toastContainer = document.getElementById('toast-container');
+            const undoBtn = document.getElementById('undo-btn');
+            const exportBtn = document.getElementById('export-btn');
+            const importFile = document.getElementById('import-file');
+            const importLabel = document.getElementById('import-label');
+            const batchActionsContainer = document.getElementById('batch-actions-container');
+            const selectAllBtn = document.getElementById('select-all-btn');
+            const deselectAllBtn = document.getElementById('deselect-all-btn');
+            const batchDeleteBtn = document.getElementById('batch-delete-btn');
+            const batchCompleteBtn = document.getElementById('batch-complete-btn');
+            const sidebarArea = document.getElementById('sidebar-area');
+            const taskAreaContent = document.getElementById('task-area-content');
 
-      const logout = () => {
-        setUser(null);
-      };
+            // ---=== Utility Functions ===---
+            const generateId = () => '_' + Math.random().toString(36).substr(2, 9);
 
-      const addTask = (task) => {
-        setTasks([...tasks, { ...task, id: Date.now().toString(), completed: false, userId: user.id }]);
-      };
+            const showToast = (message, type = 'info', duration = 3000) => {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
 
-      const updateTask = (updatedTask) => {
-        setTasks(tasks.map((t) => (t.id === updatedTask.id ? { ...updatedTask, userId: user.id } : t)));
-        setEditingTask(null);
-      };
+                // Trigger fade in animation
+                setTimeout(() => toast.classList.add('show'), 10);
 
-      const toggleTask = (id) => {
-        setTasks(tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
-      };
+                // Remove toast after duration
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    // Remove from DOM after transition ends
+                    toast.addEventListener('transitionend', () => toast.remove());
+                }, duration);
+            };
 
-      const deleteTask = (id) => {
-        setTasks(tasks.filter((t) => t.id !== id));
-      };
+            const formatDate = (isoString) => {
+                if (!isoString) return '';
+                const date = new Date(isoString);
+                 // Adjust for timezone offset to display local date correctly in input type=date
+                const offset = date.getTimezoneOffset();
+                const adjustedDate = new Date(date.getTime() - (offset*60*1000));
+                return adjustedDate.toISOString().split('T')[0];
+            };
 
-      const addCategory = (name) => {
-        setCategories([...categories, { id: Date.now().toString(), name, userId: user.id }]);
-      };
+            const formatDisplayDate = (isoString) => {
+                 if (!isoString) return 'No due date';
+                 const date = new Date(isoString);
+                 return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+            };
 
-      const filteredTasks = tasks
-        .filter((task) => task.userId === user?.id)
-        .filter((task) => {
-          if (filter === 'Active') return !task.completed;
-          if (filter === 'Completed') return task.completed;
-          return true;
-        })
-        .filter((task) => (categoryFilter ? task.category === categoryFilter : true))
-        .filter((task) => (priorityFilter ? task.priority === priorityFilter : true))
-        .filter((task) => task.title.toLowerCase().includes(search.toLowerCase()) || (task.description?.toLowerCase().includes(search.toLowerCase()) ?? false))
-        .sort((a, b) => {
-          if (sort === 'title') return a.title.localeCompare(b.title);
-          if (sort === 'dueDate') return (a.dueDate || '9999-12-31').localeCompare(b.dueDate || '9999-12-31');
-          if (sort === 'priority') {
-            const priorities = { High: 3, Medium: 2, Low: 1 };
-            return (priorities[b.priority || 'Low'] - priorities[a.priority || 'Low']);
-          }
-          return 0;
+            const isOverdue = (isoString) => {
+                if (!isoString) return false;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Compare dates only
+                const dueDate = new Date(isoString);
+                dueDate.setHours(0, 0, 0, 0);
+                return dueDate < today;
+            };
+
+            const saveState = () => {
+                if (!currentUser) return;
+                try {
+                    // Store data per user
+                    const userData = { tasks, categories };
+                    localStorage.setItem(`todoAppData_${currentUser.id}`, JSON.stringify(userData));
+                } catch (e) {
+                    console.error("Error saving state to localStorage:", e);
+                    showToast("Error saving data. Storage might be full.", "error");
+                }
+            };
+
+            const loadState = () => {
+                if (!currentUser) return;
+                try {
+                    const savedData = localStorage.getItem(`todoAppData_${currentUser.id}`);
+                    if (savedData) {
+                        const parsedData = JSON.parse(savedData);
+                        tasks = parsedData.tasks || [];
+                        categories = parsedData.categories || [];
+                        // Ensure tasks have all required fields after loading (migration)
+                        tasks = tasks.map(t => ({
+                            priority: 'none', // Default if missing
+                            notes: '', // Default if missing
+                            ...t // Spread existing task data over defaults
+                        }));
+                    } else {
+                        // Load sample data for new user
+                        initializeSampleData();
+                    }
+                } catch (e) {
+                    console.error("Error loading state from localStorage:", e);
+                    showToast("Error loading previous data.", "error");
+                    tasks = [];
+                    categories = [];
+                    initializeSampleData(); // Fallback to sample data on error
+                }
+            };
+
+            // ---=== Authentication Simulation ===---
+            const loadUserSession = () => {
+                const session = localStorage.getItem('todoUserSession');
+                if (session) {
+                    currentUser = JSON.parse(session);
+                    showLoggedInUI();
+                } else {
+                    showLoggedOutUI();
+                }
+            };
+
+            const saveUserSession = () => {
+                if (currentUser) {
+                    localStorage.setItem('todoUserSession', JSON.stringify(currentUser));
+                } else {
+                    localStorage.removeItem('todoUserSession');
+                }
+            };
+
+            const handleLogin = (event) => {
+                event.preventDefault();
+                const email = document.getElementById('login-email').value.trim();
+                const password = document.getElementById('login-password').value;
+                loginError.style.display = 'none';
+
+                // --- VERY BASIC SIMULATION ---
+                // In a real app, this involves an API call.
+                // We'll just simulate finding a user stored locally (e.g., from registration)
+                // Or create a default user if none exists for simplicity.
+                const storedUsers = JSON.parse(localStorage.getItem('todoUsers') || '{}');
+                let foundUser = Object.values(storedUsers).find(user => user.email === email);
+
+                // Simulate successful login (password check is skipped here)
+                if (foundUser || email === 'test@example.com') { // Allow default login
+                     if (!foundUser && email === 'test@example.com') {
+                         // Create the default test user if they don't exist
+                         foundUser = { id: 'user_default', email: 'test@example.com', name: 'Test User' };
+                         storedUsers[foundUser.id] = foundUser;
+                         localStorage.setItem('todoUsers', JSON.stringify(storedUsers));
+                     }
+                    currentUser = foundUser;
+                    saveUserSession();
+                    showLoggedInUI();
+                    loadState(); // Load user-specific data
+                    renderAll();
+                    showToast(`Welcome back, ${currentUser.name || currentUser.email}!`, 'success');
+                } else {
+                    loginError.textContent = 'Invalid email or password.';
+                    loginError.style.display = 'block';
+                }
+                loginForm.reset();
+            };
+
+            const handleRegister = (event) => {
+                 event.preventDefault();
+                 const name = document.getElementById('register-name').value.trim();
+                 const email = document.getElementById('register-email').value.trim();
+                 const password = document.getElementById('register-password').value;
+                 const confirmPassword = document.getElementById('register-confirm-password').value;
+                 registerError.style.display = 'none';
+
+                 if (password !== confirmPassword) {
+                     registerError.textContent = 'Passwords do not match.';
+                     registerError.style.display = 'block';
+                     return;
+                 }
+                 if (password.length < 6) {
+                      registerError.textContent = 'Password must be at least 6 characters long.';
+                     registerError.style.display = 'block';
+                     return;
+                 }
+
+                 // --- SIMULATION ---
+                 const storedUsers = JSON.parse(localStorage.getItem('todoUsers') || '{}');
+                 const emailExists = Object.values(storedUsers).some(user => user.email === email);
+
+                 if (emailExists) {
+                     registerError.textContent = 'Email already registered.';
+                     registerError.style.display = 'block';
+                     return;
+                 }
+
+                 // Create new user
+                 const newUserId = generateId();
+                 const newUser = { id: newUserId, email, name: name || '' }; // Don't store password!
+                 storedUsers[newUserId] = newUser;
+                 localStorage.setItem('todoUsers', JSON.stringify(storedUsers));
+
+                 // Automatically log in the new user
+                 currentUser = newUser;
+                 saveUserSession();
+                 closeModal('register-modal');
+                 showLoggedInUI();
+                 loadState(); // Load (or initialize sample) data for new user
+                 renderAll();
+                 showToast('Registration successful! Welcome!', 'success');
+                 registerForm.reset();
+            };
+
+            const handleLogout = () => {
+                // Save history before logging out? Maybe not needed.
+                clearHistory(); // Clear history for the logged-out user
+                currentUser = null;
+                saveUserSession();
+                tasks = []; // Clear in-memory data
+                categories = [];
+                selectedTaskIds.clear();
+                showLoggedOutUI();
+                renderAll(); // Clear the UI
+            };
+
+            const showLoggedInUI = () => {
+                loginScreen.style.display = 'none';
+                mainAppArea.style.display = 'flex'; // Show main content flex container
+                sidebarArea.classList.remove('hidden');
+                taskAreaContent.classList.remove('hidden');
+                loginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                userInfoDisplay.classList.remove('hidden');
+                userEmailSpan.textContent = currentUser.name || currentUser.email;
+                undoBtn.classList.remove('hidden');
+                exportBtn.classList.remove('hidden');
+                importLabel.classList.remove('hidden'); // Show import button label
+                batchActionsContainer.style.display = 'flex'; // Show batch actions
+            };
+
+            const showLoggedOutUI = () => {
+                loginScreen.style.display = 'block';
+                mainAppArea.style.display = 'none'; // Hide main content area
+                sidebarArea.classList.add('hidden');
+                taskAreaContent.classList.add('hidden');
+                loginBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+                userInfoDisplay.classList.add('hidden');
+                undoBtn.classList.add('hidden');
+                exportBtn.classList.add('hidden');
+                importLabel.classList.add('hidden'); // Hide import button label
+                batchActionsContainer.style.display = 'none'; // Hide batch actions
+            };
+
+            // ---=== Theme Handling ===---
+            const applyTheme = (theme) => {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    themeToggleBtn.textContent = '☀️'; // Sun icon for light mode
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    themeToggleBtn.textContent = '🌓'; // Moon icon for dark mode
+                }
+                localStorage.setItem('theme', theme);
+            };
+
+            const toggleTheme = () => {
+                const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+                applyTheme(currentTheme === 'light' ? 'dark' : 'light');
+            };
+
+            // ---=== Modal Handling ===---
+            const openModal = (modalId) => {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.add('active');
+                    // Focus first focusable element in modal (optional, good for a11y)
+                     const focusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                     if (focusable) {
+                         focusable.focus();
+                     }
+                }
+            };
+
+            const closeModal = (modalId) => {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.remove('active');
+                }
+            };
+
+            // ---=== State History (Undo) ===---
+            const saveHistory = () => {
+                 // Deep copy current state (tasks and categories)
+                 const currentState = JSON.stringify({ tasks: tasks, categories: categories });
+
+                 // Avoid saving identical consecutive states
+                 if (stateHistory.length > 0 && stateHistory[stateHistory.length - 1] === currentState) {
+                     return;
+                 }
+
+                 stateHistory.push(currentState);
+                 // Limit history size
+                 if (stateHistory.length > MAX_HISTORY) {
+                     stateHistory.shift(); // Remove the oldest state
+                 }
+                 updateUndoButton();
+            };
+
+            const undoLastAction = () => {
+                if (stateHistory.length > 1) { // Need at least 2 states: current + previous
+                     stateHistory.pop(); // Remove the current state
+                     const previousStateJSON = stateHistory[stateHistory.length - 1]; // Get the last saved state
+                     const previousState = JSON.parse(previousStateJSON);
+                     tasks = previousState.tasks || [];
+                     categories = previousState.categories || [];
+                     saveState(); // Persist the restored state
+                     renderAll();
+                     showToast('Action undone', 'info');
+                }
+                 updateUndoButton();
+            };
+
+            const clearHistory = () => {
+                 stateHistory = [];
+                 // Save the initial empty state if needed, or just clear
+                 updateUndoButton();
+            };
+
+             const updateUndoButton = () => {
+                undoBtn.disabled = stateHistory.length <= 1; // Disable if only initial state exists
+            };
+
+
+            // ---=== Category Management ===---
+            const renderCategories = () => {
+                categoryListDiv.innerHTML = '<button data-category-id="all" class="category-name">All Categories</button>'; // Reset with 'All' option
+                const categorySelectOptions = '<option value="">-- Select Category --</option>' + categories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('');
+                taskCategorySelect.innerHTML = categorySelectOptions; // Update modal dropdown
+
+                categories.forEach(cat => {
+                    const catItem = document.createElement('div');
+                    catItem.className = 'category-item';
+                    catItem.innerHTML = `
+                        <button data-category-id="${cat.id}" class="category-name">${cat.name}</button>
+                        <button class="btn btn-icon btn-sm danger delete-category-btn" data-category-id="${cat.id}" aria-label="Delete category ${cat.name}">&times;</button>
+                    `;
+                    categoryListDiv.appendChild(catItem);
+                });
+
+                // Add active class to current filter
+                 const currentCatBtn = categoryListDiv.querySelector(`button[data-category-id="${currentFilters.categoryId}"]`);
+                 if (currentCatBtn) {
+                     currentCatBtn.classList.add('active');
+                 } else {
+                     // Default to 'All Categories' if current filter doesn't match anymore
+                     categoryListDiv.querySelector('button[data-category-id="all"]').classList.add('active');
+                 }
+            };
+
+            const handleAddCategory = (event) => {
+                event.preventDefault();
+                const nameInput = document.getElementById('new-category-name');
+                const name = nameInput.value.trim();
+                if (name && !categories.some(cat => cat.name.toLowerCase() === name.toLowerCase())) {
+                    saveHistory(); // Save state before modification
+                    const newCategory = { id: generateId(), name: name };
+                    categories.push(newCategory);
+                    saveState();
+                    renderCategories();
+                    nameInput.value = '';
+                    showToast(`Category "${name}" added`, 'success');
+                } else if (!name) {
+                     showToast('Category name cannot be empty', 'error');
+                } else {
+                    showToast(`Category "${name}" already exists`, 'error');
+                }
+            };
+
+            const handleDeleteCategory = (categoryId) => {
+                 if (confirm('Are you sure you want to delete this category? Tasks in this category will lose their category assignment.')) {
+                     saveHistory(); // Save state before modification
+                     categories = categories.filter(cat => cat.id !== categoryId);
+                     // Remove category assignment from tasks
+                     tasks = tasks.map(task => {
+                         if (task.categoryId === categoryId) {
+                             return { ...task, categoryId: undefined };
+                         }
+                         return task;
+                     });
+                     // If the deleted category was the active filter, reset to 'all'
+                     if (currentFilters.categoryId === categoryId) {
+                         currentFilters.categoryId = 'all';
+                     }
+                     saveState();
+                     renderAll(); // Re-render tasks and categories
+                     showToast('Category deleted', 'info');
+                 }
+            };
+
+            // ---=== Task Management ===---
+            const renderTasks = () => {
+                taskListUl.innerHTML = ''; // Clear existing tasks
+                selectedTaskIds.clear(); // Clear selection on re-render
+                updateBatchActionButtons(); // Update button states
+
+                const filteredTasks = getFilteredAndSortedTasks();
+
+                if (filteredTasks.length === 0) {
+                    noTasksMessage.style.display = 'block';
+                } else {
+                    noTasksMessage.style.display = 'none';
+                    filteredTasks.forEach(task => {
+                        const taskItem = document.createElement('li');
+                        taskItem.className = `task-item ${task.completed ? 'completed' : ''}`;
+                        taskItem.dataset.taskId = task.id;
+                        taskItem.draggable = true; // Make draggable
+
+                        const category = categories.find(cat => cat.id === task.categoryId);
+                        const dueDateStr = formatDisplayDate(task.dueDate);
+                        const isTaskOverdue = isOverdue(task.dueDate);
+
+                        taskItem.innerHTML = `
+                            <label class="checkbox-container" for="task-checkbox-${task.id}">
+                                <input type="checkbox" id="task-checkbox-${task.id}" class="task-checkbox checkbox-input" data-task-id="${task.id}" ${task.completed ? 'checked' : ''}>
+                                <span class="sr-only">Mark task ${task.completed ? 'incomplete' : 'complete'}</span>
+                            </label>
+                             <label class="checkbox-container batch-select-container" for="task-batch-select-${task.id}">
+                                <input type="checkbox" id="task-batch-select-${task.id}" class="task-batch-checkbox checkbox-input" data-task-id="${task.id}" >
+                                <span class="sr-only">Select task for batch action</span>
+                            </label>
+                            <div class="task-content">
+                                <div class="task-title">${task.title}</div>
+                                ${task.description ? `<div class="task-description">${task.description}</div>` : ''}
+                                ${task.notes ? `<div class="task-description" style="font-style: italic;">Notes: ${task.notes}</div>` : ''}
+                                <div class="task-meta">
+                                    ${task.priority !== 'none' ? `<span class="priority-tag priority-${task.priority}">${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)} Priority</span>` : ''}
+                                    ${task.dueDate ? `<span class="due-date ${isTaskOverdue && !task.completed ? 'overdue' : ''}">${dueDateStr} ${isTaskOverdue && !task.completed ? '(Overdue)' : ''}</span>` : ''}
+                                    ${category ? `<span class="category-tag">${category.name}</span>` : ''}
+                                    <span class="created-date">Created: ${formatDisplayDate(task.createdAt)}</span>
+                                </div>
+                            </div>
+                            <div class="task-actions">
+                                <button class="btn btn-icon btn-sm edit-task-btn" data-task-id="${task.id}" aria-label="Edit task">✏️</button>
+                                <button class="btn btn-icon btn-sm danger delete-task-btn" data-task-id="${task.id}" aria-label="Delete task">🗑️</button>
+                            </div>
+                        `;
+                        taskListUl.appendChild(taskItem);
+                    });
+                }
+                updateSelectAllButtonState();
+            };
+
+            const getFilteredAndSortedTasks = () => {
+                let filtered = [...tasks]; // Start with all tasks for the current user
+
+                // Apply Status Filter
+                if (currentFilters.status === 'active') {
+                    filtered = filtered.filter(task => !task.completed);
+                } else if (currentFilters.status === 'completed') {
+                    filtered = filtered.filter(task => task.completed);
+                }
+
+                // Apply Category Filter
+                if (currentFilters.categoryId !== 'all') {
+                    filtered = filtered.filter(task => task.categoryId === currentFilters.categoryId);
+                }
+
+                 // Apply Priority Filter
+                if (currentFilters.priority !== 'all') {
+                    filtered = filtered.filter(task => task.priority === currentFilters.priority);
+                }
+
+                 // Apply Due Date Filter
+                 const today = new Date();
+                 today.setHours(0,0,0,0);
+                 const endOfWeek = new Date(today);
+                 endOfWeek.setDate(today.getDate() + (6 - today.getDay())); // End of current week (Saturday)
+                 endOfWeek.setHours(23, 59, 59, 999);
+
+                 if (currentFilters.dueDate === 'today') {
+                     filtered = filtered.filter(task => task.dueDate && formatDate(task.dueDate) === formatDate(today.toISOString()));
+                 } else if (currentFilters.dueDate === 'this_week') {
+                     filtered = filtered.filter(task => {
+                         if (!task.dueDate) return false;
+                         const dueDate = new Date(task.dueDate);
+                         return dueDate >= today && dueDate <= endOfWeek;
+                     });
+                 } else if (currentFilters.dueDate === 'overdue') {
+                     filtered = filtered.filter(task => !task.completed && task.dueDate && isOverdue(task.dueDate));
+                 }
+
+
+                // Apply Search Filter
+                if (currentFilters.searchTerm) {
+                    const searchTermLower = currentFilters.searchTerm.toLowerCase();
+                    filtered = filtered.filter(task =>
+                        task.title.toLowerCase().includes(searchTermLower) ||
+                        (task.description && task.description.toLowerCase().includes(searchTermLower)) ||
+                         (task.notes && task.notes.toLowerCase().includes(searchTermLower))
+                    );
+                }
+
+                // Apply Sorting
+                 const priorityOrder = { high: 3, medium: 2, low: 1, none: 0 };
+                 filtered.sort((a, b) => {
+                     let compareA, compareB;
+                     switch (currentSort.by) {
+                         case 'title':
+                             compareA = a.title.toLowerCase();
+                             compareB = b.title.toLowerCase();
+                             break;
+                         case 'dueDate':
+                             // Handle null/undefined dates - sort them last
+                             compareA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
+                             compareB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+                             break;
+                         case 'priority':
+                             compareA = priorityOrder[a.priority];
+                             compareB = priorityOrder[b.priority];
+                             break;
+                         case 'createdAt':
+                         default: // Default to createdAt
+                             compareA = new Date(a.createdAt).getTime();
+                             compareB = new Date(b.createdAt).getTime();
+                             break;
+                     }
+
+                     let comparison = 0;
+                     if (compareA > compareB) {
+                         comparison = 1;
+                     } else if (compareA < compareB) {
+                         comparison = -1;
+                     }
+
+                     // Handle cases where primary sort key is equal (e.g., same due date) - add secondary sort by creation date
+                     if (comparison === 0 && currentSort.by !== 'createdAt') {
+                         let secondaryA = new Date(a.createdAt).getTime();
+                         let secondaryB = new Date(b.createdAt).getTime();
+                          comparison = secondaryA > secondaryB ? 1 : (secondaryA < secondaryB ? -1 : 0);
+                          // Default secondary sort is newest first when primary matches
+                          return comparison * -1; // Multiply by -1 for descending secondary sort
+                     }
+
+
+                     return comparison * (currentSort.direction === 'desc' ? -1 : 1);
+                 });
+
+
+                return filtered;
+            };
+
+            const handleTaskFormSubmit = (event) => {
+                event.preventDefault();
+                taskFormError.style.display = 'none';
+
+                const taskId = document.getElementById('task-id').value;
+                const title = document.getElementById('task-title').value.trim();
+                const description = document.getElementById('task-description').value.trim();
+                const notes = document.getElementById('task-notes').value.trim();
+                const dueDate = document.getElementById('task-due-date').value;
+                const categoryId = document.getElementById('task-category').value || undefined; // Handle empty string case
+                const priority = document.getElementById('task-priority').value;
+
+                if (!title) {
+                    taskFormError.textContent = 'Task title is required.';
+                    taskFormError.style.display = 'block';
+                    return;
+                }
+
+                saveHistory(); // Save state before modification
+
+                if (taskId) {
+                    // Editing existing task
+                    const taskIndex = tasks.findIndex(t => t.id === taskId);
+                    if (taskIndex > -1) {
+                        tasks[taskIndex] = {
+                            ...tasks[taskIndex], // Keep existing properties like completed, createdAt, userId
+                            title,
+                            description,
+                            notes,
+                            dueDate: dueDate ? new Date(dueDate).toISOString() : undefined, // Store as ISO or undefined
+                            categoryId,
+                            priority
+                        };
+                        showToast('Task updated', 'success');
+                    }
+                } else {
+                    // Adding new task
+                    const newTask = {
+                        id: generateId(),
+                        title,
+                        description,
+                        notes,
+                        dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
+                        categoryId,
+                        priority,
+                        completed: false,
+                        createdAt: new Date().toISOString(),
+                        userId: currentUser.id // Associate with current user
+                    };
+                    tasks.push(newTask);
+                    showToast('Task added', 'success');
+                }
+
+                saveState();
+                renderTasks();
+                closeModal('task-modal');
+                taskForm.reset(); // Clear the form
+                document.getElementById('task-id').value = ''; // Clear hidden ID field
+            };
+
+            const openEditTaskModal = (taskId) => {
+                const task = tasks.find(t => t.id === taskId);
+                if (task) {
+                    taskModalTitle.textContent = 'Edit Task';
+                    document.getElementById('task-id').value = task.id;
+                    document.getElementById('task-title').value = task.title;
+                    document.getElementById('task-description').value = task.description || '';
+                    document.getElementById('task-notes').value = task.notes || '';
+                    document.getElementById('task-due-date').value = formatDate(task.dueDate); // Format for date input
+                    document.getElementById('task-category').value = task.categoryId || '';
+                    document.getElementById('task-priority').value = task.priority || 'none';
+                    taskFormError.style.display = 'none'; // Hide previous errors
+                    openModal('task-modal');
+                }
+            };
+
+            const openAddTaskModal = () => {
+                taskModalTitle.textContent = 'Add New Task';
+                taskForm.reset(); // Clear form fields
+                document.getElementById('task-id').value = ''; // Ensure ID is empty
+                taskFormError.style.display = 'none'; // Hide previous errors
+                // Set default priority if needed, e.g., 'none'
+                document.getElementById('task-priority').value = 'none';
+                openModal('task-modal');
+            };
+
+            const toggleTaskComplete = (taskId) => {
+                saveHistory(); // Save state before modification
+                const taskIndex = tasks.findIndex(t => t.id === taskId);
+                if (taskIndex > -1) {
+                    tasks[taskIndex].completed = !tasks[taskIndex].completed;
+                    saveState();
+                    renderTasks(); // Re-render to reflect change visually
+                    // Optionally show toast
+                    // showToast(`Task marked as ${tasks[taskIndex].completed ? 'complete' : 'active'}`, 'info');
+                }
+            };
+
+            const deleteTask = (taskId) => {
+                 if (confirm('Are you sure you want to delete this task?')) {
+                     saveHistory(); // Save state before modification
+                     tasks = tasks.filter(t => t.id !== taskId);
+                     selectedTaskIds.delete(taskId); // Remove from selection if present
+                     saveState();
+                     renderTasks();
+                     updateBatchActionButtons();
+                     showToast('Task deleted', 'info');
+                 }
+            };
+
+            // ---=== Filtering and Sorting Handlers ===---
+            const handleFilterChange = (event) => {
+                const target = event.target.closest('button[data-filter], button[data-category-id], select');
+                if (!target) return;
+
+                if (target.matches('button[data-filter]')) {
+                    currentFilters.status = target.dataset.filter;
+                     // Update active class for status buttons
+                     filterStatusOptions.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                     target.classList.add('active');
+                } else if (target.matches('button[data-category-id]')) {
+                    currentFilters.categoryId = target.dataset.categoryId;
+                     // Update active class for category buttons
+                     categoryListDiv.querySelectorAll('button.category-name').forEach(btn => btn.classList.remove('active'));
+                     target.classList.add('active');
+                } else if (target.id === 'filter-priority-select') {
+                     currentFilters.priority = target.value;
+                } else if (target.id === 'filter-duedate-select') {
+                     currentFilters.dueDate = target.value;
+                }
+
+                renderTasks();
+            };
+
+            const handleSearch = (event) => {
+                currentFilters.searchTerm = event.target.value;
+                // Debounce rendering slightly? Optional for performance.
+                renderTasks();
+            };
+
+            const handleSortChange = (event) => {
+                const [by, direction] = event.target.value.split('_');
+                currentSort.by = by;
+                currentSort.direction = direction;
+                renderTasks();
+            };
+
+            // ---=== Drag and Drop ---===
+            let draggedItemId = null;
+
+            const handleDragStart = (event) => {
+                draggedItemId = event.target.dataset.taskId;
+                event.dataTransfer.effectAllowed = 'move';
+                event.dataTransfer.setData('text/plain', draggedItemId); // Necessary for Firefox
+                // Add styling to the dragged item
+                setTimeout(() => event.target.classList.add('dragging'), 0);
+            };
+
+            const handleDragEnd = (event) => {
+                 event.target.classList.remove('dragging');
+                 // Clear visual cues from potential drop targets
+                 document.querySelectorAll('.task-item.drag-over').forEach(el => el.classList.remove('drag-over'));
+                 draggedItemId = null;
+            };
+
+            const handleDragOver = (event) => {
+                event.preventDefault(); // Necessary to allow dropping
+                event.dataTransfer.dropEffect = 'move';
+
+                const targetItem = event.target.closest('.task-item');
+                if (targetItem && targetItem.dataset.taskId !== draggedItemId) {
+                    // Remove indicator from other items
+                     document.querySelectorAll('.task-item.drag-over').forEach(el => el.classList.remove('drag-over'));
+                    // Add indicator to current target
+                    targetItem.classList.add('drag-over');
+                }
+            };
+
+             const handleDragLeave = (event) => {
+                 const targetItem = event.target.closest('.task-item');
+                 if (targetItem) {
+                     targetItem.classList.remove('drag-over');
+                 }
+             };
+
+            const handleDrop = (event) => {
+                event.preventDefault();
+                const targetItem = event.target.closest('.task-item');
+                 if (!targetItem || !draggedItemId || targetItem.dataset.taskId === draggedItemId) {
+                     if (targetItem) targetItem.classList.remove('drag-over'); // Clean up indicator
+                     return; // Don't drop on itself or outside a task item
+                 }
+
+                 targetItem.classList.remove('drag-over'); // Clean up indicator
+
+                 saveHistory(); // Save state before reordering
+
+                 const draggedIndex = tasks.findIndex(task => task.id === draggedItemId);
+                 const targetIndex = tasks.findIndex(task => task.id === targetItem.dataset.taskId);
+
+                 if (draggedIndex > -1 && targetIndex > -1) {
+                     // Remove the dragged item and store it
+                     const [draggedTask] = tasks.splice(draggedIndex, 1);
+                     // Insert it at the target index
+                     tasks.splice(targetIndex, 0, draggedTask);
+
+                     // Re-render the list to reflect the new order
+                     saveState();
+                     renderTasks(); // This re-renders based on the *current* sort order, effectively overriding manual sort for now.
+                     // To maintain manual order, we'd need a separate 'manual' sort option or adjust the rendering logic.
+                     // For simplicity, drag/drop currently just changes the underlying array order, which sorting then overrides on next render.
+                     // A better approach would be to add an 'order' property to tasks if manual sorting is critical.
+                     showToast('Task reordered (Note: Sorting may override manual order)', 'info');
+                 }
+                 draggedItemId = null;
+            };
+
+
+            // ---=== Batch Actions ===---
+             const updateBatchActionButtons = () => {
+                 const hasSelection = selectedTaskIds.size > 0;
+                 batchDeleteBtn.classList.toggle('hidden', !hasSelection);
+                 batchCompleteBtn.classList.toggle('hidden', !hasSelection);
+                 deselectAllBtn.classList.toggle('hidden', !hasSelection);
+                 selectAllBtn.classList.toggle('hidden', hasSelection); // Show Select All only if nothing selected
+             };
+
+             const updateSelectAllButtonState = () => {
+                 const visibleTasks = getFilteredAndSortedTasks();
+                 const allVisibleSelected = visibleTasks.length > 0 && visibleTasks.every(task => selectedTaskIds.has(task.id));
+                 selectAllBtn.textContent = allVisibleSelected ? 'Deselect Visible' : 'Select Visible';
+                 // Adjust visibility based on whether *any* tasks are visible
+                 selectAllBtn.classList.toggle('hidden', visibleTasks.length === 0);
+                 deselectAllBtn.classList.toggle('hidden', selectedTaskIds.size === 0); // Show deselect if any are selected
+             };
+
+             const handleBatchCheckboxChange = (event) => {
+                 const taskId = event.target.dataset.taskId;
+                 if (event.target.checked) {
+                     selectedTaskIds.add(taskId);
+                 } else {
+                     selectedTaskIds.delete(taskId);
+                 }
+                 updateBatchActionButtons();
+                 updateSelectAllButtonState(); // Update main select button text
+             };
+
+             const handleSelectAllVisible = () => {
+                 const visibleTasks = getFilteredAndSortedTasks();
+                 const allVisibleSelected = visibleTasks.every(task => selectedTaskIds.has(task.id));
+
+                 visibleTasks.forEach(task => {
+                     const checkbox = document.getElementById(`task-batch-select-${task.id}`);
+                     if (checkbox) {
+                         if (allVisibleSelected) {
+                             // Deselect all visible
+                             selectedTaskIds.delete(task.id);
+                             checkbox.checked = false;
+                         } else {
+                             // Select all visible
+                             selectedTaskIds.add(task.id);
+                             checkbox.checked = true;
+                         }
+                     }
+                 });
+                 updateBatchActionButtons();
+                 updateSelectAllButtonState();
+             };
+
+             const handleDeselectAll = () => {
+                 selectedTaskIds.clear();
+                  document.querySelectorAll('.task-batch-checkbox').forEach(cb => cb.checked = false);
+                 updateBatchActionButtons();
+                 updateSelectAllButtonState();
+             };
+
+             const handleBatchDelete = () => {
+                 if (selectedTaskIds.size === 0) return;
+                 if (confirm(`Are you sure you want to delete ${selectedTaskIds.size} selected task(s)?`)) {
+                     saveHistory();
+                     tasks = tasks.filter(task => !selectedTaskIds.has(task.id));
+                     selectedTaskIds.clear();
+                     saveState();
+                     renderTasks(); // Re-renders the list
+                     updateBatchActionButtons();
+                     showToast(`${selectedTaskIds.size} tasks deleted`, 'info');
+                 }
+             };
+
+             const handleBatchComplete = () => {
+                 if (selectedTaskIds.size === 0) return;
+                 saveHistory();
+                 let completedCount = 0;
+                 tasks = tasks.map(task => {
+                     if (selectedTaskIds.has(task.id)) {
+                         if (!task.completed) completedCount++; // Only count newly completed
+                         return { ...task, completed: true };
+                     }
+                     return task;
+                 });
+                 selectedTaskIds.clear(); // Clear selection after action
+                 saveState();
+                 renderTasks(); // Re-renders the list
+                 updateBatchActionButtons();
+                 showToast(`${completedCount} tasks marked as complete`, 'info');
+             };
+
+            // ---=== Export / Import ===---
+            const handleExport = () => {
+                 if (!currentUser) return;
+                 const dataToExport = {
+                     tasks: tasks,
+                     categories: categories,
+                     exportedAt: new Date().toISOString(),
+                     appVersion: '1.0.0' // Optional versioning
+                 };
+                 const jsonString = JSON.stringify(dataToExport, null, 2); // Pretty print JSON
+                 const blob = new Blob([jsonString], { type: 'application/json' });
+                 const url = URL.createObjectURL(blob);
+                 const a = document.createElement('a');
+                 a.href = url;
+                 const dateSuffix = new Date().toISOString().split('T')[0];
+                 a.download = `todo_backup_${currentUser.email}_${dateSuffix}.json`;
+                 document.body.appendChild(a);
+                 a.click();
+                 document.body.removeChild(a);
+                 URL.revokeObjectURL(url);
+                 showToast('Tasks exported successfully', 'success');
+            };
+
+            const handleImport = (event) => {
+                 const file = event.target.files[0];
+                 if (!file) return;
+
+                 const reader = new FileReader();
+                 reader.onload = (e) => {
+                     try {
+                         const importedData = JSON.parse(e.target.result);
+
+                         // Basic validation
+                         if (!importedData || !Array.isArray(importedData.tasks) || !Array.isArray(importedData.categories)) {
+                             throw new Error('Invalid file format.');
+                         }
+
+                         if (confirm(`Importing will REPLACE your current tasks and categories for user ${currentUser.email}. Are you sure?`)) {
+                             saveHistory(); // Save current state before replacing
+
+                             // Validate and sanitize imported data (simple example)
+                             const importedTasks = importedData.tasks.map(t => ({
+                                 id: t.id || generateId(), // Ensure ID exists
+                                 title: t.title || 'Untitled Task',
+                                 description: t.description || '',
+                                 notes: t.notes || '',
+                                 dueDate: t.dueDate ? new Date(t.dueDate).toISOString() : undefined, // Validate/format date
+                                 categoryId: t.categoryId, // Keep category ID, will link if category exists
+                                 priority: ['low', 'medium', 'high', 'none'].includes(t.priority) ? t.priority : 'none', // Validate priority
+                                 completed: typeof t.completed === 'boolean' ? t.completed : false,
+                                 createdAt: t.createdAt ? new Date(t.createdAt).toISOString() : new Date().toISOString(), // Validate/format date
+                                 userId: currentUser.id // Assign to current user
+                             }));
+
+                             const importedCategories = importedData.categories.map(c => ({
+                                 id: c.id || generateId(),
+                                 name: c.name || 'Untitled Category'
+                                 // Add color validation/handling if needed
+                             }));
+
+                             tasks = importedTasks;
+                             categories = importedCategories;
+
+                             saveState();
+                             renderAll();
+                             showToast('Tasks imported successfully', 'success');
+                         }
+                     } catch (error) {
+                         console.error("Import error:", error);
+                         showToast(`Import failed: ${error.message}`, 'error');
+                     } finally {
+                         // Reset file input to allow importing the same file again if needed
+                         event.target.value = null;
+                     }
+                 };
+                 reader.onerror = () => {
+                     showToast('Failed to read the file.', 'error');
+                     event.target.value = null;
+                 };
+                 reader.readAsText(file);
+            };
+
+
+             // ---=== Sample Data Initialization ===---
+             const initializeSampleData = () => {
+                 console.log("Initializing sample data for user:", currentUser.id);
+                 const sampleCatsRaw = [
+                     { name: 'Work' }, { name: 'Personal' }, { name: 'Shopping' },
+                 ];
+                 const now = new Date();
+                 const todayISO = now.toISOString();
+                 const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
+                 const nextWeek = new Date(now); nextWeek.setDate(now.getDate() + 7);
+                 const yesterday = new Date(now); yesterday.setDate(now.getDate() -1);
+
+                 categories = sampleCatsRaw.map(c => ({ ...c, id: generateId() }));
+                 const catMap = new Map(categories.map(c => [c.name, c.id]));
+
+                 tasks = [
+                     { id: generateId(), userId: currentUser.id, title: 'Finish project proposal', description: 'Draft and finalize the proposal document', priority: 'high', completed: false, categoryId: catMap.get('Work'), createdAt: todayISO, notes: 'Include budget details.' },
+                     { id: generateId(), userId: currentUser.id, title: 'Buy groceries', description: 'Milk, Eggs, Bread, Cheese', priority: 'medium', completed: false, categoryId: catMap.get('Shopping'), dueDate: tomorrow.toISOString(), createdAt: todayISO },
+                     { id: generateId(), userId: currentUser.id, title: 'Schedule dentist appointment', priority: 'low', completed: false, categoryId: catMap.get('Personal'), createdAt: todayISO },
+                     { id: generateId(), userId: currentUser.id, title: 'Read chapter 5', priority: 'medium', completed: true, createdAt: todayISO }, // Completed task
+                     { id: generateId(), userId: currentUser.id, title: 'Pay electricity bill', priority: 'high', completed: false, dueDate: yesterday.toISOString(), createdAt: todayISO, notes: 'Due yesterday!' }, // Overdue task
+                     { id: generateId(), userId: currentUser.id, title: 'Workout session', description: 'Leg day', priority: 'medium', completed: false, categoryId: catMap.get('Personal'), createdAt: todayISO },
+                     { id: generateId(), userId: currentUser.id, title: 'Plan weekend trip', priority: 'low', completed: false, createdAt: todayISO },
+                     { id: generateId(), userId: currentUser.id, title: 'Call Mom', priority: 'medium', completed: false, categoryId: catMap.get('Personal'), dueDate: todayISO, createdAt: todayISO }, // Due today
+                     { id: generateId(), userId: currentUser.id, title: 'Update portfolio website', priority: 'high', completed: false, categoryId: catMap.get('Work'), dueDate: nextWeek.toISOString(), createdAt: todayISO },
+                     { id: generateId(), userId: currentUser.id, title: 'Water the plants', priority: 'low', completed: true, createdAt: todayISO }, // Another completed task
+                 ];
+                 saveState(); // Save the initialized sample data
+                 saveHistory(); // Save initial state for undo
+            };
+
+
+            // ---=== Global Event Listeners ===---
+            themeToggleBtn.addEventListener('click', toggleTheme);
+            loginBtn.addEventListener('click', () => {/* Handled by showing login screen */});
+            logoutBtn.addEventListener('click', handleLogout);
+            loginForm.addEventListener('submit', handleLogin);
+            showRegisterModalBtn.addEventListener('click', () => openModal('register-modal'));
+            registerForm.addEventListener('submit', handleRegister);
+            addTaskBtn.addEventListener('click', openAddTaskModal);
+            taskForm.addEventListener('submit', handleTaskFormSubmit);
+            addCategoryForm.addEventListener('submit', handleAddCategory);
+            undoBtn.addEventListener('click', undoLastAction);
+            exportBtn.addEventListener('click', handleExport);
+            importFile.addEventListener('change', handleImport);
+
+            // Use event delegation for dynamically added elements (tasks, categories)
+            taskListUl.addEventListener('click', (event) => {
+                if (event.target.matches('.task-checkbox')) {
+                    toggleTaskComplete(event.target.dataset.taskId);
+                } else if (event.target.matches('.edit-task-btn')) {
+                    openEditTaskModal(event.target.dataset.taskId);
+                } else if (event.target.matches('.delete-task-btn')) {
+                    deleteTask(event.target.dataset.taskId);
+                } else if (event.target.matches('.task-batch-checkbox')) {
+                    handleBatchCheckboxChange(event);
+                }
+            });
+
+             // Drag and Drop listeners on the list container
+             taskListUl.addEventListener('dragstart', handleDragStart);
+             taskListUl.addEventListener('dragend', handleDragEnd);
+             taskListUl.addEventListener('dragover', handleDragOver);
+             taskListUl.addEventListener('dragleave', handleDragLeave);
+             taskListUl.addEventListener('drop', handleDrop);
+
+
+            categoryListDiv.addEventListener('click', (event) => {
+                if (event.target.matches('.delete-category-btn')) {
+                    handleDeleteCategory(event.target.dataset.categoryId);
+                } else if (event.target.matches('.category-name')) {
+                    // Handle category filtering via delegation
+                    handleFilterChange(event);
+                }
+            });
+
+            // Filter/Sort listeners
+            filterStatusOptions.addEventListener('click', handleFilterChange);
+            filterPrioritySelect.addEventListener('change', handleFilterChange);
+            filterDueDateSelect.addEventListener('change', handleFilterChange);
+            searchInput.addEventListener('input', handleSearch); // 'input' for real-time search
+            sortSelect.addEventListener('change', handleSortChange);
+
+            // Batch Action listeners
+            selectAllBtn.addEventListener('click', handleSelectAllVisible);
+            deselectAllBtn.addEventListener('click', handleDeselectAll);
+            batchDeleteBtn.addEventListener('click', handleBatchDelete);
+            batchCompleteBtn.addEventListener('click', handleBatchComplete);
+
+
+            // Modal close listeners
+            modalCloseBtns.forEach(btn => {
+                btn.addEventListener('click', () => closeModal(btn.dataset.modalId));
+            });
+            // Close modal on overlay click
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (event) => {
+                    if (event.target === modal) { // Check if click is on the overlay itself
+                        closeModal(modal.id);
+                    }
+                });
+            });
+
+            // ---=== Initialization ===---
+            const renderAll = () => {
+                renderCategories();
+                renderTasks();
+                updateUndoButton();
+            };
+
+            // Initial theme setup
+            const savedTheme = localStorage.getItem('theme') || 'light'; // Default to light
+            applyTheme(savedTheme);
+
+            // Initial auth setup
+            loadUserSession();
+            if (currentUser) {
+                loadState(); // Load data only if logged in
+                clearHistory(); // Clear history from previous sessions
+                saveHistory(); // Save initial loaded state
+                renderAll();
+            } else {
+                 // Ensure UI is cleared if not logged in
+                 taskListUl.innerHTML = '';
+                 categoryListDiv.innerHTML = '<button data-category-id="all" class="active category-name">All Categories</button>';
+                 noTasksMessage.style.display = 'block';
+                 updateUndoButton();
+            }
         });
 
-      if (!user) {
-        return (
-          <ThemeContext.Provider value={{ theme, toggleTheme }}>
-            <AuthContext.Provider value={{ user, login, register, logout }}>
-              <LoginPage
-                onLogin={login}
-                onRegisterClick={() => setShowRegister(true)}
-              />
-              {showRegister && (
-                <RegisterModal
-                  onClose={() => setShowRegister(false)}
-                  onRegister={register}
-                />
-              )}
-            </AuthContext.Provider>
-          </ThemeContext.Provider>
-        );
-      }
+    </script>
 
-      return (
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
-          <AuthContext.Provider value={{ user, login, register, logout }}>
-            <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
-              <div className="max-w-4xl mx-auto">
-                <header className="flex justify-between items-center mb-6">
-                  <h1 className="text-3xl font-bold">Todo List</h1>
-                  <div className="flex items-center space-x-4">
-                    <button
-                      onClick={toggleTheme}
-                      className="p-2 rounded bg-gray-200 dark:bg-gray-700"
-                    >
-                      {theme === 'light' ? '🌙' : '☀️'}
-                    </button>
-                    <button
-                      onClick={logout}
-                      className="px-4 py-2 bg-red-500 text-white rounded"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                </header>
-
-                <TaskForm
-                  onSubmit={addTask}
-                  categories={categories.filter((c) => c.userId === user.id)}
-                />
-
-                <div className="mb-4 flex flex-wrap gap-4">
-                  <select
-                    value={filter}
-                    onChange={(e) => setFilter(e.target.value)}
-                    className="p-2 border rounded dark:bg-gray-800 dark:text-white"
-                  >
-                    <option value="All">All</option>
-                    <option value="Active">Active</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                  <select
-                    value={categoryFilter}
-                    onChange={(e) => setCategoryFilter(e.target.value)}
-                    className="p-2 border rounded dark:bg-gray-800 dark:text-white"
-                  >
-                    <option value="">All Categories</option>
-                    {categories.filter((c) => c.userId === user.id).map((cat) => (
-                      <option key={cat.id} value={cat.name}>{cat.name}</option>
-                    ))}
-                  </select>
-                  <select
-                    value={priorityFilter}
-                    onChange={(e) => setPriorityFilter(e.target.value)}
-                    className="p-2 border rounded dark:bg-gray-800 dark:text-white"
-                  >
-                    <option value="">All Priorities</option>
-                    <option value="High">High</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Low">Low</option>
-                  </select>
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search tasks..."
-                    className="p-2 border rounded dark:bg-gray-800 dark:text-white"
-                  />
-                  <select
-                    value={sort}
-                    onChange={(e) => setSort(e.target.value)}
-                    className="p-2 border rounded dark:bg-gray-800 dark:text-white"
-                  >
-                    <option value="title">Sort by Title</option>
-                    <option value="dueDate">Sort by Due Date</option>
-                    <option value="priority">Sort by Priority</option>
-                  </select>
-                </div>
-
-                <div className="mb-4">
-                  <input
-                    type="text"
-                    placeholder="New category"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && e.currentTarget.value.trim()) {
-                        addCategory(e.currentTarget.value.trim());
-                        e.currentTarget.value = '';
-                      }
-                    }}
-                    className="p-2 border rounded dark:bg-gray-800 dark:text-white"
-                  />
-                </div>
-
-                {editingTask && (
-                  <TaskForm
-                    onSubmit={(task) => updateTask({ ...editingTask, ...task })}
-                    categories={categories.filter((c) => c.userId === user.id)}
-                    initialTask={editingTask}
-                    onCancel={() => setEditingTask(null)}
-                  />
-                )}
-
-                <ul className="space-y-2">
-                  {filteredTasks.map((task) => (
-                    <TaskItem
-                      key={task.id}
-                      task={task}
-                      onToggle={toggleTask}
-                      onDelete={deleteTask}
-                      onEdit={setEditingTask}
-                    />
-                  ))}
-                </ul>
-
-                {loading && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </AuthContext.Provider>
-        </ThemeContext.Provider>
-      );
-    };
-
-    // Render
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-  </script>
 </body>
 </html>
