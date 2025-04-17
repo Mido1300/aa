@@ -3,9 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do App</title>
+    <title>Task Management System</title>
     <style>
-        /* Base styles */
+        :root {
+            --primary-bg: linear-gradient(135deg, #8B0000, #4A0000);
+            --secondary-bg: #2D0000;
+            --accent: #00008B;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] {
+            --primary-bg: linear-gradient(135deg, #ff6b6b, #ffe6e6);
+            --secondary-bg: #ffffff;
+            --accent: #007bff;
+            --success: #4caf50;
+            --danger: #f44336;
+            --warning: #ffeb3b;
+            --light: #ffffff;
+            --dark: #212121;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,259 +35,19 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        :root {
-            --primary-dark-red: linear-gradient(135deg, #8B0000, #590000);
-            --secondary-color: #f8f9fa;
-            --accent-green: #28a745;
-            --accent-yellow: #ffc107;
-            --accent-blue: #000080;
-            --accent-gray: #6c757d;
-            --transparent-black: rgba(0, 0, 0, 0.6);
-            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --card-bg: rgba(255, 255, 255, 0.9);
-            --error-color: #dc3545;
-        }
-
         body {
-            background: var(--primary-dark-red);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            background: var(--primary-bg);
+            color: var(--light);
+            transition: var(--transition);
         }
 
         .container {
-            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
 
-        /* Login Page Styles */
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .login-form {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            box-shadow: var(--box-shadow);
-            padding: 30px;
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .login-form h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ced4da;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .form-control:focus {
-            border-color: #000080;
-            outline: none;
-        }
-
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary {
-            background-color: #000080;
-            color: white;
-            width: 100%;
-        }
-
-        .btn-primary:hover {
-            background-color: #00005a;
-        }
-
-        .btn-success {
-            background-color: var(--accent-green);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background-color: #218838;
-        }
-
-        .btn-secondary {
-            background-color: var(--accent-gray);
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-
-        .btn-danger {
-            background-color: var(--error-color);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #bd2130;
-        }
-
-        .login-btn {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .login-btn::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 50px;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: skewX(-20deg);
-            animation: shineEffect 3s infinite;
-        }
-
-        @keyframes shineEffect {
-            0% {
-                left: -100%;
-            }
-            20% {
-                left: 100%;
-            }
-            100% {
-                left: 100%;
-            }
-        }
-
-        .register-text {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #6c757d;
-        }
-
-        .register-text a {
-            color: var(--accent-blue);
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .register-text a:hover {
-            text-decoration: underline;
-        }
-
-        /* Dashboard styles and task management continued... */
-        .priority-high {
-            background-color: rgba(220, 53, 69, 0.1);
-            color: var(--error-color);
-        }
-
-        .priority-medium {
-            background-color: rgba(255, 193, 7, 0.1);
-            color: #fd7e14;
-        }
-
-        .priority-low {
-            background-color: rgba(108, 117, 125, 0.1);
-            color: #6c757d;
-        }
-
-        .task-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .task-action-btn {
-            background-color: transparent;
-            border: none;
-            color: #6c757d;
-            cursor: pointer;
-            font-size: 16px;
-            transition: color 0.3s;
-        }
-
-        .edit-btn:hover {
-            color: #000080;
-        }
-
-        .view-btn:hover {
-            color: #28a745;
-        }
-
-        .delete-btn:hover {
-            color: #dc3545;
-        }
-
-        .play-btn:hover {
-            color: #fd7e14;
-        }
-
-        .due-alert {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 4px;
-        }
-
-        .due-normal {
-            background-color: var(--accent-green);
-        }
-
-        .due-soon {
-            background-color: var(--accent-yellow);
-        }
-
-        .due-expired {
-            background-color: var(--error-color);
-        }
-
-        .task-completed {
-            background-color: rgba(40, 167, 69, 0.1);
-        }
-
-        .task-completed .task-title {
-            text-decoration: line-through;
-            color: #6c757d;
-        }
-
-        /* Chart styles */
-        .chart-container {
-            width: 100%;
-            height: 300px;
-        }
-
-        /* Modal Styles for forms */
         .modal {
             display: none;
             position: fixed;
@@ -273,1878 +55,612 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: var(--transparent-black);
-            z-index: 1000;
-            overflow-y: auto;
+            background: rgba(0,0,0,0.5);
         }
 
         .modal-content {
-            background-color: var(--card-bg);
-            margin: 5% auto;
+            background: var(--secondary-bg);
+            margin: 10% auto;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: var(--box-shadow);
-            width: 90%;
-            max-width: 600px;
-            animation: modalAnimation 0.3s ease-out;
+            width: 80%;
+            max-width: 500px;
+            position: relative;
         }
 
-        @keyframes modalAnimation {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .form-group {
+            margin: 15px 0;
         }
 
-        .modal-header {
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--light);
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+        }
+
+        .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #dee2e6;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+            padding: 20px 0;
         }
 
-        .modal-title {
-            font-size: 20px;
-            color: #333;
-        }
-
-        .close {
-            font-size: 24px;
-            font-weight: bold;
-            color: #aaa;
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             cursor: pointer;
         }
 
-        .close:hover {
-            color: #333;
+        .task-card {
+            background: var(--secondary-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
         }
 
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            padding-top: 15px;
-            margin-top: 20px;
-            border-top: 1px solid #dee2e6;
+        .task-card:hover {
+            transform: translateY(-5px);
         }
 
-        .modal-footer .btn {
-            margin-left: 10px;
-        }
-
-        /* Sub-task styles */
-        .subtasks-container {
-            margin-top: 15px;
-            margin-bottom: 15px;
-        }
-
-        .subtask-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            background-color: #f8f9fa;
-            padding: 10px;
-            border-radius: 5px;
-        }
-
-        .subtask-input {
-            flex-grow: 1;
+        .priority-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
             margin-right: 10px;
-            padding: 8px;
-            border: 1px solid #ced4da;
-            border-radius: 5px;
         }
 
-        .add-subtask-btn {
-            background-color: var(--accent-green);
-            color: white;
-            border: none;
+        .high { background: var(--danger); }
+        .medium { background: #ff851b; }
+        .low { background: #aaaaaa; }
+
+        .chart-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--accent);
             border-radius: 50%;
             width: 30px;
             height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .animated-bg {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { background-color: rgba(255,255,255,0.1); }
+            50% { background-color: rgba(255,255,255,0.2); }
+            100% { background-color: rgba(255,255,255,0.1); }
+        }
+
+        .task-timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--secondary-bg);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        .login-page {
             display: flex;
             justify-content: center;
             align-items: center;
-            cursor: pointer;
-            font-size: 18px;
-            transition: background-color 0.3s;
+            height: 100vh;
         }
 
-        .add-subtask-btn:hover {
-            background-color: #218838;
-        }
-
-        .remove-subtask-btn {
-            background-color: var(--error-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 18px;
-            transition: background-color 0.3s;
-        }
-
-        .remove-subtask-btn:hover {
-            background-color: #bd2130;
-        }
-
-        /* Profile styles */
-        .profile-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .profile-picture-container {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 20px;
-        }
-
-        .profile-picture {
+        .login-box {
+            background: var(--secondary-bg);
+            padding: 40px;
+            border-radius: 10px;
             width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid white;
-            box-shadow: var(--box-shadow);
+            max-width: 400px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
         }
 
-        .profile-upload-btn {
+        .login-box h2 {
+            margin-bottom: 30px;
+            text-align: center;
+            color: var(--light);
+        }
+
+        .login-box .form-group {
+            position: relative;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid var(--light);
+            border-radius: 5px;
+            background: transparent;
+            color: var(--light);
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .login-box .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: var(--light);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .login-box .btn-login:hover {
+            background: #000066;
+        }
+
+        .login-box .register-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-box .register-link a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login-box .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .glow-effect {
             position: absolute;
             bottom: 0;
-            right: 0;
-            background-color: var(--accent-blue);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            animation: glow 2s linear infinite;
         }
 
-        .profile-upload-btn:hover {
-            background-color: #00005a;
-        }
-
-        .profile-info {
-            margin-bottom: 30px;
-        }
-
-        .profile-info-row {
-            display: flex;
-            margin-bottom: 15px;
-        }
-
-        .profile-info-label {
-            width: 120px;
-            font-weight: 600;
-            color: #6c757d;
-        }
-
-        .profile-info-value {
-            flex-grow: 1;
-            color: #333;
-        }
-
-        /* Import/Export modal styles */
-        .upload-area {
-            border: 2px dashed #ced4da;
-            border-radius: 5px;
-            padding: 30px;
-            text-align: center;
-            margin-bottom: 20px;
-            cursor: pointer;
-            transition: border-color 0.3s;
-        }
-
-        .upload-area:hover {
-            border-color: #000080;
-        }
-
-        .upload-icon {
-            font-size: 40px;
-            color: #6c757d;
-            margin-bottom: 10px;
-        }
-
-        .upload-text {
-            color: #6c757d;
-            margin-bottom: 10px;
-        }
-
-        .upload-input {
-            display: none;
-        }
-
-        .url-input-container {
-            margin-top: 20px;
-        }
-
-        /* Notification styles */
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 5px;
-            box-shadow: var(--box-shadow);
-            z-index: 1000;
-            display: none;
-        }
-
-        .notification.show {
-            display: block;
-            animation: fadeInNotification 0.3s, fadeOutNotification 0.3s 2.7s;
-        }
-
-        @keyframes fadeInNotification {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeOutNotification {
-            from {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-        }
-
-        /* Dark Mode */
-        body.dark-mode {
-            background: linear-gradient(135deg, #1a1a1a, #303030);
-        }
-
-        body.dark-mode .login-form,
-        body.dark-mode .modal-content,
-        body.dark-mode .stat-card,
-        body.dark-mode .tasks-section,
-        body.dark-mode .task-item,
-        body.dark-mode .user-card,
-        body.dark-mode .graph-card,
-        body.dark-mode .subtask-item {
-            background-color: #2d2d2d;
-            color: #e0e0e0;
-        }
-
-        body.dark-mode .task-completed {
-            background-color: rgba(40, 167, 69, 0.2);
-        }
-
-        body.dark-mode .dropdown-menu {
-            background-color: #2d2d2d;
-        }
-
-        body.dark-mode .dropdown-item {
-            color: #e0e0e0;
-        }
-
-        body.dark-mode .dropdown-item:hover {
-            background-color: #3d3d3d;
-        }
-
-        body.dark-mode .task-title,
-        body.dark-mode .stat-title,
-        body.dark-mode .stat-value,
-        body.dark-mode .modal-title,
-        body.dark-mode label,
-        body.dark-mode h2,
-        body.dark-mode .profile-info-value {
-            color: #e0e0e0;
-        }
-
-        body.dark-mode .form-control,
-        body.dark-mode .filter-select,
-        body.dark-mode .search-input,
-        body.dark-mode .subtask-input {
-            background-color: #3d3d3d;
-            border-color: #4d4d4d;
-            color: #e0e0e0;
-        }
-
-        body.dark-mode .upload-area {
-            border-color: #4d4d4d;
-        }
-
-        body.dark-mode .upload-text,
-        body.dark-mode .upload-icon {
-            color: #b0b0b0;
+        @keyframes glow {
+            0% { background-position: -100% 0; }
+            100% { background-position: 200% 0; }
         }
     </style>
 </head>
 <body>
     <!-- Login Page -->
-    <div class="login-container" id="loginPage">
-        <div class="login-form">
-            <h2>Welcome to To-Do App</h2>
+    <div class="login-page" id="loginPage">
+        <div class="login-box">
+            <h2>Login</h2>
             <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" value="test@example.com" required>
+                <input type="email" id="loginEmail" placeholder="Email" value="test@example.com">
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" value="123456" required>
+                <input type="password" id="loginPassword" placeholder="Password" value="123456">
             </div>
-            <button class="btn btn-primary login-btn" id="loginBtn">Login</button>
-            <p class="register-text">Don't have an account? <a id="registerLink">Register now</a></p>
-        </div>
-    </div>
-
-    <!-- Dashboard -->
-    <div class="dashboard" id="dashboard">
-        <div class="container">
-            <div class="header">
-                <div class="logo">To-Do App</div>
-                <div class="user-section">
-                    <div class="timer-display" id="taskTimer">00:00:00</div>
-                    <label class="mode-switch">
-                        <input type="checkbox" id="darkModeToggle">
-                        <span class="slider"></span>
-                    </label>
-                    <div class="user-profile">
-                        <img src="/api/placeholder/400/400" alt="User" class="profile-img" id="profileImg">
-                        <span class="notification-badge" id="notificationBadge">3</span>
-                        <div class="dropdown-menu" id="profileDropdown">
-                            <a class="dropdown-item" id="viewProfileBtn">View Profile</a>
-                            <a class="dropdown-item" id="editProfileBtn">Edit Profile</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" id="logoutBtn">Logout</a>
-                        </div>
-                    </div>
-                </div>
+            <button class="btn btn-login" onclick="handleLogin()">Login</button>
+            <div class="register-link">
+                Don't have an account? <a href="#" onclick="showRegister()">Register</a>
             </div>
-            
-            <div class="dashboard-content">
-                <!-- Users Section -->
-                <div class="users-section" id="usersSection" style="display: none;">
-                    <h2 style="color: white; margin-bottom: 20px;">Users</h2>
-                    <div class="users-container" id="usersContainer">
-                        <!-- Users will be added dynamically -->
-                    </div>
-                </div>
-                
-                <!-- Tasks Dashboard -->
-                <div class="tasks-dashboard" id="tasksDashboard">
-                    <div class="stats-container">
-                        <div class="stat-card">
-                            <div class="stat-title">Total Tasks</div>
-                            <div class="stat-value" id="totalTasksValue">10</div>
-                        </div>
-                        <div class="stat-card stat-completed">
-                            <div class="stat-title">Completed Tasks</div>
-                            <div class="stat-value" id="completedTasksValue">4</div>
-                        </div>
-                        <div class="stat-card stat-pending">
-                            <div class="stat-title">Pending Tasks</div>
-                            <div class="stat-value" id="pendingTasksValue">6</div>
-                        </div>
-                    </div>
-                    
-                    <div class="tasks-section">
-                        <div class="tasks-header">
-                            <h3 class="tasks-title">Tasks</h3>
-                            <div class="tasks-actions">
-                                <button class="btn btn-success" id="addTaskBtn">+ Add Task</button>
-                                <button class="btn btn-secondary" id="exportBtn">
-                                    <i class="fas fa-download"></i> Export
-                                </button>
-                                <button class="btn btn-secondary" id="importBtn">
-                                    <i class="fas fa-upload"></i> Import
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="tasks-filter">
-                            <div class="filter-group">
-                                <label>Status</label>
-                                <select class="filter-select" id="statusFilter">
-                                    <option value="all">All</option>
-                                    <option value="active">Active</option>
-                                    <option value="completed">Completed</option>
-                                </select>
-                            </div>
-                            <div class="filter-group">
-                                <label>Category</label>
-                                <select class="filter-select" id="categoryFilter">
-                                    <option value="all">All Categories</option>
-                                    <option value="work">Work</option>
-                                    <option value="personal">Personal</option>
-                                    <option value="study">Study</option>
-                                    <option value="health">Health</option>
-                                    <option value="finance">Finance</option>
-                                </select>
-                            </div>
-                            <div class="filter-group">
-                                <label>Priority</label>
-                                <select class="filter-select" id="priorityFilter">
-                                    <option value="all">All Priorities</option>
-                                    <option value="high">High</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="low">Low</option>
-                                </select>
-                            </div>
-                            <div class="filter-group">
-                                <label>Due Date</label>
-                                <select class="filter-select" id="dueDateFilter">
-                                    <option value="all">All Dates</option>
-                                    <option value="today">Today</option>
-                                    <option value="week">This Week</option>
-                                    <option value="month">This Month</option>
-                                    <option value="custom">Custom</option>
-                                </select>
-                            </div>
-                            <div class="search-box">
-                                <input type="text" class="search-input" id="searchInput" placeholder="Search tasks...">
-                                <i class="fas fa-search search-icon"></i>
-                            </div>
-                            <div class="undo-redo">
-                                <button class="undo-redo-btn" id="undoBtn">
-                                    <i class="fas fa-undo"></i>
-                                </button>
-                                <button class="undo-redo-btn" id="redoBtn">
-                                    <i class="fas fa-redo"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="tasks-view-toggle">
-                            <button class="toggle-btn active" id="listViewBtn">List View</button>
-                            <button class="toggle-btn" id="graphViewBtn">Graph View</button>
-                        </div>
-                        
-                        <div class="view-container">
-                            <div class="list-view" id="listView">
-                                <div id="tasksContainer">
-                                    <!-- Tasks will be added dynamically -->
-                                </div>
-                                <div class="batch-actions" id="batchActions">
-                                    <button class="btn btn-danger" id="batchDeleteBtn">Delete Selected</button>
-                                    <button class="btn btn-success" id="batchCompleteBtn">Mark as Completed</button>
-                                </div>
-                            </div>
-                            <div class="graph-view" id="graphView" style="display: none;">
-                                <div class="graph-card">
-                                    <h4>Tasks Status</h4>
-                                    <div class="chart-container">
-                                        <canvas id="barChart"></canvas>
-                                    </div>
-                                </div>
-                                <div class="graph-card">
-                                    <h4>Completion Rate</h4>
-                                    <div class="chart-container">
-                                        <canvas id="pieChart"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="glow-effect"></div>
         </div>
     </div>
 
     <!-- Registration Modal -->
-    <div class="modal" id="registerModal">
+    <div id="registerModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Register New Account</h4>
-                <span class="close" id="closeRegisterModal">&times;</span>
+            <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            <h2>Register</h2>
+            <div class="form-group">
+                <input type="text" id="firstName" placeholder="First Name" required>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="registerFirstName">First Name</label>
-                    <input type="text" class="form-control" id="registerFirstName" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerLastName">Last Name</label>
-                    <input type="text" class="form-control" id="registerLastName" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerEmail">Email</label>
-                    <input type="email" class="form-control" id="registerEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerConfirmEmail">Confirm Email</label>
-                    <input type="email" class="form-control" id="registerConfirmEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerPassword">Password</label>
-                    <input type="password" class="form-control" id="registerPassword" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerConfirmPassword">Confirm Password</label>
-                    <input type="password" class="form-control" id="registerConfirmPassword" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerBirthdate">Birthdate</label>
-                    <div class="calendar-dropdown">
-                        <input type="text" class="form-control" id="registerBirthdate" readonly required>
-                        <div class="calendar" id="birthdateCalendar">
-                            <div class="calendar-header">
-                                <button class="calendar-nav" id="prevMonth">&lt;</button>
-                                <div id="currentMonth">May 2023</div>
-                                <button class="calendar-nav" id="nextMonth">&gt;</button>
-                            </div>
-                            <div class="calendar-days" id="calendarDays">
-                                <!-- Calendar days will be added dynamically -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="registerNationality">Nationality</label>
-                    <select class="form-control" id="registerNationality" required>
-                        <option value="">Select a country</option>
-                        <option value="USA">United States</option>
-                        <option value="UK">United Kingdom</option>
-                        <option value="Canada">Canada</option>
-                        <option value="Australia">Australia</option>
-                        <option value="Germany">Germany</option>
-                        <option value="France">France</option>
-                        <option value="Japan">Japan</option>
-                        <option value="China">China</option>
-                        <option value="India">India</option>
-                        <option value="Brazil">Brazil</option>
-                        <!-- More countries would be added in a real application -->
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="registerRole">Role</label>
-                    <select class="form-control" id="registerRole" required>
-                        <option value="">Select a role</option>
-                        <option value="Manager">Manager</option>
-                        <option value="Staff">Staff</option>
-                        <option value="Customer">Customer</option>
-                        <option value="Admin">Admin</option>
-                    </select>
-                </div>
+            <div class="form-group">
+                <input type="text" id="lastName" placeholder="Last Name" required>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelRegisterBtn">Cancel</button>
-                <button class="btn btn-success" id="createAccountBtn">Create</button>
+            <div class="form-group">
+                <input type="email" id="regEmail" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <input type="email" id="confirmEmail" placeholder="Confirm Email" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="regPassword" placeholder="Password" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+            </div>
+            <div class="form-group">
+                <input type="date" id="birthdate" required>
+            </div>
+            <div class="form-group">
+                <select id="nationality" required>
+                    <option value="">Select Nationality</option>
+                    <option value="US">United States</option>
+                    <option value="CA">Canada</option>
+                    <option value="UK">United Kingdom</option>
+                    <option value="AU">Australia</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select id="role" required>
+                    <option value="">Select Role</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Staff">Staff</option>
+                    <option value="Customer">Customer</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-success" onclick="registerUser()">Create</button>
+                <button class="btn btn-secondary" onclick="closeModal('registerModal')">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Add Task Modal -->
-    <div class="modal" id="addTaskModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Add New Task</h4>
-                <span class="close" id="closeAddTaskModal">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="taskTitle">Title</label>
-                    <input type="text" class="form-control" id="taskTitle" required>
-                </div>
-                <div class="form-group">
-                    <label for="taskDescription">Description</label>
-                    <textarea class="form-control" id="taskDescription" rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Sub Tasks</label>
-                    <div class="subtasks-container" id="subtasksContainer">
-                        <div class="subtask-item">
-                            <input type="text" class="subtask-input" placeholder="Enter sub task...">
-                            <button class="remove-subtask-btn">-</button>
-                        </div>
-                    </div>
-                    <button class="add-subtask-btn" id="addSubtaskBtn">+</button>
-                </div>
-                <div class="form-group">
-                    <label for="taskDueDate">Due Date</label>
-                    <div class="calendar-dropdown">
-                        <input type="text" class="form-control" id="taskDueDate" readonly required>
-                        <div class="calendar" id="dueDateCalendar">
-                            <!-- Calendar structure similar to birthdate calendar -->
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="taskPriority">Priority</label>
-                    <select class="form-control" id="taskPriority" required>
-                        <option value="">Select priority</option>
-                        <option value="high">High</option>
-                        <option value="medium">Medium</option>
-                        <option value="low">Low</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="taskCategory">Category</label>
-                    <select class="form-control" id="taskCategory" required>
-                        <option value="">Select category</option>
-                        <option value="work">Work</option>
-                        <option value="personal">Personal</option>
-                        <option value="study">Study</option>
-                        <option value="health">Health</option>
-                        <option value="finance">Finance</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="taskNotes">Additional Notes</label>
-                    <textarea class="form-control" id="taskNotes" rows="2"></textarea>
+    <!-- Main Dashboard -->
+    <div class="dashboard" id="dashboard" style="display: none">
+        <div class="navbar">
+            <div class="app-title">To-Do App</div>
+            <div class="user-profile" onclick="toggleProfileMenu()">
+                <div class="profile-pic">JD</div>
+                <span id="userName"></span>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div onclick="showProfile()">View Profile</div>
+                    <div onclick="toggleTheme()">Switch Theme</div>
+                    <div onclick="logout()">Logout</div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelAddTaskBtn">Cancel</button>
-                <button class="btn btn-success" id="createTaskBtn">Create</button>
+        </div>
+
+        <div class="container">
+            <div class="task-timer" id="taskTimer">
+                <h3>Task Timer</h3>
+                <div class="timer-display">00:00:00</div>
+                <button class="btn btn-danger" onclick="stopTimer()">Stop</button>
+            </div>
+
+            <div class="task-stats">
+                <div class="stat-card">
+                    <h3>Total Tasks</h3>
+                    <div class="stat-number" id="totalTasks">0</div>
+                </div>
+                <div class="stat-card success">
+                    <h3>Completed Tasks</h3>
+                    <div class="stat-number" id="completedTasks">0</div>
+                </div>
+                <div class="stat-card warning">
+                    <h3>Pending Tasks</h3>
+                    <div class="stat-number" id="pendingTasks">0</div>
+                </div>
+            </div>
+
+            <div class="task-controls">
+                <button class="btn btn-success" onclick="showAddTask()"><i class="fas fa-plus"></i> Add Task</button>
+                <button class="btn btn-primary" onclick="toggleView()"><i class="fas fa-list"></i> List / <i class="fas fa-chart-bar"></i> Graph</button>
+                <button class="btn btn-secondary" onclick="showImport()"><i class="fas fa-file-import"></i> Import</button>
+                <button class="btn btn-secondary" onclick="showExport()"><i class="fas fa-file-export"></i> Export</button>
+            </div>
+
+            <div class="task-filters">
+                <select id="statusFilter">
+                    <option value="all">All</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                </select>
+                <select id="categoryFilter">
+                    <option value="all">All Categories</option>
+                </select>
+                <select id="priorityFilter">
+                    <option value="all">All Priorities</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+                <input type="text" id="searchTasks" placeholder="Search tasks...">
+            </div>
+
+            <div id="taskList" class="task-list"></div>
+            <div id="graphView" class="chart-container" style="display: none">
+                <canvas id="barChart"></canvas>
+                <canvas id="pieChart"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- Import Modal -->
-    <div class="modal" id="importModal">
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Import Tasks</h4>
-                <span class="close" id="closeImportModal">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                    </div>
-                    <div class="upload-text">Drag & drop your file here or click to browse</div>
-                    <input type="file" id="fileUpload" class="upload-input" accept=".json">
+            <span class="close" onclick="closeModal('profileModal')">&times;</span>
+            <h2>User Profile</h2>
+            <div class="profile-info">
+                <div class="profile-pic-large" id="profilePic">JD</div>
+                <div class="profile-details">
+                    <div><strong>Name:</strong> <span id="profileName"></span></div>
+                    <div><strong>Email:</strong> <span id="profileEmail"></span></div>
+                    <div><strong>Role:</strong> <span id="profileRole"></span></div>
+                    <div><strong>Joined:</strong> <span id="profileJoined"></span></div>
                 </div>
-                <div class="url-input-container">
-                    <div class="form-group">
-                        <label for="importUrl">Or import from URL</label>
-                        <input type="text" class="form-control" id="importUrl" placeholder="Enter URL to import from">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelImportBtn">Cancel</button>
-                <button class="btn btn-primary" id="confirmImportBtn">Import</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Export Modal -->
-    <div class="modal" id="exportModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Export Tasks</h4>
-                <span class="close" id="closeExportModal">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="exportFormat">Format</label>
-                    <select class="form-control" id="exportFormat">
-                        <option value="json">JSON</option>
-                        <option value="csv">CSV</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Export Options</label>
-                    <div class="checkbox-group">
-                        <label>
-                            <input type="checkbox" id="exportCompleted" checked> Include completed tasks
-                        </label>
-                    </div>
-                    <div class="checkbox-group">
-                        <label>
-                            <input type="checkbox" id="exportSubtasks" checked> Include subtasks
-                        </label>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelExportBtn">Cancel</button>
-                <button class="btn btn-primary" id="confirmExportBtn">Export</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- View Profile Modal -->
-    <div class="modal" id="viewProfileModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">User Profile</h4>
-                <span class="close" id="closeViewProfileModal">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="profile-header">
-                    <div class="profile-picture-container">
-                        <img src="/api/placeholder/400/400" alt="Profile" class="profile-picture" id="viewProfilePicture">
-                    </div>
-                    <h3 id="viewProfileName">John Doe</h3>
-                    <p id="viewProfileRole">Manager</p>
-                </div>
-                <div class="profile-info">
-                    <div class="profile-info-row">
-                        <span class="profile-info-label">Email:</span>
-                        <span class="profile-info-value" id="viewProfileEmail">test@example.com</span>
-                    </div>
-                    <div class="profile-info-row">
-                        <span class="profile-info-label">Birthdate:</span>
-                        <span class="profile-info-value" id="viewProfileBirthdate">01/01/1990</span>
-                    </div>
-                    <div class="profile-info-row">
-                        <span class="profile-info-label">Nationality:</span>
-                        <span class="profile-info-value" id="viewProfileNationality">United States</span>
-                    </div>
-                    <div class="profile-info-row">
-                        <span class="profile-info-label">Joined:</span>
-                        <span class="profile-info-value" id="viewProfileJoined">01/01/2023</span>
-                    </div>
-                </div>
-                <div class="profile-stats">
-                    <h4>Activity Overview</h4>
-                    <div class="chart-container">
-                        <canvas id="activityChart"></canvas>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="closeProfileBtn">Close</button>
-                <button class="btn btn-primary" id="editProfileFromViewBtn">Edit Profile</button>
+                <button class="btn btn-primary" onclick="showEditProfile()">Edit Profile</button>
             </div>
         </div>
     </div>
 
     <!-- Edit Profile Modal -->
-    <div class="modal" id="editProfileModal">
+    <div id="editProfileModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Edit Profile</h4>
-                <span class="close" id="closeEditProfileModal">&times;</span>
+            <span class="close" onclick="closeModal('editProfileModal')">&times;</span>
+            <h2>Edit Profile</h2>
+            <div class="form-group">
+                <input type="text" id="editFirstName" placeholder="First Name">
             </div>
-            <div class="modal-body">
-                <div class="profile-picture-container">
-                    <img src="/api/placeholder/400/400" alt="Profile" class="profile-picture" id="editProfilePicture">
-                    <button class="profile-upload-btn" id="uploadProfilePictureBtn">
-                        <i class="fas fa-camera"></i>
-                    </button>
-                    <input type="file" id="profilePictureInput" accept="image/*" style="display: none;">
-                </div>
-                <div class="form-group">
-                    <label for="editFirstName">First Name</label>
-                    <input type="text" class="form-control" id="editFirstName" value="John">
-                </div>
-                <div class="form-group">
-                    <label for="editLastName">Last Name</label>
-                    <input type="text" class="form-control" id="editLastName" value="Doe">
-                </div>
-                <div class="form-group">
-                    <label for="editEmail">Email</label>
-                    <input type="email" class="form-control" id="editEmail" value="test@example.com">
-                </div>
-                <div class="form-group">
-                    <label for="editPassword">New Password (leave blank to keep current)</label>
-                    <input type="password" class="form-control" id="editPassword">
-                </div>
-                <div class="form-group">
-                    <label for="editConfirmPassword">Confirm New Password</label>
-                    <input type="password" class="form-control" id="editConfirmPassword">
-                </div>
-                <div class="form-group">
-                    <label for="editNationality">Nationality</label>
-                    <select class="form-control" id="editNationality">
-                        <option value="USA" selected>United States</option>
-                        <option value="UK">United Kingdom</option>
-                        <option value="Canada">Canada</option>
-                        <option value="Australia">Australia</option>
-                        <option value="Germany">Germany</option>
-                        <option value="France">France</option>
-                        <option value="Japan">Japan</option>
-                        <option value="China">China</option>
-                        <option value="India">India</option>
-                        <option value="Brazil">Brazil</option>
-                    </select>
-                </div>
+            <div class="form-group">
+                <input type="text" id="editLastName" placeholder="Last Name">
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelEditProfileBtn">Cancel</button>
-                <button class="btn btn-primary" id="saveProfileBtn">Save Changes</button>
+            <div class="form-group">
+                <input type="email" id="editEmail" placeholder="Email">
             </div>
+            <div class="form-group">
+                <input type="tel" id="editPhone" placeholder="Phone Number">
+            </div>
+            <div class="form-group">
+                <input type="file" id="profileImage" accept="image/*">
+            </div>
+            <button class="btn btn-success" onclick="saveProfile()">Save Changes</button>
         </div>
     </div>
 
-    <!-- Task Detail Modal -->
-    <div class="modal" id="taskDetailModal">
+    <!-- Add Task Modal -->
+    <div id="addTaskModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="taskDetailTitle">Task Details</h4>
-                <span class="close" id="closeTaskDetailModal">&times;</span>
+            <span class="close" onclick="closeModal('addTaskModal')">&times;</span>
+            <h2>Add New Task</h2>
+            <div class="form-group">
+                <input type="text" id="taskTitle" placeholder="Task Title" required>
             </div>
-            <div class="modal-body">
-                <div class="task-detail-content">
-                    <div class="task-detail-header">
-                        <div class="task-status" id="taskDetailStatus">Active</div>
-                        <div class="task-category" id="taskDetailCategory">Work</div>
-                        <div class="task-priority" id="taskDetailPriority">High</div>
-                    </div>
-                    <div class="task-detail-section">
-                        <h5>Description</h5>
-                        <p id="taskDetailDescription">Task description will appear here.</p>
-                    </div>
-                    <div class="task-detail-section">
-                        <h5>Subtasks</h5>
-                        <div class="subtasks-list" id="taskDetailSubtasks">
-                            <!-- Subtasks will be added dynamically -->
-                        </div>
-                    </div>
-                    <div class="task-detail-section">
-                        <h5>Due Date</h5>
-                        <p id="taskDetailDueDate">01/01/2023</p>
-                    </div>
-                    <div class="task-detail-section">
-                        <h5>Additional Notes</h5>
-                        <p id="taskDetailNotes">Additional notes will appear here.</p>
-                    </div>
-                    <div class="task-detail-section">
-                        <h5>Time Spent</h5>
-                        <p id="taskDetailTimeSpent">00:00:00</p>
+            <div class="form-group">
+                <textarea id="taskDescription" placeholder="Task Description" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <input type="date" id="dueDate" required>
+            </div>
+            <div class="form-group">
+                <select id="taskPriority">
+                    <option value="high">High Priority</option>
+                    <option value="medium">Medium Priority</option>
+                    <option value="low">Low Priority</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select id="taskCategory">
+                    <option value="work">Work</option>
+                    <option value="personal">Personal</option>
+                    <option value="urgent">Urgent</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <div class="subtasks">
+                    <div class="subtask-group">
+                        <input type="text" class="subtask" placeholder="Subtask">
+                        <button class="btn btn-danger" onclick="removeSubtask(this)">-</button>
                     </div>
                 </div>
+                <button class="btn btn-primary" onclick="addSubtask()"><i class="fas fa-plus"></i> Add Subtask</button>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="closeDetailBtn">Close</button>
-                <button class="btn btn-danger" id="deleteTaskFromDetailBtn">Delete</button>
-                <button class="btn btn-primary" id="editTaskFromDetailBtn">Edit</button>
-                <button class="btn btn-success" id="toggleTaskStatusBtn">Mark as Completed</button>
-            </div>
+            <button class="btn btn-success" onclick="createTask()">Create Task</button>
         </div>
     </div>
 
-    <!-- Notification -->
-    <div class="notification" id="notification">
-        <!-- Notification content will be added dynamically -->
+    <!-- Import Modal -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('importModal')">&times;</span>
+            <h2>Import Tasks</h2>
+            <div class="form-group">
+                <input type="file" id="importFile" accept=".json">
+            </div>
+            <div class="form-group">
+                <input type="url" id="importUrl" placeholder="Enter URL">
+            </div>
+            <button class="btn btn-success" onclick="importTasks()">Import</button>
+        </div>
     </div>
 
-    <!-- Font Awesome for icons (CDN) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    
-    <!-- Chart.js for charts (CDN) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    
-    <!-- Main JavaScript file -->
+    <!-- Export Modal -->
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('exportModal')">&times;</span>
+            <h2>Export Tasks</h2>
+            <div class="form-group">
+                <select id="exportFormat">
+                    <option value="json">JSON</option>
+                    <option value="csv">CSV</option>
+                    <option value="pdf">PDF</option>
+                </select>
+            </div>
+            <button class="btn btn-success" onclick="exportTasks()">Export</button>
+        </div>
+    </div>
+
     <script>
-        // Sample data for demonstration
-        const sampleTasks = [
-            {
-                id: 1,
-                title: "Complete project proposal",
-                description: "Write a comprehensive project proposal for the new client.",
-                status: "active",
-                priority: "high",
-                category: "work",
-                dueDate: "2023-05-15",
-                subtasks: [
-                    { id: 1, text: "Research client background", completed: true },
-                    { id: 2, text: "Outline proposal structure", completed: true },
-                    { id: 3, text: "Write first draft", completed: false },
-                    { id: 4, text: "Review with team", completed: false }
-                ],
-                notes: "Include previous case studies and testimonials.",
-                timeSpent: 7200 // 2 hours in seconds
-            },
-            {
-                id: 2,
-                title: "Weekly team meeting",
-                description: "Discuss project progress and upcoming deadlines.",
-                status: "active",
-                priority: "medium",
-                category: "work",
-                dueDate: "2023-05-10",
-                subtasks: [],
-                notes: "Prepare agenda beforehand.",
-                timeSpent: 0
-            },
-            {
-                id: 3,
-                title: "Grocery shopping",
-                description: "Buy essentials for the week.",
-                status: "completed",
-                priority: "low",
-                category: "personal",
-                dueDate: "2023-05-08",
-                subtasks: [
-                    { id: 1, text: "Make shopping list", completed: true },
-                    { id: 2, text: "Check pantry inventory", completed: true }
-                ],
-                notes: "Don't forget reusable bags.",
-                timeSpent: 3600 // 1 hour in seconds
-            },
-            {
-                id: 4,
-                title: "Study for exam",
-                description: "Review chapters 5-8 for upcoming test.",
-                status: "active",
-                priority: "high",
-                category: "study",
-                dueDate: "2023-05-20",
-                subtasks: [
-                    { id: 1, text: "Review chapter 5", completed: false },
-                    { id: 2, text: "Review chapter 6", completed: false },
-                    { id: 3, text: "Review chapter 7", completed: false },
-                    { id: 4, text: "Review chapter 8", completed: false }
-                ],
-                notes: "Focus on key concepts and practice problems.",
-                timeSpent: 10800 // 3 hours in seconds
-            },
-            {
-                id: 5,
-                title: "Morning run",
-                description: "30 minute jog in the park.",
-                status: "completed",
-                priority: "medium",
-                category: "health",
-                dueDate: "2023-05-05",
-                subtasks: [],
-                notes: "Track progress in fitness app.",
-                timeSpent: 1800 // 30 minutes in seconds
-            },
-            {
-                id: 6,
-                title: "Pay bills",
-                description: "Pay monthly utilities and credit card bills.",
-                status: "active",
-                priority: "high",
-                category: "finance",
-                dueDate: "2023-05-12",
-                subtasks: [
-                    { id: 1, text: "Pay electricity bill", completed: true },
-                    { id: 2, text: "Pay water bill", completed: false },
-                    { id: 3, text: "Pay credit card bill", completed: false }
-                ],
-                notes: "Set up auto-pay for recurring bills.",
-                timeSpent: 900 // 15 minutes in seconds
-            }
-        ];
+        let currentUser = null;
+        let tasks = [];
+        let timerInterval;
+        let currentView = 'list';
 
-        // DOM elements
-        const loginPage = document.getElementById('loginPage');
-        const dashboard = document.getElementById('dashboard');
-        const loginBtn = document.getElementById('loginBtn');
-        const registerLink = document.getElementById('registerLink');
-        const registerModal = document.getElementById('registerModal');
-        const closeRegisterModal = document.getElementById('closeRegisterModal');
-        const cancelRegisterBtn = document.getElementById('cancelRegisterBtn');
-        const createAccountBtn = document.getElementById('createAccountBtn');
-        const addTaskBtn = document.getElementById('addTaskBtn');
-        const addTaskModal = document.getElementById('addTaskModal');
-        const closeAddTaskModal = document.getElementById('closeAddTaskModal');
-        const cancelAddTaskBtn = document.getElementById('cancelAddTaskBtn');
-        const createTaskBtn = document.getElementById('createTaskBtn');
-        const importBtn = document.getElementById('importBtn');
-        const exportBtn = document.getElementById('exportBtn');
-        const importModal = document.getElementById('importModal');
-        const exportModal = document.getElementById('exportModal');
-        const closeImportModal = document.getElementById('closeImportModal');
-        const closeExportModal = document.getElementById('closeExportModal');
-        const cancelImportBtn = document.getElementById('cancelImportBtn');
-        const cancelExportBtn = document.getElementById('cancelExportBtn');
-        const confirmImportBtn = document.getElementById('confirmImportBtn');
-        const confirmExportBtn = document.getElementById('confirmExportBtn');
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const taskDetailModal = document.getElementById('taskDetailModal');
-        const closeTaskDetailModal = document.getElementById('closeTaskDetailModal');
-        const notification = document.getElementById('notification');
-        const viewProfileBtn = document.getElementById('viewProfileBtn');
-        const editProfileBtn = document.getElementById('editProfileBtn');
-        const viewProfileModal = document.getElementById('viewProfileModal');
-        const editProfileModal = document.getElementById('editProfileModal');
-        const closeViewProfileModal = document.getElementById('closeViewProfileModal');
-        const closeEditProfileModal = document.getElementById('closeEditProfileModal');
-        const logoutBtn = document.getElementById('logoutBtn');
+        // Login/Register Functions
+        function showRegister() {
+            document.getElementById('registerModal').style.display = 'block';
+        }
 
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
-            // Show login page by default
-            loginPage.style.display = 'flex';
-            dashboard.style.display = 'none';
-            
-            // Event listeners
-            loginBtn.addEventListener('click', login);
-            registerLink.addEventListener('click', openRegisterModal);
-            closeRegisterModal.addEventListener('click', closeModal.bind(null, registerModal));
-            cancelRegisterBtn.addEventListener('click', closeModal.bind(null, registerModal));
-            createAccountBtn.addEventListener('click', register);
-            addTaskBtn.addEventListener('click', openAddTaskModal);
-            closeAddTaskModal.addEventListener('click', closeModal.bind(null, addTaskModal));
-            cancelAddTaskBtn.addEventListener('click', closeModal.bind(null, addTaskModal));
-            createTaskBtn.addEventListener('click', createTask);
-            importBtn.addEventListener('click', openModal.bind(null, importModal));
-            exportBtn.addEventListener('click', openModal.bind(null, exportModal));
-            closeImportModal.addEventListener('click', closeModal.bind(null, importModal));
-            closeExportModal.addEventListener('click', closeModal.bind(null, exportModal));
-            cancelImportBtn.addEventListener('click', closeModal.bind(null, importModal));
-            cancelExportBtn.addEventListener('click', closeModal.bind(null, exportModal));
-            confirmImportBtn.addEventListener('click', importTasks);
-            confirmExportBtn.addEventListener('click', exportTasks);
-            darkModeToggle.addEventListener('change', toggleDarkMode);
-            closeTaskDetailModal.addEventListener('click', closeModal.bind(null, taskDetailModal));
-            viewProfileBtn.addEventListener('click', openModal.bind(null, viewProfileModal));
-            editProfileBtn.addEventListener('click', openModal.bind(null, editProfileModal));
-            closeViewProfileModal.addEventListener('click', closeModal.bind(null, viewProfileModal));
-            closeEditProfileModal.addEventListener('click', closeModal.bind(null, editProfileModal));
-            logoutBtn.addEventListener('click', logout);
-            
-            // Load tasks sample data
-            loadTasks(sampleTasks);
-            updateTaskStats();
-            
-            // Initialize filters
-            initializeFilters();
-            
-            // Initialize charts if Graph View is active
-            if (document.getElementById('graphView').style.display !== 'none') {
-                initializeCharts();
-            }
-        });
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
 
-        // Functions
-        function login() {
-            // Simple login demonstration (no actual authentication)
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+        function registerUser() {
+            // Validation logic here
+            // Save user to local storage
+            closeModal('registerModal');
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
             
-            if (email && password) {
-                loginPage.style.display = 'none';
-                dashboard.style.display = 'block';
-                showNotification('Login successful!');
-            } else {
-                showNotification('Please enter email and password.');
+            if(email === 'test@example.com' && password === '123456') {
+                currentUser = { 
+                    email: email,
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    role: 'Admin',
+                    joined: new Date().toLocaleDateString()
+                };
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                updateProfile();
+                loadTasks();
             }
         }
-        
-        function openRegisterModal() {
-            openModal(registerModal);
+
+        // Dashboard Functions
+        function updateProfile() {
+            document.getElementById('userName').innerText = currentUser.firstName;
+            document.getElementById('profileName').innerText = `${currentUser.firstName} ${currentUser.lastName}`;
+            document.getElementById('profileEmail').innerText = currentUser.email;
+            document.getElementById('profileRole').innerText = currentUser.role;
+            document.getElementById('profileJoined').innerText = currentUser.joined;
         }
-        
-        function openAddTaskModal() {
-            openModal(addTaskModal);
+
+        function toggleTheme() {
+            const body = document.body;
+            body.setAttribute('data-theme', body.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
         }
-        
-        function openModal(modal) {
-            modal.style.display = 'block';
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'block';
         }
-        
-        function closeModal(modal) {
-            modal.style.display = 'none';
+
+        // Task Management
+        function showAddTask() {
+            document.getElementById('addTaskModal').style.display = 'block';
         }
-        
-        function register() {
-            // Validate form fields
-            const firstName = document.getElementById('registerFirstName').value;
-            const lastName = document.getElementById('registerLastName').value;
-            const email = document.getElementById('registerEmail').value;
-            const confirmEmail = document.getElementById('registerConfirmEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('registerConfirmPassword').value;
-            
-            if (!firstName || !lastName || !email || !confirmEmail || !password || !confirmPassword) {
-                showNotification('Please fill in all required fields.');
-                return;
-            }
-            
-            if (email !== confirmEmail) {
-                showNotification('Email addresses do not match.');
-                return;
-            }
-            
-            if (password !== confirmPassword) {
-                showNotification('Passwords do not match.');
-                return;
-            }
-            
-            // Registration successful
-            closeModal(registerModal);
-            showNotification('Account created successfully! Please login.');
-        }
-        
+
         function createTask() {
-            const title = document.getElementById('taskTitle').value;
-            const description = document.getElementById('taskDescription').value;
-            const dueDate = document.getElementById('taskDueDate').value;
-            const priority = document.getElementById('taskPriority').value;
-            const category = document.getElementById('taskCategory').value;
-            const notes = document.getElementById('taskNotes').value;
-            
-            if (!title || !dueDate || !priority || !category) {
-                showNotification('Please fill in all required fields.');
-                return;
-            }
-            
-            // Get subtasks
-            const subtasks = [];
-            const subtaskInputs = document.querySelectorAll('.subtask-input');
-            subtaskInputs.forEach((input, index) => {
-                if (input.value.trim() !== '') {
-                    subtasks.push({
-                        id: index + 1,
-                        text: input.value.trim(),
-                        completed: false
-                    });
-                }
-            });
-            
-            // Create new task
-            const newTask = {
-                id: Date.now(),
-                title,
-                description,
-                status: 'active',
-                priority,
-                category,
-                dueDate,
-                subtasks,
-                notes,
-                timeSpent: 0
-            };
-            
-            // Add task to UI
-            addTaskToUI(newTask);
-            
-            // Update stats
-            updateTaskStats();
-            
-            // Close modal
-            closeModal(addTaskModal);
-            
-            // Show notification
-            showNotification('Task created successfully!');
-            
-            // Reset form
-            document.getElementById('taskTitle').value = '';
-            document.getElementById('taskDescription').value = '';
-            document.getElementById('taskDueDate').value = '';
-            document.getElementById('taskPriority').value = '';
-            document.getElementById('taskCategory').value = '';
-            document.getElementById('taskNotes').value = '';
-            document.getElementById('subtasksContainer').innerHTML = `
-                <div class="subtask-item">
-                    <input type="text" class="subtask-input" placeholder="Enter sub task...">
-                    <button class="remove-subtask-btn">-</button>
-                </div>
-            `;
+            // Task creation logic
+            closeModal('addTaskModal');
+            loadTasks();
         }
-        
-        function loadTasks(tasks) {
-            const tasksContainer = document.getElementById('tasksContainer');
-            tasksContainer.innerHTML = '';
-            
-            tasks.forEach(task => {
-                addTaskToUI(task);
-            });
-        }
-        
-        function addTaskToUI(task) {
-            const tasksContainer = document.getElementById('tasksContainer');
-            
-            // Create task element
-            const taskElement = document.createElement('div');
-            taskElement.classList.add('task-item');
-            taskElement.dataset.id = task.id;
-            taskElement.dataset.status = task.status;
-            taskElement.dataset.priority = task.priority;
-            taskElement.dataset.category = task.category;
-            
-            if (task.status === 'completed') {
-                taskElement.classList.add('task-completed');
-            }
-            
-            // Due date alert
-            const today = new Date();
-            const dueDate = new Date(task.dueDate);
-            let dueClass = 'due-normal';
-            
-            if (task.status !== 'completed') {
-                const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-                
-                if (diffDays < 0) {
-                    dueClass = 'due-expired';
-                } else if (diffDays <= 2) {
-                    dueClass = 'due-soon';
-                }
-            }
-            
-            // Subtasks progress
-            let completedSubtasks = 0;
-            let totalSubtasks = task.subtasks.length;
-            
-            if (totalSubtasks > 0) {
-                completedSubtasks = task.subtasks.filter(subtask => subtask.completed).length;
-            }
-            
-            // Format due date
-            const formattedDueDate = dueDate.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-            
-            // Task HTML
-            taskElement.innerHTML = `
-                <div class="due-alert ${dueClass}"></div>
-                <div class="task-checkbox">
-                    <input type="checkbox" id="task${task.id}" ${task.status === 'completed' ? 'checked' : ''}>
-                    <label for="task${task.id}"></label>
-                </div>
-                <div class="task-content">
-                    <h4 class="task-title">${task.title}</h4>
-                    <div class="task-meta">
-                        <span class="task-due-date">
-                            <i class="far fa-calendar-alt"></i> ${formattedDueDate}
-                        </span>
-                        <span class="task-category">
-                            <i class="fas fa-tag"></i> ${task.category.charAt(0).toUpperCase() + task.category.slice(1)}
-                        </span>
-                        <span class="task-priority priority-${task.priority}">
-                            <i class="fas fa-flag"></i> ${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
-                        </span>
-                    </div>
-                    ${totalSubtasks > 0 ? `
-                        <div class="subtasks-progress">
-                            <div class="progress-bar">
-                                <div class="progress" style="width: ${(completedSubtasks / totalSubtasks) * 100}%"></div>
+
+        function loadTasks() {
+            // Load tasks from storage
+            document.getElementById('taskList').innerHTML = '<div class="loader"></div>';
+            setTimeout(() => {
+                document.getElementById('taskList').innerHTML = `
+                    <div class="task-card">
+                        <div class="task-header">
+                            <h3>Sample Task</h3>
+                            <div class="task-actions">
+                                <button onclick="editTask()"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteTask()"><i class="fas fa-trash"></i></button>
                             </div>
-                            <span class="progress-text">${completedSubtasks}/${totalSubtasks} subtasks</span>
                         </div>
-                    ` : ''}
-                </div>
-                <div class="task-actions">
-                    <button class="task-action-btn view-btn" title="View Details">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="task-action-btn edit-btn" title="Edit Task">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="task-action-btn play-btn" title="Start Timer">
-                        <i class="fas fa-play"></i>
-                    </button>
-                    <button class="task-action-btn delete-btn" title="Delete Task">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                </div>
-            `;
-            
-            // Add task to container
-            tasksContainer.appendChild(taskElement);
-            
-            // Add event listeners
-            const checkbox = taskElement.querySelector(`#task${task.id}`);
-            checkbox.addEventListener('change', () => toggleTaskStatus(task.id));
-            
-            const viewBtn = taskElement.querySelector('.view-btn');
-            viewBtn.addEventListener('click', () => viewTaskDetails(task.id));
-            
-            const editBtn = taskElement.querySelector('.edit-btn');
-            editBtn.addEventListener('click', () => editTask(task.id));
-            
-            const playBtn = taskElement.querySelector('.play-btn');
-            playBtn.addEventListener('click', () => startTaskTimer(task.id));
-            
-            const deleteBtn = taskElement.querySelector('.delete-btn');
-            deleteBtn.addEventListener('click', () => deleteTask(task.id));
-        }
-        
-        function updateTaskStats() {
-            const totalTasks = document.querySelectorAll('.task-item').length;
-            const completedTasks = document.querySelectorAll('.task-item[data-status="completed"]').length;
-            const pendingTasks = totalTasks - completedTasks;
-            
-            document.getElementById('totalTasksValue').textContent = totalTasks;
-            document.getElementById('completedTasksValue').textContent = completedTasks;
-            document.getElementById('pendingTasksValue').textContent = pendingTasks;
-            
-            // Update charts if they exist
-            if (typeof updateCharts === 'function') {
-                updateCharts();
-            }
-        }
-        
-        function initializeFilters() {
-            const statusFilter = document.getElementById('statusFilter');
-            const categoryFilter = document.getElementById('categoryFilter');
-            const priorityFilter = document.getElementById('priorityFilter');
-            const dueDateFilter = document.getElementById('dueDateFilter');
-            const searchInput = document.getElementById('searchInput');
-            
-            const filterTasks = () => {
-                const status = statusFilter.value;
-                const category = categoryFilter.value;
-                const priority = priorityFilter.value;
-                const dueDate = dueDateFilter.value;
-                const searchText = searchInput.value.toLowerCase();
-                
-                const tasks = document.querySelectorAll('.task-item');
-                
-                tasks.forEach(task => {
-                    const taskStatus = task.dataset.status;
-                    const taskCategory = task.dataset.category;
-                    const taskPriority = task.dataset.priority;
-                    const taskTitle = task.querySelector('.task-title').textContent.toLowerCase();
-                    
-                    let statusMatch = status === 'all' || status === taskStatus;
-                    let categoryMatch = category === 'all' || category === taskCategory;
-                    let priorityMatch = priority === 'all' || priority === taskPriority;
-                    let dueDateMatch = true; // Custom due date filtering would be implemented here
-                    let searchMatch = searchText === '' || taskTitle.includes(searchText);
-                    
-                    if (statusMatch && categoryMatch && priorityMatch && dueDateMatch && searchMatch) {
-                        task.style.display = 'flex';
-                    } else {
-                        task.style.display = 'none';
-                    }
-                });
-            };
-            
-            statusFilter.addEventListener('change', filterTasks);
-            categoryFilter.addEventListener('change', filterTasks);
-            priorityFilter.addEventListener('change', filterTasks);
-            dueDateFilter.addEventListener('change', filterTasks);
-            searchInput.addEventListener('input', filterTasks);
-        }
-        
-        function toggleTaskStatus(taskId) {
-            const taskElement = document.querySelector(`.task-item[data-id="${taskId}"]`);
-            const isCompleted = taskElement.querySelector(`#task${taskId}`).checked;
-            
-            if (isCompleted) {
-                taskElement.classList.add('task-completed');
-                taskElement.dataset.status = 'completed';
-            } else {
-                taskElement.classList.remove('task-completed');
-                taskElement.dataset.status = 'active';
-            }
-            
-            updateTaskStats();
-        }
-        
-        function viewTaskDetails(taskId) {
-            // In a real app, you would fetch task details from the server
-            // For this demo, we'll use the sample tasks
-            const task = sampleTasks.find(t => t.id === taskId);
-            
-            if (!task) return;
-            
-            document.getElementById('taskDetailTitle').textContent = task.title;
-            document.getElementById('taskDetailStatus').textContent = task.status.charAt(0).toUpperCase() + task.status.slice(1);
-            document.getElementById('taskDetailCategory').textContent = task.category.charAt(0).toUpperCase() + task.category.slice(1);
-            document.getElementById('taskDetailPriority').textContent = task.priority.charAt(0).toUpperCase() + task.priority.slice(1);
-            document.getElementById('taskDetailDescription').textContent = task.description || 'No description available.';
-            document.getElementById('taskDetailDueDate').textContent = new Date(task.dueDate).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-            document.getElementById('taskDetailNotes').textContent = task.notes || 'No additional notes.';
-            
-            // Format time spent
-            const hours = Math.floor(task.timeSpent / 3600);
-            const minutes = Math.floor((task.timeSpent % 3600) / 60);
-            const seconds = task.timeSpent % 60;
-            document.getElementById('taskDetailTimeSpent').textContent = 
-                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            
-            // Render subtasks
-            const subtasksContainer = document.getElementById('taskDetailSubtasks');
-            subtasksContainer.innerHTML = '';
-            
-            if (task.subtasks.length > 0) {
-                const subtasksList = document.createElement('ul');
-                subtasksList.classList.add('subtasks-detail-list');
-                
-                task.subtasks.forEach(subtask => {
-                    const subtaskItem = document.createElement('li');
-                    subtaskItem.classList.add('subtask-detail-item');
-                    if (subtask.completed) {
-                        subtaskItem.classList.add('completed');
-                    }
-                    subtaskItem.innerHTML = `
-                        <input type="checkbox" id="detailSubtask${subtask.id}" ${subtask.completed ? 'checked' : ''} disabled>
-                        <label for="detailSubtask${subtask.id}">${subtask.text}</label>
-                    `;
-                    subtasksList.appendChild(subtaskItem);
-                });
-                
-                subtasksContainer.appendChild(subtasksList);
-            } else {
-                subtasksContainer.innerHTML = '<p>No subtasks available.</p>';
-            }
-            
-            // Toggle status button text
-            const toggleStatusBtn = document.getElementById('toggleTaskStatusBtn');
-            toggleStatusBtn.textContent = task.status === 'completed' ? 'Mark as Active' : 'Mark as Completed';
-            
-            // Add event listeners for detail modal buttons
-            document.getElementById('deleteTaskFromDetailBtn').onclick = () => {
-                closeModal(taskDetailModal);
-                deleteTask(taskId);
-            };
-            
-            document.getElementById('editTaskFromDetailBtn').onclick = () => {
-                closeModal(taskDetailModal);
-                editTask(taskId);
-            };
-            
-            document.getElementById('toggleTaskStatusBtn').onclick = () => {
-                toggleTaskStatus(taskId);
-                closeModal(taskDetailModal);
-            };
-            
-            // Show the modal
-            openModal(taskDetailModal);
-        }
-        
-        function editTask(taskId) {
-            // In a real app, you would fetch task details from the server
-            const task = sampleTasks.find(t => t.id === taskId);
-            
-            if (!task) return;
-            
-            // Fill the edit form
-            document.getElementById('taskTitle').value = task.title;
-            document.getElementById('taskDescription').value = task.description || '';
-            document.getElementById('taskDueDate').value = task.dueDate;
-            document.getElementById('taskPriority').value = task.priority;
-            document.getElementById('taskCategory').value = task.category;
-            document.getElementById('taskNotes').value = task.notes || '';
-            
-            // Fill subtasks
-            const subtasksContainer = document.getElementById('subtasksContainer');
-            subtasksContainer.innerHTML = '';
-            
-            if (task.subtasks.length > 0) {
-                task.subtasks.forEach(subtask => {
-                    const subtaskItem = document.createElement('div');
-                    subtaskItem.classList.add('subtask-item');
-                    subtaskItem.innerHTML = `
-                        <input type="text" class="subtask-input" value="${subtask.text}">
-                        <button class="remove-subtask-btn">-</button>
-                    `;
-                    subtasksContainer.appendChild(subtaskItem);
-                });
-            } else {
-                subtasksContainer.innerHTML = `
-                    <div class="subtask-item">
-                        <input type="text" class="subtask-input" placeholder="Enter sub task...">
-                        <button class="remove-subtask-btn">-</button>
+                        <div class="task-details">
+                            <div class="priority-indicator high"></div>High Priority
+                            <div>Due: 2023-12-31</div>
+                        </div>
                     </div>
                 `;
-            }
-            
-            // Add event listeners for remove subtask buttons
-            const removeSubtaskBtns = document.querySelectorAll('.remove-subtask-btn');
-            removeSubtaskBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    if (document.querySelectorAll('.subtask-item').length > 1) {
-                        this.parentElement.remove();
-                    }
-                });
-            });
-            
-            // Change create button to update
-            document.querySelector('.modal-title').textContent = 'Edit Task';
-            document.getElementById('createTaskBtn').textContent = 'Update';
-            document.getElementById('createTaskBtn').onclick = () => updateTask(taskId);
-            
-            // Show the modal
-            openModal(addTaskModal);
-        }
-        
-        function updateTask(taskId) {
-            const title = document.getElementById('taskTitle').value;
-            const description = document.getElementById('taskDescription').value;
-            const dueDate = document.getElementById('taskDueDate').value;
-            const priority = document.getElementById('taskPriority').value;
-            const category = document.getElementById('taskCategory').value;
-            const notes = document.getElementById('taskNotes').value;
-            
-            if (!title || !dueDate || !priority || !category) {
-                showNotification('Please fill in all required fields.');
-                return;
-            }
-            
-            // Get subtasks
-            const subtasks = [];
-            const subtaskInputs = document.querySelectorAll('.subtask-input');
-            subtaskInputs.forEach((input, index) => {
-                if (input.value.trim() !== '') {
-                    subtasks.push({
-                        id: index + 1,
-                        text: input.value.trim(),
-                        completed: false
-                    });
-                }
-            });
-            
-            // Find task index
-            const taskIndex = sampleTasks.findIndex(t => t.id === taskId);
-            
-            if (taskIndex === -1) return;
-            
-            // Update task
-            sampleTasks[taskIndex] = {
-                ...sampleTasks[taskIndex],
-                title,
-                description,
-                priority,
-                category,
-                dueDate,
-                subtasks,
-                notes
-            };
-            
-            // Update UI
-            const taskElement = document.querySelector(`.task-item[data-id="${taskId}"]`);
-            taskElement.dataset.priority = priority;
-            taskElement.dataset.category = category;
-            
-            // Update task title
-            taskElement.querySelector('.task-title').textContent = title;
-            
-            // Update due date
-            const formattedDueDate = new Date(dueDate).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-            taskElement.querySelector('.task-due-date').innerHTML = `
-                <i class="far fa-calendar-alt"></i> ${formattedDueDate}
-            `;
-            
-            // Update category
-            taskElement.querySelector('.task-category').innerHTML = `
-                <i class="fas fa-tag"></i> ${category.charAt(0).toUpperCase() + category.slice(1)}
-            `;
-            
-            // Update priority
-            taskElement.querySelector('.task-priority').className = `task-priority priority-${priority}`;
-            taskElement.querySelector('.task-priority').innerHTML = `
-                <i class="fas fa-flag"></i> ${priority.charAt(0).toUpperCase() + priority.slice(1)}
-            `;
-            
-            // Update subtasks progress
-            const subtasksContainer = taskElement.querySelector('.subtasks-progress');
-            if (subtasks.length > 0) {
-                const completedSubtasks = subtasks.filter(subtask => subtask.completed).length;
-                
-                if (subtasksContainer) {
-                    subtasksContainer.innerHTML = `
-                        <div class="progress-bar">
-                            <div class="progress" style="width: ${(completedSubtasks / subtasks.length) * 100}%"></div>
-                        </div>
-                        <span class="progress-text">${completedSubtasks}/${subtasks.length} subtasks</span>
-                    `;
-                } else {
-                    const newSubtasksContainer = document.createElement('div');
-                    newSubtasksContainer.classList.add('subtasks-progress');
-                    newSubtasksContainer.innerHTML = `
-                        <div class="progress-bar">
-                            <div class="progress" style="width: ${(completedSubtasks / subtasks.length) * 100}%"></div>
-                        </div>
-                        <span class="progress-text">${completedSubtasks}/${subtasks.length} subtasks</span>
-                    `;
-                    taskElement.querySelector('.task-content').appendChild(newSubtasksContainer);
-                }
-            } else if (subtasksContainer) {
-                subtasksContainer.remove();
-            }
-            
-            // Close modal
-            closeModal(addTaskModal);
-            
-            // Reset form
-            document.querySelector('.modal-title').textContent = 'Add New Task';
-            document.getElementById('createTaskBtn').textContent = 'Create';
-            document.getElementById('createTaskBtn').onclick = createTask;
-            
-            // Show notification
-            showNotification('Task updated successfully!');
-        }
-        
-        function deleteTask(taskId) {
-            // Remove task from UI
-            const taskElement = document.querySelector(`.task-item[data-id="${taskId}"]`);
-            taskElement.remove();
-            
-            // Remove task from data
-            const taskIndex = sampleTasks.findIndex(t => t.id === taskId);
-            if (taskIndex !== -1) {
-                sampleTasks.splice(taskIndex, 1);
-            }
-            
-            // Update stats
-            updateTaskStats();
-            
-            // Show notification
-            showNotification('Task deleted successfully!');
-        }
-        
-        function startTaskTimer(taskId) {
-            // In a real app, you would start a timer for the task
-            showNotification('Timer started for task.');
-            
-            // Toggle the play button to a pause button
-            const playBtn = document.querySelector(`.task-item[data-id="${taskId}"] .play-btn`);
-            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            playBtn.title = 'Pause Timer';
-            
-            // Update the class for styling
-            playBtn.classList.remove('play-btn');
-            playBtn.classList.add('pause-btn');
-            
-            // Change the event listener
-            playBtn.removeEventListener('click', () => startTaskTimer(taskId));
-            playBtn.addEventListener('click', () => pauseTaskTimer(taskId));
-            
-            // Start the timer display
-            const taskTimer = document.getElementById('taskTimer');
-            let seconds = 0;
-            
-            window.timerInterval = setInterval(() => {
-                seconds++;
-                const hours = Math.floor(seconds / 3600);
-                const minutes = Math.floor((seconds % 3600) / 60);
-                const secs = seconds % 60;
-                
-                taskTimer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
             }, 1000);
         }
-        
-        function pauseTaskTimer(taskId) {
-            // In a real app, you would pause the timer for the task
-            clearInterval(window.timerInterval);
-            showNotification('Timer paused.');
-            
-            // Toggle the pause button back to a play button
-            const pauseBtn = document.querySelector(`.task-item[data-id="${taskId}"] .pause-btn`);
-            pauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-            pauseBtn.title = 'Start Timer';
-            
-            // Update the class for styling
-            pauseBtn.classList.remove('pause-btn');
-            pauseBtn.classList.add('play-btn');
-            
-            // Change the event listener
-            pauseBtn.removeEventListener('click', () => pauseTaskTimer(taskId));
-            pauseBtn.addEventListener('click', () => startTaskTimer(taskId));
+
+        // Timer Functions
+        function startTimer(taskId) {
+            document.getElementById('taskTimer').style.display = 'block';
+            let time = 0;
+            timerInterval = setInterval(() => {
+                time++;
+                document.querySelector('.timer-display').innerText = new Date(time * 1000).toISOString().substr(11, 8);
+            }, 1000);
         }
-        
-        function importTasks() {
-            // In a real app, you would handle file upload and parsing
-            showNotification('Tasks imported successfully!');
-            closeModal(importModal);
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            document.getElementById('taskTimer').style.display = 'none';
         }
-        
-        function exportTasks() {
-            // In a real app, you would generate and download a file
-            showNotification('Tasks exported successfully!');
-            closeModal(exportModal);
-        }
-        
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-        }
-        
-        function showNotification(message) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-        
-        function logout() {
-            // In a real app, you would handle logout properly
-            loginPage.style.display = 'flex';
-            dashboard.style.display = 'none';
-        }
-        
-        function initializeCharts() {
-            // Create bar chart
-            const barCtx = document.getElementById('barChart').getContext('2d');
-            window.barChart = new Chart(barCtx, {
+
+        // Initial Load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize charts
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            const ctxPie = document.getElementById('pieChart').getContext('2d');
+
+            new Chart(ctxBar, {
                 type: 'bar',
                 data: {
-                    labels: ['Work', 'Personal', 'Study', 'Health', 'Finance'],
+                    labels: ['Completed', 'Pending'],
                     datasets: [{
-                        label: 'Active Tasks',
-                        data: [3, 1, 1, 0, 1],
-                        backgroundColor: '#000080'
-                    }, {
-                        label: 'Completed Tasks',
-                        data: [0, 1, 0, 1, 0],
-                        backgroundColor: '#28a745'
+                        label: 'Task Status',
+                        data: [5, 3],
+                        backgroundColor: [var(--success), var(--warning)]
                     }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    }
                 }
             });
-            
-            // Create pie chart
-            const pieCtx = document.getElementById('pieChart').getContext('2d');
-            window.pieChart = new Chart(pieCtx, {
+
+            new Chart(ctxPie, {
                 type: 'pie',
                 data: {
                     labels: ['Completed', 'Pending'],
                     datasets: [{
-                        data: [2, 8],
-                        backgroundColor: ['#28a745', '#000080']
+                        data: [5, 3],
+                        backgroundColor: [var(--success), var(--warning)]
                     }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false
                 }
             });
-            
-            // Create activity chart for profile
-            const activityCtx = document.getElementById('activityChart').getContext('2d');
-            window.activityChart = new Chart(activityCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    datasets: [{
-                        label: 'Tasks Completed',
-                        data: [2, 1, 3, 0, 1, 0, 0],
-                        borderColor: '#28a745',
-                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        
-        function updateCharts() {
-            // Update chart data based on current tasks
-            const categories = ['work', 'personal', 'study', 'health', 'finance'];
-            const activeData = [];
-            const completedData = [];
-            
-            categories.forEach(category => {
-                const activeTasks = document.querySelectorAll(`.task-item[data-status="active"][data-category="${category}"]`).length;
-                const completedTasks = document.querySelectorAll(`.task-item[data-status="completed"][data-category="${category}"]`).length;
-                
-                activeData.push(activeTasks);
-                completedData.push(completedTasks);
-            });
-            
-            // Update bar chart
-            window.barChart.data.datasets[0].data = activeData;
-            window.barChart.data.datasets[1].data = completedData;
-            window.barChart.update();
-            
-            // Update pie chart
-            const totalCompleted = completedData.reduce((acc, val) => acc + val, 0);
-            const totalActive = activeData.reduce((acc, val) => acc + val, 0);
-            
-            window.pieChart.data.datasets[0].data = [totalCompleted, totalActive];
-            window.pieChart.update();
-        }
-        
-        // Initialize subtask handlers
-        document.getElementById('addSubtaskBtn').addEventListener('click', function() {
-            const subtasksContainer = document.getElementById('subtasksContainer');
-            const subtaskItem = document.createElement('div');
-            subtaskItem.classList.add('subtask-item');
-            subtaskItem.innerHTML = `
-                <input type="text" class="subtask-input" placeholder="Enter sub task...">
-                <button class="remove-subtask-btn">-</button>
-            `;
-            subtasksContainer.appendChild(subtaskItem);
-            
-            // Add event listener to remove button
-            subtaskItem.querySelector('.remove-subtask-btn').addEventListener('click', function() {
-                if (document.querySelectorAll('.subtask-item').length > 1) {
-                    this.parentElement.remove();
-                }
-            });
-        });
-        
-        // Add event listeners for view toggle buttons
-        document.getElementById('listViewBtn').addEventListener('click', function() {
-            document.getElementById('listView').style.display = 'block';
-            document.getElementById('graphView').style.display = 'none';
-            this.classList.add('active');
-            document.getElementById('graphViewBtn').classList.remove('active');
-        });
-        
-        document.getElementById('graphViewBtn').addEventListener('click', function() {
-            document.getElementById('listView').style.display = 'none';
-            document.getElementById('graphView').style.display = 'block';
-            this.classList.add('active');
-            document.getElementById('listViewBtn').classList.remove('active');
-            
-            // Initialize charts if they don't exist yet
-            if (!window.barChart || !window.pieChart) {
-                initializeCharts();
-            } else {
-                updateCharts();
-            }
-        });
-        
-        // Profile dropdown toggle
-        document.getElementById('profileImg').addEventListener('click', function() {
-            document.getElementById('profileDropdown').classList.toggle('active');
-        });
-        
-        // Close dropdown when clicking outside
-        window.addEventListener('click', function(event) {
-            if (!event.target.matches('.profile-img')) {
-                const dropdown = document.getElementById('profileDropdown');
-                if (dropdown.classList.contains('active')) {
-                    dropdown.classList.remove('active');
-                }
-            }
         });
     </script>
 </body>
