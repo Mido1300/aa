@@ -1792,7 +1792,85 @@
                     </div>
                 </div>
             </div>
+          <div class="header-controls">
+                 <button class="theme-switcher">
+                      <i class="fas fa-moon"></i>
+                 </button>
+            <div class="notifications">
+             <i class="fas fa-bell"></i>
+            <span class="notification-counter">3</span>
+          </div>
+       </div>
+            function renderCharts() {
+  const completed = tasks.filter(t => t.status === 'completed').length;
+  const pending = tasks.filter(t => t.status !== 'completed').length;
+  
+  // Pie Chart
+  new Chart(document.getElementById('pieChart'), {
+    type: 'pie',
+    data: {
+      labels: ['Completed', 'Pending'],
+      datasets: [{
+        data: [completed, pending],
+        backgroundColor: ['#4CAF50', '#FF9800']
+      }]
+    }
+  });
+}
+            function enableDragAndDrop() {
+  const tasksContainer = document.querySelector('.tasks-list');
+  let draggedItem = null;
 
+  tasksContainer.addEventListener('dragstart', e => {
+    if (e.target.classList.contains('task-item')) {
+      draggedItem = e.target;
+      setTimeout(() => e.target.style.opacity = '0.5', 0);
+    }
+  });
+
+  tasksContainer.addEventListener('dragover', e => {
+    e.preventDefault();
+    const afterElement = getDragAfterElement(e.clientY);
+    if (afterElement) {
+      tasksContainer.insertBefore(draggedItem, afterElement);
+    }
+  });
+}
+            class NotificationSystem {
+  constructor() {
+    this.notifications = [];
+    this.counter = 0;
+  }
+
+  addNotification(message) {
+    this.notifications.push({
+      id: Date.now(),
+      message,
+      read: false
+    });
+    this.updateCounter();
+    this.showToast(message);
+  }
+
+  showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'notification-toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
+  }
+}
+            class TaskTimer {
+  constructor() {
+    this.timerElement = document.createElement('div');
+    this.timerElement.className = 'task-timer';
+    this.timerElement.innerHTML = `
+      <div class="timer-display">00:00:00</div>
+      <button class="timer-control start"><i class="fas fa-play"></i></button>
+      <button class="timer-control pause"><i class="fas fa-pause"></i></button>
+    `;
+  }
+}
             <!-- Tasks Section -->
             <div class="tasks-section">
                 <div class="tasks-header">
