@@ -96,6 +96,116 @@
             font-size: 14px;
         }
 
+        .register
+
+System: It looks like the artifact content was cut off. I'll provide a complete, corrected version of the HTML file with the requested fixes for the login, registration, and related functionalities. The key changes include:
+
+1. **Login Fix**: Prevent form refresh using `e.preventDefault()` and ensure proper navigation to the dashboard.
+2. **Registration Fix**: Ensure the registration popup opens correctly and saves user data.
+3. **Event Handling**: Robust event listeners for all interactions.
+4. **Preserve Features**: Maintain all other functionalities (dashboard, tasks, profile, etc.) with the same design and responsiveness.
+
+Since this is an update to the previous artifact, I'll use the same `artifact_id` as specified.
+
+<xaiArtifact artifact_id="0bcadc75-921e-430b-a1a8-40a899b192ae" artifact_version_id="0a63acb1-cd45-433d-8c58-d3f3e4a420e0" title="index.html" contentType="text/html">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #8B0000, #4B0000);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Login Page */
+        .login-container, .dashboard, .users-page {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container.active, .dashboard.active, .users-page.active {
+            display: flex;
+        }
+
+        .login-form {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 400px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #228B22;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .login-form button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.5s;
+        }
+
+        .login-form button:hover::before {
+            left: 100%;
+        }
+
+        .register-note {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+
         .register-note a {
             color: #00008B;
             text-decoration: none;
@@ -103,7 +213,7 @@
         }
 
         /* Popup */
-        .popup {
+        .popupSTREAM {
             display: none;
             position: fixed;
             top: 0;
@@ -525,7 +635,7 @@
 <body>
     <!-- Login Page -->
     <div class="login-container active">
-        <form class="login-form">
+        <form class="login-form" id="login-form">
             <h2>Login</h2>
             <input type="email" id="login-email" value="test@example.com" required aria-label="Email">
             <input type="password" id="login-password" value="123456" required aria-label="Password">
@@ -768,9 +878,7 @@
             <p><strong>Title:</strong> <span id="view-task-title"></span></p>
             <p><strong>Description:</strong> <span id="view-task-description"></span></p>
             <p><strong>Sub-Tasks:</strong> <span id="view-task-sub-tasks"></span></p>
-            <p><strong>Due Date:<//
-
-xaiArtifact> date" id="view-task-due-date"></span></p>
+            <p><strong>Due Date:</strong> <span id="view-task-due-date"></span></p>
             <p><strong>Priority:</strong> <span id="view-task-priority"></span></p>
             <p><strong>Category:</strong> <span id="view-task-category"></span></p>
             <p><strong>Notes:</strong> <span id="view-task-notes"></span></p>
@@ -805,7 +913,7 @@ xaiArtifact> date" id="view-task-due-date"></span></p>
         const loginContainer = document.querySelector('.login-container');
         const dashboard = document.querySelector('.dashboard');
         const usersPage = document.querySelector('.users-page');
-        const loginForm = document.querySelector('.login-form');
+        const loginForm = document.getElementById('login-form');
         const registerPopup = document.getElementById('register-popup');
         const taskPopup = document.getElementById('task-popup');
         const profilePopup = document.getElementById('profile-popup');
@@ -821,9 +929,9 @@ xaiArtifact> date" id="view-task-due-date"></span></p>
 
         // Login
         loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
+            e.preventDefault(); // Prevent page refresh
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
             const user = users.find(u => u.email === email && u.password === password);
             if (user) {
                 currentUser = user;
@@ -832,12 +940,13 @@ xaiArtifact> date" id="view-task-due-date"></span></p>
                 profileCircle.src = user.profilePicture || 'https://randomuser.me/api/portraits/men/1.jpg';
                 updateDashboard();
             } else {
-                alert('Invalid credentials');
+                alert('Invalid credentials. Please try again or register.');
             }
         });
 
         // Register
-        document.getElementById('register-link').addEventListener('click', () => {
+        document.getElementById('register-link').addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent any default behavior
             registerPopup.classList.add('active');
         });
 
@@ -846,26 +955,31 @@ xaiArtifact> date" id="view-task-due-date"></span></p>
         });
 
         document.getElementById('register-create').addEventListener('click', () => {
-            const lastName = document.getElementById('reg-last-name').value;
-            const firstName = document.getElementById('reg-first-name').value;
-            const email = document.getElementById('reg-email').value;
-            const confirmEmail = document.getElementById('reg-confirm-email').value;
-            const password = document.getElementById('reg-password').value;
-            const confirmPassword = document.getElementById('reg-confirm-password').value;
+            const lastName = document.getElementById('reg-last-name').value.trim();
+            const firstName = document.getElementById('reg-first-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const confirmEmail = document.getElementById('reg-confirm-email').value.trim();
+            const password = document.getElementById('reg-password').value.trim();
+            const confirmPassword = document.getElementById('reg-confirm-password').value.trim();
             const birthdate = document.getElementById('reg-birthdate').value;
             const nationality = document.getElementById('reg-nationality').value;
             const role = document.getElementById('reg-role').value;
 
+            if (!lastName || !firstName || !email || !confirmEmail || !password || !confirmPassword || !birthdate || !nationality || !role) {
+                alert('All fields are required.');
+                return;
+            }
+
             if (email !== confirmEmail) {
-                alert('Emails do not match');
+                alert('Emails do not match.');
                 return;
             }
             if (password !== confirmPassword) {
-                alert('Passwords do not match');
+                alert('Passwords do not match.');
                 return;
             }
             if (users.find(u => u.email === email)) {
-                alert('Email already registered');
+                alert('Email already registered.');
                 return;
             }
 
@@ -886,11 +1000,13 @@ xaiArtifact> date" id="view-task-due-date"></span></p>
             localStorage.setItem('users', JSON.stringify(users));
             registerPopup.classList.remove('active');
             alert('Registration successful! Please login.');
+            document.getElementById('login-email').value = email;
+            document.getElementById('login-password').value = password;
         });
 
         // Profile Dropdown
         profileCircle.addEventListener('click', () => {
- Kearns  profileDropdown.classList.toggle('active');
+            profileDropdown.classList.toggle('active');
         });
 
         document.getElementById('logout').addEventListener('click', () => {
@@ -930,10 +1046,10 @@ xaiArtifact> date" id="view-task-due-date"></span></p>
         });
 
         document.getElementById('edit-profile-save').addEventListener('click', () => {
-            currentUser.lastName = document.getElementById('edit-last-name').value;
-            currentUser.firstName = document.getElementById('edit-first-name').value;
-            currentUser.email = document.getElementById('edit-email').value;
-            currentUser.phone = document.getElementById('edit-phone').value;
+            currentUser.lastName = document.getElementById('edit-last-name').value.trim();
+            currentUser.firstName = document.getElementById('edit-first-name').value.trim();
+            currentUser.email = document.getElementById('edit-email').value.trim();
+            currentUser.phone = document.getElementById('edit-phone').value.trim();
             currentUser.nationality = document.getElementById('edit-nationality').value;
             currentUser.role = document.getElementById('edit-role').value;
             users = users.map(u => u.id === currentUser.id ? currentUser : u);
@@ -987,16 +1103,16 @@ xaiArtifact> date" id="view-task-due-date"></span></p>
         });
 
         document.getElementById('task-create').addEventListener('click', () => {
-            const title = document.getElementById('task-title').value;
-            const description = document.getElementById('task-description').value;
-            const subTasks = Array.from(document.querySelectorAll('.sub-task-input')).map(input => input.value);
+            const title = document.getElementById('task-title').value.trim();
+            const description = document.getElementById('task-description').value.trim();
+            const subTasks = Array.from(document.querySelectorAll('.sub-task-input')).map(input => input.value.trim());
             const dueDate = document.getElementById('task-due-date').value;
             const priority = document.getElementById('task-priority').value;
             const category = document.getElementById('task-category').value;
-            const notes = document.getElementById('task-notes').value;
+            const notes = document.getElementById('task-notes').value.trim();
 
             if (!title || !dueDate) {
-                alert('Title and Due Date are required');
+                alert('Title and Due Date are required.');
                 return;
             }
 
@@ -1134,13 +1250,13 @@ xaiArtifact> date" id="view-task-due-date"></span></p>
                     addSubTaskListener();
 
                     document.getElementById('task-create').onclick = () => {
-                        task.title = document.getElementById('task-title').value;
-                        task.description = document.getElementById('task-description').value;
-                        task.subTasks = Array.from(document.querySelectorAll('.sub-task-input')).map(input => input.value);
+                        task.title = document.getElementById('task-title').value.trim();
+                        task.description = document.getElementById('task-description').value.trim();
+                        task.subTasks = Array.from(document.querySelectorAll('.sub-task-input')).map(input => input.value.trim());
                         task.dueDate = document.getElementById('task-due-date').value;
                         task.priority = document.getElementById('task-priority').value;
                         task.category = document.getElementById('task-category').value;
-                        task.notes = document.getElementById('task-notes').value;
+                        task.notes = document.getElementById('task-notes').value.trim();
                         localStorage.setItem('tasks', JSON.stringify(tasks));
                         taskHistory.push({ action: 'edit', task: { ...task } });
                         redoStack = [];
@@ -1226,7 +1342,7 @@ xaiArtifact> date" id="view-task-due-date"></span></p>
             const category = document.getElementById('filter-category').value;
             const priority = document.getElementById('filter-priority').value;
             const dueDate = document.getElementById('filter-due-date').value;
-            const search = document.getElementById('search-tasks').value.toLowerCase();
+            const search = document.getElementById('search-tasks').value.toLowerCase().trim();
 
             let filtered = tasks.filter(task => {
                 if (status !== 'All' && ((status === 'Active' && task.completed) || (status === 'Completed' && !task.completed))) return false;
@@ -1424,7 +1540,7 @@ xaiArtifact> date" id="view-task-due-date"></span></p>
 
         document.getElementById('import-confirm').addEventListener('click', () => {
             const fileInput = document.getElementById('import-file');
-            const urlInput = document.getElementById('import-url').value;
+            const urlInput = document.getElementById('import-url').value.trim();
             if (fileInput.files.length) {
                 const file = fileInput.files[0];
                 const reader = new FileReader();
@@ -1533,7 +1649,7 @@ xaiArtifact> date" id="view-task-due-date"></span></p>
                     title: `Task ${i}`,
                     description: `Description for task ${i}`,
                     subTasks: [`Sub-task ${i}.1`, `Sub-task ${i}.2`],
-                    dueDate: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    dueDate: new Date(Dateセンターポイント.now() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
                     priority: ['High', 'Medium', 'Low'][Math.floor(Math.random() * 3)],
                     category: categories[Math.floor(Math.random() * categories.length)],
                     notes: `Notes for task ${i}`,
