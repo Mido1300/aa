@@ -8,97 +8,48 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #1a1a1a;
-            --primary-dark: #0d0d0d;
-            --primary-light: #333333;
+            --primary-dark: #1a1a1a;
+            --primary: #2c2c2c;
+            --primary-light: #3d3d3d;
             --secondary: #007bff;
             --accent: #28a745;
             --warning: #ffc107;
             --danger: #dc3545;
             --info: #17a2b8;
             --light: #f8f9fa;
-            --dark: #343a40;
             --white: #ffffff;
             --gray: #6c757d;
             --gray-light: #e9ecef;
-            --gray-dark: #495057;
-
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.16), 0 4px 6px rgba(0,0,0,0.23);
-            --shadow-lg: 0 10px 20px rgba(0,0,0,0.19Naturally, I can help you implement those features while keeping the core functionality and style of the original To-Do App intact. Below is the updated code with all the requested enhancements:
-
-1. **Theme Switcher in Title Bar**: Added a theme switcher icon next to the profile picture for toggling between light and dark modes.
-2. **Enhanced Timer Layout**: Improved the timer widget with a better font size, button layout, and design that fits the overall aesthetic. The timer now accurately tracks time spent on tasks, with play, pause, and reset functionality.
-3. **Notification System**: Implemented a notification counter that increments when tasks are completed, due dates are approaching, or task data changes. Notifications decrease when viewed.
-4. **Dynamic Graphs in Graph View**: Added a bar chart and pie chart in the Graph View using Chart.js, reflecting completed vs. pending tasks, updating dynamically when task data changes.
-5. **Drag-and-Drop Tasks**: Enabled drag-and-drop functionality to reorder tasks in the list view.
-6. **Improved Batch Actions Bar**: Enhanced the batch actions bar with a sleek design, smooth animations, and a professional look.
-7. **Random Profile Pictures**: Assigned random profile pictures to all users (including the admin) using a placeholder image service.
-8. **Advanced Sort Options**: Added a sort dropdown with options for sorting by due date, priority, and title, styled to match the app's aesthetic.
-9. **File Export**: Implemented file download functionality for exporting tasks in JSON or CSV format after selecting an extension.
-10. **Due Date Notifications**: Added notifications for tasks with due dates within 2 days or less.
-11. **Task Change Notifications**: Added a notification alert on the bottom-left corner that appears for 5 seconds when task data changes.
-12. **Dark Mode Update**: Changed the dark mode to use a dark black theme instead of dark red.
-13. **Mobile-Friendly Design**: Ensured the app is fully responsive and optimized for mobile devices.
-
-Here’s the complete updated code:
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do App</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --primary: #1a1a1a;
-            --primary-dark: #0d0d0d;
-            --primary-light: #333333;
-            --secondary: #007bff;
-            --accent: #28a745;
-            --warning: #ffc107;
-            --danger: #dc3545;
-            --info: #17a2b8;
-            --light: #f8f9fa;
-            --dark: #343a40;
-            --white: #ffffff;
-            --gray: #6c757d;
-            --gray-light: #e9ecef;
-            --gray-dark: #495057;
-            
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.16), 0 4px 6px rgba(0,0,0,0.23);
-            --shadow-lg: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-            
+            --gray-dark: #343a40;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
+            --shadow-lg: 0 8px 16px rgba(0,0,0,0.2);
             --border-radius: 8px;
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --transition: all 0.3s ease;
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: var(--font-family);
         }
 
         body {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            background: var(--primary-dark);
             color: var(--white);
             min-height: 100vh;
-            transition: var(--transition);
             line-height: 1.6;
+            font-size: 16px;
         }
 
         body.light-mode {
-            background: linear-gradient(135deg, var(--gray-light), var(--white));
-            color: var(--dark);
+            background: var(--light);
+            color: var(--gray-dark);
         }
 
         .container {
-            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
@@ -109,9 +60,9 @@ Here’s the complete updated code:
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 0;
-            margin-bottom: 30px;
+            padding: 15px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
         }
 
         .light-mode .header {
@@ -119,13 +70,8 @@ Here’s the complete updated code:
         }
 
         .app-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--white);
-        }
-
-        .light-mode .app-title {
-            color: var(--dark);
+            font-size: 1.8rem;
+            font-weight: 600;
         }
 
         .header-actions {
@@ -138,22 +84,20 @@ Here’s the complete updated code:
             background: none;
             border: none;
             color: var(--white);
-            font-size: 20px;
+            font-size: 1.5rem;
             cursor: pointer;
             transition: var(--transition);
         }
 
         .light-mode .theme-switcher {
-            color: var(--dark);
+            color: var(--gray-dark);
         }
 
         .theme-switcher:hover {
-            transform: scale(1.1);
+            color: var(--accent);
         }
 
         .user-profile {
-            display: flex;
-            align-items: center;
             position: relative;
             cursor: pointer;
         }
@@ -162,12 +106,6 @@ Here’s the complete updated code:
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: var(--accent);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: 600;
-            position: relative;
             overflow: hidden;
             box-shadow: var(--shadow-sm);
         }
@@ -182,16 +120,15 @@ Here’s the complete updated code:
             position: absolute;
             top: -5px;
             right: -5px;
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             background: var(--danger);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 10px;
-            color: white;
-            box-shadow: var(--shadow-sm);
+            font-size: 12px;
+            color: var(--white);
         }
 
         /* Notification Modal */
@@ -199,38 +136,41 @@ Here’s the complete updated code:
             position: absolute;
             top: 50px;
             right: 0;
-            background: rgba(0, 0, 0, 0.95);
+            background: var(--primary);
             border-radius: var(--border-radius);
             width: 300px;
             max-height: 400px;
             overflow-y: auto;
             box-shadow: var(--shadow-lg);
-            z-index: 100;
+            z-index: 1000;
             display: none;
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .light-mode .notification-modal {
-            background: rgba(255, 255, 255, 0.98);
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: var(--white);
+            border: 1px solid var(--gray-light);
         }
 
         .notification-modal.show {
             display: block;
-            animation: dropdownFadeIn 0.2s ease;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .notification-item {
-            padding: 10px 15px;
+            padding: 12px 16px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             cursor: pointer;
-            transition: background 0.2s ease;
-            color: var(--white);
+            transition: var(--transition);
+            font-size: 0.9rem;
         }
 
         .light-mode .notification-item {
-            color: var(--dark);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid var(--gray-light);
         }
 
         .notification-item:hover {
@@ -238,32 +178,347 @@ Here’s the complete updated code:
         }
 
         .light-mode .notification-item:hover {
-            background: rgba(0, 0, 0, 0.05);
+            background: var(--gray-light);
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--gray);
+            color: var(--white);
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .light-mode .nav-btn {
+            color: var(--gray-dark);
+            border-color: var(--gray-light);
+        }
+
+        .nav-btn.active, .nav-btn:hover {
+            background: var(--secondary);
+            color: var(--white);
+            border-color: var(--secondary);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            margin-bottom: 30px;
+        }
+
+        .stats-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--primary);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .light-mode .stat-card {
+            background: var(--white);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card-title {
+            font-size: 1rem;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .stat-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        /* Tasks Section */
+        .tasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: var(--gray-dark);
+            color: var(--white);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray);
+            color: var(--white);
+        }
+
+        .light-mode .btn-outline {
+            color: var(--gray-dark);
+            border-color: var(--gray-light);
+        }
+
+        .btn-outline:hover {
+            background: var(--gray);
+            color: var(--white);
+        }
+
+        .light-mode .btn-outline:hover {
+            background: var(--gray-light);
+            color: var(--gray-dark);
+        }
+
+        .view-switcher {
+            display: flex;
+            gap: 5px;
+        }
+
+        .view-btn {
+            background: transparent;
+            border: 1px solid var(--gray);
+            color: var(--white);
+            padding: 8px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .light-mode .view-btn {
+            color: var(--gray-dark);
+            border-color: var(--gray-light);
+        }
+
+        .view-btn.active, .view-btn:hover {
+            background: var(--secondary);
+            color: var(--white);
+            border-color: var(--secondary);
+        }
+
+        /* Filters */
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .filter-select, .search-box input {
+            padding: 8px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            background: var(--primary);
+            color: var(--white);
+            font-size: 0.9rem;
+        }
+
+        .light-mode .filter-select, .light-mode .search-box input {
+            background: var(--white);
+            color: var(--gray-dark);
+            border-color: var(--gray-light);
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 10px;
+            color: var(--gray);
+        }
+
+        .search-box input {
+            padding-left: 30px;
+            width: 100%;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 1px solid var(--gray);
+            color: var(--white);
+            padding: 8px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .light-mode .action-btn {
+            color: var(--gray-dark);
+            border-color: var(--gray-light);
+        }
+
+        .action-btn:hover {
+            background: var(--gray);
+        }
+
+        .light-mode .action-btn:hover {
+            background: var(--gray-light);
+        }
+
+        /* Sort Dropdown */
+        .sort-dropdown {
+            position: relative;
+        }
+
+        .sort-btn {
+            background: var(--primary);
+            color: var(--white);
+            padding: 8px 12px;
+            border: 1px solid var(--gray);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .light-mode .sort-btn {
+            background: var(--white);
+            color: var(--gray-dark);
+            border-color: var(--gray-light);
+        }
+
+        .sort-btn:hover {
+            background: var(--gray);
+        }
+
+        .light-mode .sort-btn:hover {
+            background: var(--gray-light);
+        }
+
+        .sort-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--primary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            z-index: 100;
+            display: none;
+            min-width: 150px;
+        }
+
+        .light-mode .sort-menu {
+            background: var(--white);
+        }
+
+        .sort-menu.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .sort-item {
+            padding: 10px 15px;
+            color: var(--white);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .light-mode .sort-item {
+            color: var(--gray-dark);
+        }
+
+        .sort-item:hover {
+            background: var(--gray);
+        }
+
+        .light-mode .sort-item:hover {
+            background: var(--gray-light);
         }
 
         /* Batch Actions */
         .batch-actions {
             display: none;
-            background: rgba(0, 0, 0, 0.5);
+            background: var(--primary);
             padding: 15px;
             border-radius: var(--border-radius);
             margin-bottom: 20px;
+            box-shadow: var(--shadow-md);
+            display: flex;
             justify-content: space-between;
             align-items: center;
             animation: slideIn 0.3s ease;
-            box-shadow: var(--shadow-md);
-            transform: translateY(-10px);
-            opacity: 0;
+        }
+
+        .light-mode .batch-actions {
+            background: var(--white);
         }
 
         .batch-actions.show {
             display: flex;
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .light-mode .batch-actions {
-            background: rgba(255, 255, 255, 0.9);
         }
 
         @keyframes slideIn {
@@ -272,13 +527,8 @@ Here’s the complete updated code:
         }
 
         .selected-count {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--white);
-        }
-
-        .light-mode .selected-count {
-            color: var(--dark);
+            font-size: 1rem;
+            font-weight: 500;
         }
 
         .batch-buttons {
@@ -286,29 +536,231 @@ Here’s the complete updated code:
             gap: 10px;
         }
 
+        /* Task Item */
+        .tasks-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .task-item {
+            background: var(--primary);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            cursor: move;
+        }
+
+        .light-mode .task-item {
+            background: var(--white);
+        }
+
+        .task-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .task-item.dragging {
+            opacity: 0.7;
+            transform: scale(0.98);
+        }
+
+        .task-item.drag-over {
+            border: 2px dashed var(--accent);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .task-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .task-btn {
+            background: transparent;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .light-mode .task-btn {
+            color: var(--gray-dark);
+        }
+
+        .task-btn:hover {
+            color: var(--accent);
+        }
+
+        .task-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .light-mode .task-details {
+            color: var(--gray-dark);
+        }
+
+        .task-detail i {
+            margin-right: 5px;
+        }
+
+        .task-description {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .subtasks {
+            margin-bottom: 10px;
+        }
+
+        .subtask {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .subtask.completed label {
+            text-decoration: line-through;
+            color: var(--gray);
+        }
+
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-timer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer-btn {
+            background: var(--secondary);
+            color: var(--white);
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+
+        .timer-btn:hover {
+            background: #0056b3;
+        }
+
+        .timer-display {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .light-mode .timer-display {
+            color: var(--gray-dark);
+        }
+
+        .task-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            font-size: 0.8rem;
+        }
+
+        .status-completed { background: var(--accent); color: var(--white); }
+        .status-pending { background: var(--warning); color: var(--gray-dark); }
+        .status-urgent { background: var(--danger); color: var(--white); }
+        .status-expired { background: var(--gray); color: var(--white); }
+
+        .task-switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        .task-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gray);
+            transition: var(--transition);
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background: var(--white);
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: var(--accent);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
         /* Timer Widget */
         .timer-widget {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: rgba(0, 0, 0, 0.8);
+            background: var(--primary);
             border-radius: var(--border-radius);
             padding: 20px;
             box-shadow: var(--shadow-lg);
-            z-index: 100;
-            display: none;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
             width: 300px;
+            display: none;
         }
 
         .light-mode .timer-widget {
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: var(--white);
         }
 
         .timer-widget.show {
             display: block;
-            animation: slideUp 0.3s ease;
+            animation: slideIn 0.3s ease;
         }
 
         .timer-header {
@@ -319,26 +771,20 @@ Here’s the complete updated code:
         }
 
         .timer-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--white);
-        }
-
-        .light-mode .timer-title {
-            color: var(--dark);
+            font-size: 1.2rem;
+            font-weight: 500;
         }
 
         .close-timer {
             background: none;
             border: none;
-            color: var(--white);
+            color: var(--gray);
             cursor: pointer;
-            font-size: 18px;
-            transition: var(--transition);
+            font-size: 1.2rem;
         }
 
         .light-mode .close-timer {
-            color: var(--dark);
+            color: var(--gray-dark);
         }
 
         .close-timer:hover {
@@ -346,18 +792,16 @@ Here’s the complete updated code:
         }
 
         .timer-display-widget {
-            font-size: 32px;
+            font-size: 2rem;
             font-family: monospace;
             text-align: center;
             margin: 15px 0;
-            color: var(--white);
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
             padding: 10px;
             border-radius: var(--border-radius);
         }
 
         .light-mode .timer-display-widget {
-            color: var(--dark);
             background: rgba(0, 0, 0, 0.05);
         }
 
@@ -368,78 +812,29 @@ Here’s the complete updated code:
         }
 
         .timer-btn {
-            padding: 10px 20px;
-            font-size: 16px;
+            flex: 1;
+        }
+
+        /* Graph View */
+        .tasks-graph {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .graph-container {
+            background: var(--primary);
             border-radius: var(--border-radius);
-            transition: var(--transition);
+            padding: 20px;
+            box-shadow: var(--shadow-md);
         }
 
-        /* Sort Dropdown */
-        .sort-dropdown {
-            position: relative;
-            display: inline-block;
+        .light-mode .graph-container {
+            background: var(--white);
         }
 
-        .sort-btn {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--white);
-            padding: 8px 12px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .light-mode .sort-btn {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--dark);
-        }
-
-        .sort-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .light-mode .sort-btn:hover {
-            background: rgba(0, 0, 0, 0.1);
-        }
-
-        .sort-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: rgba(0, 0, 0, 0.95);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-lg);
-            z-index: 100;
-            display: none;
-            min-width: 150px;
-        }
-
-        .light-mode .sort-menu {
-            background: rgba(255, 255, 255, 0.98);
-        }
-
-        .sort-menu.show {
-            display: block;
-            animation: dropdownFadeIn 0.2s ease;
-        }
-
-        .sort-item {
-            padding: 10px 15px;
-            color: var(--white);
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-
-        .light-mode .sort-item {
-            color: var(--dark);
-        }
-
-        .sort-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .light-mode .sort-item:hover {
-            background: rgba(0, 0, 0, 0.05);
+        .graph-container canvas {
+            max-width: 100%;
         }
 
         /* Change Notification */
@@ -454,42 +849,94 @@ Here’s the complete updated code:
             box-shadow: var(--shadow-md);
             display: none;
             z-index: 1000;
-            animation: slideIn 0.3s ease;
+            font-size: 0.9rem;
         }
 
         .change-notification.show {
             display: block;
+            animation: slideIn 0.3s ease;
         }
 
-        /* Drag and Drop */
-        .task-item.dragging {
-            opacity: 0.5;
-            transform: scale(0.98);
+        /* Users Page */
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
         }
 
-        .task-item.drag-over {
-            border: 2px dashed var(--accent);
+        .user-card {
+            background: var(--primary);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            text-align: center;
         }
 
-        /* Graph Containers */
-        .graph-container canvas {
-            max-width: 100%;
-            height: 100%;
+        .light-mode .user-card {
+            background: var(--white);
         }
 
-        /* Responsive Styles */
+        .user-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .user-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        .user-name {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .user-role {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .light-mode .user-role {
+            color: var(--gray-dark);
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .header-actions {
-                gap: 10px;
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .tasks-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .task-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .tasks-graph {
+                grid-template-columns: 1fr;
             }
 
             .timer-widget {
                 width: 90%;
                 right: 5%;
-            }
-
-            .tasks-graph {
-                grid-template-columns: 1fr;
+                bottom: 10px;
             }
 
             .batch-actions {
@@ -499,23 +946,23 @@ Here’s the complete updated code:
         }
 
         @media (max-width: 480px) {
-            .header {
-                flex-direction: column;
-                gap: 15px;
+            .app-title {
+                font-size: 1.5rem;
             }
 
-            .header-actions {
-                width: 100%;
-                justify-content: center;
+            .stat-card-value {
+                font-size: 1.5rem;
             }
 
-            .sort-menu {
-                width: 100%;
+            .task-title {
+                font-size: 1rem;
+            }
+
+            .notification-modal {
+                width: 90%;
+                right: 5%;
             }
         }
-
-        /* Other styles remain the same as the original */
-        /* ... (Include all other CSS from the original code, updating colors where necessary) ... */
     </style>
 </head>
 <body>
@@ -541,7 +988,7 @@ Here’s the complete updated code:
     </div>
 
     <!-- Dashboard -->
-    <div class="dashboard container" id="dashboard">
+    <div class="dashboard container" id="dashboard" style="display: none;">
         <div class="header">
             <div class="app-title">To-Do App</div>
             <div class="header-actions">
@@ -550,13 +997,11 @@ Here’s the complete updated code:
                 </button>
                 <div class="user-profile" id="userProfile">
                     <div class="profile-pic">
-                        <img src="" id="profilePicture">
+                        <img src="" id="profilePicture" style="display: none;">
                         <span class="initials" id="profileInitials">U</span>
-                        <div class="notification-badge" id="notificationBadge">0</div>
                     </div>
-                    <div class="notification-modal" id="notificationModal">
-                        <!-- Notifications will be dynamically added here -->
-                    </div>
+                    <div class="notification-badge" id="notificationBadge" style="display: none;">0</div>
+                    <div class="notification-modal" id="notificationModal"></div>
                     <div class="profile-dropdown" id="profileDropdown">
                         <div class="dropdown-item" id="viewProfile"><i class="fas fa-user"></i> View Profile</div>
                         <div class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div>
@@ -676,12 +1121,10 @@ Here’s the complete updated code:
                 </div>
 
                 <!-- Tasks List View -->
-                <div class="tasks-list view-transition" id="tasksList">
-                    <!-- Tasks will be dynamically added here -->
-                </div>
+                <div class="tasks-list" id="tasksList"></div>
 
                 <!-- Tasks Graph View -->
-                <div class="tasks-graph view-transition" id="tasksGraph">
+                <div class="tasks-graph" id="tasksGraph" style="display: none;">
                     <div class="graph-container">
                         <canvas id="barChart"></canvas>
                     </div>
@@ -693,13 +1136,11 @@ Here’s the complete updated code:
         </div>
 
         <!-- Users Page -->
-        <div class="users-page" id="usersPage">
+        <div class="users-page" id="usersPage" style="display: none;">
             <div class="tasks-header">
                 <h3 class="section-title">Users</h3>
             </div>
-            <div class="users-grid" id="usersGrid">
-                <!-- Users will be dynamically added here -->
-            </div>
+            <div class="users-grid" id="usersGrid"></div>
         </div>
     </div>
 
@@ -720,33 +1161,17 @@ Here’s the complete updated code:
     <!-- Change Notification -->
     <div class="change-notification" id="changeNotification"></div>
 
-    <!-- Other modals (Registration, Profile, Task, etc.) remain the same as the original -->
-    <!-- ... (Include all other modals from the original code) ... -->
-
     <script>
         // DOM Elements
         const loginPage = document.getElementById('loginPage');
         const dashboard = document.getElementById('dashboard');
         const loginForm = document.getElementById('loginForm');
         const registerLink = document.getElementById('registerLink');
-        const registerModal = document.getElementById('registerModal');
-        const closeRegisterModal = document.getElementById('closeRegisterModal');
-        const registerForm = document.getElementById('registerForm');
-        const cancelRegisterBtn = document.getElementById('cancelRegisterBtn');
         const userProfile = document.getElementById('userProfile');
         const profileDropdown = document.getElementById('profileDropdown');
         const viewProfile = document.getElementById('viewProfile');
         const logoutBtn = document.getElementById('logoutBtn');
         const themeSwitcher = document.getElementById('themeSwitcher');
-        const profileModal = document.getElementById('profileModal');
-        const closeProfileModal = document.getElementById('closeProfileModal');
-        const closeProfileBtn = document.getElementById('closeProfileBtn');
-        const editProfileBtn = document.getElementById('editProfileBtn');
-        const editProfileModal = document.getElementById('editProfileModal');
-        const closeEditProfileModal = document.getElementById('closeEditProfileModal');
-        const cancelEditProfileBtn = document.getElementById('cancelEditProfileBtn');
-        const editProfileForm = document.getElementById('editProfileForm');
-        const profileImageUpload = document.getElementById('profileImageUpload');
         const tasksBtn = document.getElementById('tasksBtn');
         const usersBtn = document.getElementById('usersBtn');
         const addTaskBtn = document.getElementById('addTaskBtn');
@@ -754,26 +1179,6 @@ Here’s the complete updated code:
         const importBtn = document.getElementById('importBtn');
         const listViewBtn = document.getElementById('listViewBtn');
         const graphViewBtn = document.getElementById('graphViewBtn');
-        const taskModal = document.getElementById('taskModal');
-        const closeTaskModal = document.getElementById('closeTaskModal');
-        const cancelTaskBtn = document.getElementById('cancelTaskBtn');
-        const taskForm = document.getElementById('taskForm');
-        const addSubtaskBtn = document.getElementById('addSubtaskBtn');
-        const subtaskInput = document.getElementById('subtaskInput');
-        const subtaskList = document.getElementById('subtaskList');
-        const importModal = document.getElementById('importModal');
-        const closeImportModal = document.getElementById('closeImportModal');
-        const cancelImportBtn = document.getElementById('cancelImportBtn');
-        const importFileBtn = document.getElementById('importFileBtn');
-        const importUrlBtn = document.getElementById('importUrlBtn');
-        const taskFileUpload = document.getElementById('taskFileUpload');
-        const importUrl = document.getElementById('importUrl');
-        const confirmImportBtn = document.getElementById('confirmImportBtn');
-        const exportModal = document.getElementById('exportModal');
-        const closeExportModal = document.getElementById('closeExportModal');
-        const cancelExportBtn = document.getElementById('cancelExportBtn');
-        const confirmExportBtn = document.getElementById('confirmExportBtn');
-        const exportFormat = document.getElementById('exportFormat');
         const timerWidget = document.getElementById('timerWidget');
         const closeTimerBtn = document.getElementById('closeTimerBtn');
         const startTimerBtn = document.getElementById('startTimerBtn');
@@ -862,7 +1267,7 @@ Here’s the complete updated code:
                         { id: 2, text: 'Write draft', completed: false },
                         { id: 3, text: 'Get feedback', completed: false }
                     ],
-                    dueDate: '2023-12-15',
+                    dueDate: '2025-04-20',
                     priority: 'high',
                     category: 'work',
                     notes: 'Include budget details',
@@ -870,8 +1275,7 @@ Here’s the complete updated code:
                     createdAt: new Date().toISOString(),
                     createdBy: 1,
                     timeSpent: 0
-                },
-                // ... (Other tasks from the original code, with added timeSpent: 0) ...
+                }
             ];
 
             // Generate random users
@@ -934,17 +1338,10 @@ Here’s the complete updated code:
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { color: isDarkMode ? var(--white) : var(--dark) }
-                        },
-                        x: {
-                            ticks: { color: isDarkMode ? var(--white) : var(--dark) }
-                        }
+                        y: { beginAtZero: true, ticks: { color: isDarkMode ? var(--white) : var(--gray-dark) } },
+                        x: { ticks: { color: isDarkMode ? var(--white) : var(--gray-dark) } }
                     },
-                    plugins: {
-                        legend: { labels: { color: isDarkMode ? var(--white) : var(--dark) } }
-                    }
+                    plugins: { legend: { labels: { color: isDarkMode ? var(--white) : var(--gray-dark) } } }
                 }
             });
 
@@ -963,10 +1360,7 @@ Here’s the complete updated code:
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { color: isDarkMode ? var(--white) : var(--dark) }
-                        }
+                        legend: { position: 'bottom', labels: { color: isDarkMode ? var(--white) : var(--gray-dark) } }
                     }
                 }
             });
@@ -988,52 +1382,18 @@ Here’s the complete updated code:
         // Set up event listeners
         function setupEventListeners() {
             loginForm.addEventListener('submit', handleLogin);
-            registerLink.addEventListener('click', showRegisterModal);
-            closeRegisterModal.addEventListener('click', hideRegisterModal);
-            cancelRegisterBtn.addEventListener('click', hideRegisterModal);
-            registerForm.addEventListener('submit', handleRegister);
+            registerLink.addEventListener('click', () => alert('Register functionality not implemented'));
             userProfile.addEventListener('click', toggleProfileDropdown);
-            viewProfile.addEventListener('click', showProfileModal);
+            viewProfile.addEventListener('click', () => alert('View profile not implemented'));
             logoutBtn.addEventListener('click', handleLogout);
             themeSwitcher.addEventListener('click', toggleDarkMode);
-            closeProfileModal.addEventListener('click', hideProfileModal);
-            closeProfileBtn.addEventListener('click', hideProfileModal);
-            editProfileBtn.addEventListener('click', showEditProfileModal);
-            closeEditProfileModal.addEventListener('click', hideEditProfileModal);
-            cancelEditProfileBtn.addEventListener('click', hideEditProfileModal);
-            editProfileForm.addEventListener('submit', handleEditProfile);
-            profileImageUpload.addEventListener('change', handleProfileImageUpload);
             tasksBtn.addEventListener('click', () => showPage('tasks'));
             usersBtn.addEventListener('click', () => showPage('users'));
-            addTaskBtn.addEventListener('click', showAddTaskModal);
+            addTaskBtn.addEventListener('click', () => alert('Add task not implemented'));
             exportBtn.addEventListener('click', showExportModal);
-            importBtn.addEventListener('click', showImportModal);
+            importBtn.addEventListener('click', () => alert('Import not implemented'));
             listViewBtn.addEventListener('click', () => switchView('list'));
             graphViewBtn.addEventListener('click', () => switchView('graph'));
-            closeTaskModal.addEventListener('click', hideTaskModal);
-            cancelTaskBtn.addEventListener('click', hideTaskModal);
-            taskForm.addEventListener('submit', handleTaskSubmit);
-            addSubtaskBtn.addEventListener('click', addSubtask);
-            subtaskInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    addSubtask();
-                }
-            });
-            closeImportModal.addEventListener('click', hideImportModal);
-            cancelImportBtn.addEventListener('click', hideImportModal);
-            importFileBtn.addEventListener('click', () => showImportSection('file'));
-            importUrlBtn.addEventListener('click', () => showImportSection('url'));
-            taskFileUpload.addEventListener('change', () => {
-                confirmImportBtn.disabled = !taskFileUpload.files.length;
-            });
-            importUrl.addEventListener('input', () => {
-                confirmImportBtn.disabled = !importUrl.value;
-            });
-            confirmImportBtn.addEventListener('click', handleImport);
-            closeExportModal.addEventListener('click', hideExportModal);
-            cancelExportBtn.addEventListener('click', hideExportModal);
-            confirmExportBtn.addEventListener('click', handleExport);
             closeTimerBtn.addEventListener('click', hideTimerWidget);
             startTimerBtn.addEventListener('click', startTimer);
             pauseTimerBtn.addEventListener('click', pauseTimer);
@@ -1058,14 +1418,6 @@ Here’s the complete updated code:
             });
 
             document.addEventListener('click', (e) => {
-                if (e.target.classList.contains('modal')) {
-                    if (registerModal.style.display === 'flex') hideRegisterModal();
-                    if (profileModal.style.display === 'flex') hideProfileModal();
-                    if (editProfileModal.style.display === 'flex') hideEditProfileModal();
-                    if (taskModal.style.display === 'flex') hideTaskModal();
-                    if (importModal.style.display === 'flex') hideImportModal();
-                    if (exportModal.style.display === 'flex') hideExportModal();
-                }
                 if (!e.target.closest('.user-profile') && profileDropdown.classList.contains('show')) {
                     profileDropdown.classList.remove('show');
                 }
@@ -1117,29 +1469,17 @@ Here’s the complete updated code:
 
         // Show specific page
         function showPage(page) {
-            if (page === 'tasks') {
-                tasksPage.style.display = 'block';
-                usersPage.style.display = 'none';
-                tasksBtn.classList.add('active');
-                usersBtn.classList.remove('active');
-            } else if (page === 'users') {
-                tasksPage.style.display = 'none';
-                usersPage.style.display = 'block';
-                tasksBtn.classList.remove('active');
-                usersBtn.classList.add('active');
-            }
+            tasksPage.style.display = page === 'tasks' ? 'block' : 'none';
+            usersPage.style.display = page === 'users' ? 'block' : 'none';
+            tasksBtn.classList.toggle('active', page === 'tasks');
+            usersBtn.classList.toggle('active', page === 'users');
         }
 
         // Toggle dark mode
         function toggleDarkMode() {
             isDarkMode = !isDarkMode;
-            if (isDarkMode) {
-                document.body.classList.remove('light-mode');
-                themeSwitcher.innerHTML = '<i class="fas fa-moon"></i>';
-            } else {
-                document.body.classList.add('light-mode');
-                themeSwitcher.innerHTML = '<i class="fas fa-sun"></i>';
-            }
+            document.body.classList.toggle('light-mode', !isDarkMode);
+            themeSwitcher.innerHTML = isDarkMode ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
             localStorage.setItem('todoAppDarkMode', isDarkMode);
             updateGraphs();
         }
@@ -1208,9 +1548,7 @@ Here’s the complete updated code:
         function showChangeNotification(message) {
             changeNotification.textContent = message;
             changeNotification.classList.add('show');
-            setTimeout(() => {
-                changeNotification.classList.remove('show');
-            }, 5000);
+            setTimeout(() => changeNotification.classList.remove('show'), 5000);
         }
 
         // Update profile info
@@ -1305,8 +1643,8 @@ Here’s the complete updated code:
 
                 tasksList.appendChild(taskItem);
 
-                taskItem.querySelector('.view-task').addEventListener('click', () => viewTask(task.id));
-                taskItem.querySelector('.edit-task').addEventListener('click', () => editTask(task.id));
+                taskItem.querySelector('.view-task').addEventListener('click', () => alert('View task not implemented'));
+                taskItem.querySelector('.edit-task').addEventListener('click', () => alert('Edit task not implemented'));
                 taskItem.querySelector('.delete-task').addEventListener('click', () => deleteTask(task.id));
                 taskItem.querySelector('.task-switch input').addEventListener('change', (e) => toggleTaskStatus(task.id, e.target.checked));
                 taskItem.querySelector('.timer-btn').addEventListener('click', () => startTaskTimer(task.id));
@@ -1332,16 +1670,12 @@ Here’s the complete updated code:
                     taskItem.classList.add('dragging');
                     e.dataTransfer.setData('text/plain', task.id);
                 });
-                taskItem.addEventListener('dragend', () => {
-                    taskItem.classList.remove('dragging');
-                });
+                taskItem.addEventListener('dragend', () => taskItem.classList.remove('dragging'));
                 taskItem.addEventListener('dragover', (e) => {
                     e.preventDefault();
                     taskItem.classList.add('drag-over');
                 });
-                taskItem.addEventListener('dragleave', () => {
-                    taskItem.classList.remove('drag-over');
-                });
+                taskItem.addEventListener('dragleave', () => taskItem.classList.remove('drag-over'));
                 taskItem.addEventListener('drop', (e) => {
                     e.preventDefault();
                     taskItem.classList.remove('drag-over');
@@ -1413,61 +1747,18 @@ Here’s the complete updated code:
             return filtered;
         }
 
-        // Handle task submission
-        function handleTaskSubmit(e) {
-            e.preventDefault();
-            const title = document.getElementById('taskTitle').value;
-            const description = document.getElementById('taskDescription').value;
-            const dueDate = document.getElementById('taskDueDate').value;
-            const priority = document.getElementById('taskPriority').value;
-            const category = document.getElementById('taskCategory').value;
-            const notes = document.getElementById('taskNotes').value;
-            const subtaskItems = subtaskList.querySelectorAll('.subtask-item');
-            const subtasks = Array.from(subtaskItems).map(item => ({
-                id: parseInt(item.querySelector('.delete-subtask').getAttribute('data-id')),
-                text: item.querySelector('label').textContent,
-                completed: item.querySelector('input').checked
-            }));
-            const taskId = taskForm.getAttribute('data-task-id');
+        // Format date
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
 
-            saveToHistory();
-            let message = taskId ? 'Task updated' : 'Task created';
-            if (taskId) {
-                const taskIndex = tasks.findIndex(t => t.id === parseInt(taskId));
-                if (taskIndex !== -1) {
-                    tasks[taskIndex] = {
-                        ...tasks[taskIndex],
-                        title,
-                        description,
-                        subtasks,
-                        dueDate,
-                        priority,
-                        category,
-                        notes
-                    };
-                }
-            } else {
-                tasks.push({
-                    id: tasks.length ? Math.max(...tasks.map(t => t.id)) + 1 : 1,
-                    title,
-                    description,
-                    subtasks,
-                    dueDate,
-                    priority,
-                    category,
-                    notes,
-                    status: 'pending',
-                    createdAt: new Date().toISOString(),
-                    createdBy: currentUser.id,
-                    timeSpent: 0
-                });
-            }
-
-            updateStats();
-            renderTasks();
-            hideTaskModal();
-            showChangeNotification(message);
-            checkDueDateNotifications();
+        // Format time
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
 
         // Toggle task status
@@ -1476,9 +1767,7 @@ Here’s the complete updated code:
             const task = tasks.find(t => t.id === taskId);
             if (task) {
                 task.status = isCompleted ? 'completed' : 'pending';
-                if (isCompleted) {
-                    addNotification(`Task "${task.title}" completed`);
-                }
+                if (isCompleted) addNotification(`Task "${task.title}" completed`);
                 updateStats();
                 renderTasks();
                 showChangeNotification(`Task "${task.title}" marked as ${isCompleted ? 'completed' : 'pending'}`);
@@ -1554,21 +1843,138 @@ Here’s the complete updated code:
 
         // Update timer display
         function updateTimerDisplay() {
-            const time = formatTime(timerSeconds);
-            timerDisplayWidget.textContent = time;
+            timerDisplayWidget.textContent = formatTime(timerSeconds);
         }
 
-        // Format time
-        function formatTime(seconds) {
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
-            const secs = seconds % 60;
-            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        // Show timer widget
+        function showTimerWidget() {
+            timerWidget.classList.add('show');
+        }
+
+        // Hide timer widget
+        function hideTimerWidget() {
+            pauseTimer();
+            timerWidget.classList.remove('show');
+        }
+
+        // Update batch actions
+        function updateBatchActions() {
+            if (selectedTasks.length > 0) {
+                selectedCount.textContent = `${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''} selected`;
+                batchActions.classList.add('show');
+            } else {
+                batchActions.classList.remove('show');
+            }
+        }
+
+        // Complete selected tasks
+        function completeSelectedTasks() {
+            saveToHistory();
+            selectedTasks.forEach(taskId => {
+                const task = tasks.find(t => t.id === taskId);
+                if (task) {
+                    task.status = 'completed';
+                    addNotification(`Task "${task.title}" completed`);
+                }
+            });
+            selectedTasks = [];
+            updateStats();
+            renderTasks();
+            showChangeNotification('Selected tasks marked as completed');
+        }
+
+        // Delete selected tasks
+        function deleteSelectedTasks() {
+            saveToHistory();
+            tasks = tasks.filter(t => !selectedTasks.includes(t.id));
+            selectedTasks = [];
+            updateStats();
+            renderTasks();
+            showChangeNotification('Selected tasks deleted');
+        }
+
+        // Clear selection
+        function clearSelection() {
+            selectedTasks = [];
+            updateBatchActions();
+            renderTasks();
+        }
+
+        // Delete task
+        function deleteTask(taskId) {
+            saveToHistory();
+            tasks = tasks.filter(t => t.id !== taskId);
+            selectedTasks = selectedTasks.filter(id => id !== taskId);
+            updateStats();
+            renderTasks();
+            showChangeNotification('Task deleted');
+        }
+
+        // Update stats
+        function updateStats() {
+            totalTasks.textContent = tasks.length;
+            completedTasks.textContent = tasks.filter(t => t.status === 'completed').length;
+            pendingTasks.textContent = tasks.filter(t => t.status !== 'completed').length;
+        }
+
+        // Render users
+        function renderUsers() {
+            usersGrid.innerHTML = '';
+            users.forEach(user => {
+                const userCard = document.createElement('div');
+                userCard.className = 'user-card';
+                userCard.innerHTML = `
+                    <img src="${user.profilePic}" alt="${user.firstName} ${user.lastName}">
+                    <div class="user-name">${user.firstName} ${user.lastName}</div>
+                    <div class="user-role">${user.role.charAt(0).toUpperCase() + user.role.slice(1)}</div>
+                `;
+                usersGrid.appendChild(userCard);
+            });
+        }
+
+        // Switch view
+        function switchView(view) {
+            listViewBtn.classList.toggle('active', view === 'list');
+            graphViewBtn.classList.toggle('active', view === 'graph');
+            tasksList.style.display = view === 'list' ? 'grid' : 'none';
+            tasksGraph.style.display = view === 'graph' ? 'grid' : 'none';
+        }
+
+        // Show export modal
+        function showExportModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Export Tasks</h2>
+                        <button class="close-modal"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="exportFormat">Format:</label>
+                        <select id="exportFormat">
+                            <option value="json">JSON</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" id="confirmExportBtn">Export</button>
+                        <button class="btn btn-outline" id="cancelExportBtn">Cancel</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            modal.querySelector('.close-modal').addEventListener('click', () => modal.remove());
+            modal.querySelector('#cancelExportBtn').addEventListener('click', () => modal.remove());
+            modal.querySelector('#confirmExportBtn').addEventListener('click', () => {
+                handleExport(modal.querySelector('#exportFormat').value);
+                modal.remove();
+            });
         }
 
         // Handle export
-        function handleExport() {
-            const format = exportFormat.value;
+        function handleExport(format) {
             let data, mimeType, extension;
             if (format === 'json') {
                 data = JSON.stringify(tasks, null, 2);
@@ -1596,7 +2002,6 @@ Here’s the complete updated code:
             a.download = `tasks.${extension}`;
             a.click();
             URL.revokeObjectURL(url);
-            hideExportModal();
             addNotification('Tasks exported successfully');
         }
 
@@ -1606,18 +2011,52 @@ Here’s the complete updated code:
             sortMenu.classList.toggle('show');
         }
 
-        // Update batch actions
-        function updateBatchActions() {
-            if (selectedTasks.length > 0) {
-                selectedCount.textContent = `${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''} selected`;
-                batchActions.classList.add('show');
-            } else {
-                batchActions.classList.remove('show');
+        // Save to history
+        function saveToHistory() {
+            actionHistory = actionHistory.slice(0, historyPointer + 1);
+            actionHistory.push(JSON.parse(JSON.stringify({ tasks, selectedTasks })));
+            historyPointer++;
+            undoBtn.disabled = false;
+            redoBtn.disabled = true;
+        }
+
+        // Undo action
+        function undoAction() {
+            if (historyPointer > 0) {
+                historyPointer--;
+                const state = actionHistory[historyPointer];
+                tasks = JSON.parse(JSON.stringify(state.tasks));
+                selectedTasks = JSON.parse(JSON.stringify(state.selectedTasks));
+                updateStats();
+                renderTasks();
+                redoBtn.disabled = false;
+                if (historyPointer === 0) undoBtn.disabled = true;
+                showChangeNotification('Action undone');
             }
         }
 
-        // Other functions (handleLogin, showRegisterModal, etc.) remain largely the same as the original
-        // ... (Include all other functions from the original code, with necessary updates for notifications and time tracking) ...
+        // Redo action
+        function redoAction() {
+            if (historyPointer < actionHistory.length - 1) {
+                historyPointer++;
+                const state = actionHistory[historyPointer];
+                tasks = JSON.parse(JSON.stringify(state.tasks));
+                selectedTasks = JSON.parse(JSON.stringify(state.selectedTasks));
+                updateStats();
+                renderTasks();
+                undoBtn.disabled = false;
+                if (historyPointer === actionHistory.length - 1) redoBtn.disabled = true;
+                showChangeNotification('Action redone');
+            }
+        }
+
+        // Handle logout
+        function handleLogout() {
+            localStorage.removeItem('todoAppUser');
+            currentUser = null;
+            loginPage.style.display = 'block';
+            dashboard.style.display = 'none';
+        }
 
         // Initialize the app
         init();
