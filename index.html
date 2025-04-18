@@ -2733,4 +2733,564 @@
         // Show categories modal
         function showCategoriesModal() {
             renderCategoriesList();
-            categories
+            categoriesModal.style.display = 'flex';
+        }
+
+        // Close categories modal
+        function closeCategoriesModal() {
+            categoriesModal.style.display = 'none';
+        }
+
+        // Render categories list
+        function renderCategoriesList() {
+            categoriesList.innerHTML = '';
+            
+            if (categories.length === 0) {
+                categoriesList.innerHTML = '<p>No categories yet</p>';
+                return;
+            }
+            
+            categories.forEach((category, index) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category-item';
+                categoryDiv.innerHTML = `
+                    <span>${category}</span>
+                    <button class="btn btn-danger delete-category" data-index="${index}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                categoriesList.appendChild(categoryDiv);
+                
+                // Add event listener to delete button
+                categoryDiv.querySelector('.delete-category').addEventListener('click', (e) => {
+                    deleteCategory(index);
+                });
+            });
+        }
+
+        // Add category
+        function addCategory() {
+            const categoryName = newCategory.value.trim();
+            
+            if (!categoryName) {
+                showNotification('Please enter a category name', 'error');
+                return;
+            }
+            
+            if (categories.includes(categoryName)) {
+                showNotification('Category already exists', 'error');
+                return;
+            }
+            
+            categories.push(categoryName);
+            saveCategories();
+            newCategory.value = '';
+            renderCategoriesList();
+            renderCategoriesFilter();
+            showNotification('Category added successfully!', 'success');
+        }
+
+        // Delete category
+        function deleteCategory(index) {
+            if (index < 0 || index >= categories.length) return;
+            
+            // Check if any tasks are using this category
+            const categoryInUse = tasks.some(task => 
+                task.category.toLowerCase() === categories[index].toLowerCase()
+            );
+            
+            if (categoryInUse) {
+                showNotification('Cannot delete category - it is in use by tasks', 'error');
+                return;
+            }
+            
+            categories.splice(index, 1);
+            saveCategories();
+            renderCategoriesList();
+            renderCategoriesFilter();
+            showNotification('Category deleted successfully!', 'success');
+        }
+
+        // Render categories filter
+        function renderCategoriesFilter() {
+            categoryFilter.innerHTML = '<option value="all">All</option>';
+            
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.toLowerCase();
+                option.textContent = category;
+                categoryFilter.appendChild(option);
+            });
+        }
+
+        // Update bulk actions
+        function updateBulkActions() {
+            selectedCount.textContent = selectedTasks.length;
+            
+            if (selectedTasks.length > 0) {
+                bulkActions.classList.add('show');
+            } else {
+                bulkActions.classList.remove('show');
+            }
+        }
+
+        // Complete selected tasks
+        function completeSelectedTasks() {
+            if (selectedTasks.length === 0) return;
+            
+            // Save action to history for undo
+            saveActionToHistory();
+            
+            tasks.forEach(task => {
+                if (selectedTasks.includes(task.id)) {
+                    task.completed = true;
+                }
+            });
+            
+            saveTasks();
+            renderTasks();
+            updateTaskSummary();
+            renderGraphs();
+            showNotification(`${selectedTasks.length} tasks marked as completed!`, 'success');
+            
+            selectedTasks = [];
+            updateBulkActions();
+        }
+
+        // Delete selected tasks
+        function deleteSelectedTasks() {
+            if (selectedTasks.length === 0) return;
+            
+            if (!confirm(`Are you sure you want to delete ${selectedTasks.length} task(s)?`)) return;
+            
+            // Save action to history for undo
+            saveActionToHistory();
+            
+            tasks = tasks.filter(task => !selectedTasks.includes(task.id));
+            saveTasks();
+            renderTasks();
+            updateTaskSummary();
+            renderGraphs();
+            showNotification(`${selectedTasks.length} tasks deleted!`, 'success');
+            
+            selectedTasks = [];
+            updateBulkActions();
+        }
+
+        // Filter tasks
+        function filterTasks() {
+            const status = statusFilter.value;
+            const category = categoryFilter.value;
+            const priority = priorityFilter.value;
+            const date = dateFilter.value;
+            const search = searchInput.value.toLowerCase();
+            
+            let filtered = [...tasks];
+            
+            // Filter by status
+            if (status === 'active') {
+                filtered = filtered.filter(task => !task.completed);
+            } else if (status === 'completed') {
+                filtered = filtered.filter(task => task.completed);
+            }
+            
+            // Filter by category
+            if (category !== 'all') {
+                filtered = filtered.filter(task => task.category === category);
+            }
+            
+            // Filter by priority
+            if (priority !== 'all') {
+                filtered = filtered.filter(task => task.priority === priority);
+            }
+            
+            // Filter by date
+            if (date !== 'all') {
+                const today = new Date().toISOString().split('T')[0];
+                const todayDate = new Date(today);
+                
+                if (date === 'today') {
+                    filtered = filtered.filter(task => task.dueDate === today);
+                } else if (date === 'week') {
+                    const nextWeek = new Date(todayDate);
+                    nextWeek.setDate(todayDate.getDate() + 7);
+                    const nextWeekStr = nextWeek.toISOString().split('T')[0];
+                    
+                    filtered = filtered.filter(task => task.dueDate >= today && task.dueDate <= nextWeekStr);
+                } else if (date === 'month') {
+                    const nextMonth = new Date(todayDate);
+                    nextMonth.setMonth(todayDate.getMonth() + 1);
+                    const nextMonthStr = nextMonth.toISOString().split('T')[0];
+                    
+                    filtered = filtered.filter(task => task.dueDate >= today && task.dueDate <= nextMonthStr);
+                } else if (date === 'custom') {
+                    // TODO: Implement custom date range picker
+                }
+            }
+            
+            // Filter by search
+            if (search) {
+                filtered = filtered.filter(task => 
+                    task.title.toLowerCase().includes(search) || 
+                    (task.description && task.description.toLowerCase().includes(search))
+                );
+            }
+            
+            renderTasks(filtered);
+        }
+
+        // Debounce function
+        function debounce(func, wait) {
+            let timeout;
+            return function() {
+                const context = this, args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    func.apply(context, args);
+                }, wait);
+            };
+        }
+
+        // Switch view between list and graph
+        function switchView(view) {
+            if (view === 'list') {
+                listViewBtn.classList.add('active');
+                graphViewBtn.classList.remove('active');
+                taskList.style.display = 'flex';
+                graphView.style.display = 'none';
+            } else if (view === 'graph') {
+                listViewBtn.classList.remove('active');
+                graphViewBtn.classList.add('active');
+                taskList.style.display = 'none';
+                graphView.style.display = 'grid';
+                renderGraphs();
+            }
+        }
+
+        // Render graphs
+        function renderGraphs() {
+            // Task completion over time (group by week)
+            const tasksByWeek = {};
+            const now = new Date();
+            const twelveWeeksAgo = new Date(now);
+            twelveWeeksAgo.setDate(now.getDate() - 84); // 12 weeks ago
+            
+            // Initialize weeks
+            for (let i = 0; i < 12; i++) {
+                const date = new Date(twelveWeeksAgo);
+                date.setDate(date.getDate() + (i * 7));
+                const weekKey = `Week ${i + 1}`;
+                tasksByWeek[weekKey] = { completed: 0, pending: 0 };
+            }
+            
+            // Count tasks by week
+            tasks.forEach(task => {
+                const taskDate = new Date(task.createdAt);
+                if (taskDate >= twelveWeeksAgo) {
+                    const weekDiff = Math.floor((taskDate - twelveWeeksAgo) / (7 * 24 * 60 * 60 * 1000));
+                    const weekKey = `Week ${Math.min(weekDiff + 1, 12)}`;
+                    
+                    if (task.completed) {
+                        tasksByWeek[weekKey].completed++;
+                    } else {
+                        tasksByWeek[weekKey].pending++;
+                    }
+                }
+            });
+            
+            // Prepare data for Chart.js
+            const weeks = Object.keys(tasksByWeek);
+            const completedData = weeks.map(week => tasksByWeek[week].completed);
+            const pendingData = weeks.map(week => tasksByWeek[week].pending);
+            
+            // Line chart
+            const tasksCtx = document.getElementById('tasksChart').getContext('2d');
+            
+            // Destroy previous chart if it exists
+            if (window.tasksChart) {
+                window.tasksChart.destroy();
+            }
+            
+            window.tasksChart = new Chart(tasksCtx, {
+                type: 'bar',
+                data: {
+                    labels: weeks,
+                    datasets: [
+                        {
+                            label: 'Completed Tasks',
+                            data: completedData,
+                            backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                            borderColor: 'rgba(40, 167, 69, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Pending Tasks',
+                            data: pendingData,
+                            backgroundColor: 'rgba(255, 193, 7, 0.7)',
+                            borderColor: 'rgba(255, 193, 7, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Tasks'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Weeks'
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1000
+                    }
+                }
+            });
+            
+            // Pie chart (completed vs pending)
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            const completedCount = tasks.filter(task => task.completed).length;
+            const pendingCount = tasks.length - completedCount;
+            
+            // Destroy previous chart if it exists
+            if (window.pieChart) {
+                window.pieChart.destroy();
+            }
+            
+            window.pieChart = new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Completed', 'Pending'],
+                    datasets: [{
+                        data: [completedCount, pendingCount],
+                        backgroundColor: [
+                            'rgba(40, 167, 69, 0.7)',
+                            'rgba(255, 193, 7, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(40, 167, 69, 1)',
+                            'rgba(255, 193, 7, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Task Completion'
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+        }
+
+        // Toggle users view
+        function toggleUsersView() {
+            if (usersView.style.display === 'none') {
+                usersView.style.display = 'block';
+                renderUsers();
+            } else {
+                usersView.style.display = 'none';
+            }
+        }
+
+        // Render users
+        function renderUsers() {
+            usersGrid.innerHTML = '';
+            
+            if (users.length === 0) {
+                usersGrid.innerHTML = '<p>No users found</p>';
+                return;
+            }
+            
+            // Add some random users from randomuser.me if we don't have enough
+            if (users.length < 10) {
+                fetch('https://randomuser.me/api/?results=10')
+                    .then(response => response.json())
+                    .then(data => {
+                        data.results.forEach((user, index) => {
+                            if (index >= 10 - users.length) return;
+                            
+                            const roles = ['Manager', 'Staff', 'Customer', 'Admin'];
+                            const randomRole = roles[Math.floor(Math.random() * roles.length)];
+                            
+                            users.push({
+                                id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
+                                firstName: user.name.first,
+                                lastName: user.name.last,
+                                email: user.email,
+                                password: '123456',
+                                birthdate: new Date(user.dob.date).toISOString().split('T')[0],
+                                nationality: user.location.country,
+                                role: randomRole,
+                                joinDate: new Date().toISOString(),
+                                profileImage: user.picture.large
+                            });
+                        });
+                        
+                        saveUsers();
+                        renderUsers();
+                    })
+                    .catch(error => {
+                        console.error('Error loading random users:', error);
+                        renderExistingUsers();
+                    });
+            } else {
+                renderExistingUsers();
+            }
+        }
+
+        // Render existing users
+        function renderExistingUsers() {
+            users.forEach(user => {
+                const userCard = document.createElement('div');
+                userCard.className = 'user-card';
+                
+                const roleClass = `role-${user.role.toLowerCase()}`;
+                
+                userCard.innerHTML = `
+                    <div class="user-header">
+                        <img src="${user.profileImage}" alt="${user.firstName} ${user.lastName}" class="user-avatar">
+                        <div>
+                            <h3 class="user-name">${user.firstName} ${user.lastName}</h3>
+                            <p class="user-email">${user.email}</p>
+                            <span class="user-role ${roleClass}">${user.role}</span>
+                        </div>
+                    </div>
+                `;
+                
+                usersGrid.appendChild(userCard);
+            });
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            notificationMessage.textContent = message;
+            notificationToast.className = `notification-toast notification-${type}`;
+            notificationToast.classList.add('show');
+            
+            setTimeout(() => {
+                notificationToast.classList.remove('show');
+            }, 5000);
+            
+            // Update notification badge if it's an important notification
+            if (type === 'error' || type === 'warning') {
+                notificationCount++;
+                notificationBadge.textContent = notificationCount;
+            }
+        }
+
+        // Check for due date notifications
+        function checkDueDateNotifications() {
+            const today = new Date();
+            const twoDaysLater = new Date(today);
+            twoDaysLater.setDate(today.getDate() + 2);
+            
+            tasks.forEach(task => {
+                if (!task.completed) {
+                    const dueDate = new Date(task.dueDate);
+                    
+                    if (dueDate < today) {
+                        // Task is expired
+                        showNotification(`Task "${task.title}" is overdue!`, 'error');
+                    } else if (dueDate <= twoDaysLater) {
+                        // Task is due within 2 days
+                        showNotification(`Task "${task.title}" is due soon!`, 'warning');
+                    }
+                }
+            });
+        }
+
+        // Save action to history for undo
+        function saveActionToHistory() {
+            // Only keep the last 10 actions
+            if (actionHistory.length >= 10) {
+                actionHistory.shift();
+            }
+            
+            // Save current state
+            actionHistory.push({
+                tasks: JSON.parse(JSON.stringify(tasks)),
+                pointer: historyPointer
+            });
+            
+            historyPointer = actionHistory.length - 1;
+        }
+
+        // Undo last action
+        function undoAction() {
+            if (historyPointer < 0) return;
+            
+            const previousState = actionHistory[historyPointer];
+            tasks = JSON.parse(JSON.stringify(previousState.tasks));
+            historyPointer--;
+            
+            saveTasks();
+            renderTasks();
+            updateTaskSummary();
+            renderGraphs();
+            
+            showNotification('Undo successful', 'success');
+        }
+
+        // Redo last action
+        function redoAction() {
+            if (historyPointer >= actionHistory.length - 1) return;
+            
+            historyPointer++;
+            const nextState = actionHistory[historyPointer];
+            tasks = JSON.parse(JSON.stringify(nextState.tasks));
+            
+            saveTasks();
+            renderTasks();
+            updateTaskSummary();
+            renderGraphs();
+            
+            showNotification('Redo successful', 'success');
+        }
+
+        // Close all modals
+        function closeAllModals() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = 'none';
+            });
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+Z for undo
+            if (e.ctrlKey && e.key === 'z') {
+                undoAction();
+            }
+            
+            // Ctrl+Y for redo
+            if (e.ctrlKey && e.key === 'y') {
+                redoAction();
+            }
+            
+            // Escape to close modals
+            if (e.key === 'Escape') {
+                closeAllModals();
+                profileDropdown.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
