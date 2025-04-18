@@ -3888,4 +3888,824 @@
                 hidePopup(profilePopup);
             });
 
-            // Edit profile
+            // Edit profile button
+            editProfileBtn.addEventListener('click', function() {
+                hidePopup(profilePopup);
+                
+                // Fill edit form with current user data
+                document.getElementById('editFirstName').value = currentUser.firstName;
+                document.getElementById('editLastName').value = currentUser.lastName;
+                document.getElementById('editEmail').value = currentUser.email;
+                document.getElementById('editPhone').value = currentUser.phone || '';
+                document.getElementById('editNationality').value = currentUser.nationality || '';
+                document.getElementById('editRole').value = currentUser.role;
+                avatarPreview.src = currentUser.photo;
+                
+                showPopup(editProfilePopup);
+            });
+
+            // Close edit profile popup
+            closeEditProfile.addEventListener('click', function() {
+                hidePopup(editProfilePopup);
+            });
+
+            cancelEditProfile.addEventListener('click', function() {
+                hidePopup(editProfilePopup);
+            });
+
+            // Profile photo upload
+            profilePhoto.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        avatarPreview.src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Edit profile form
+            editProfileForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Update current user
+                currentUser.firstName = document.getElementById('editFirstName').value;
+                currentUser.lastName = document.getElementById('editLastName').value;
+                currentUser.email = document.getElementById('editEmail').value;
+                currentUser.phone = document.getElementById('editPhone').value;
+                currentUser.nationality = document.getElementById('editNationality').value;
+                currentUser.role = document.getElementById('editRole').value;
+                
+                // Update photo if changed
+                if (profilePhoto.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        currentUser.photo = event.target.result;
+                        profilePic.src = event.target.result;
+                        saveToLocalStorage();
+                    };
+                    reader.readAsDataURL(profilePhoto.files[0]);
+                } else {
+                    saveToLocalStorage();
+                }
+                
+                hidePopup(editProfilePopup);
+                showToast('Profile updated successfully', 'success');
+            });
+
+            // Switch mode
+            switchMode.addEventListener('click', function() {
+                modeToggle.click();
+            });
+
+            modeToggle.addEventListener('change', function() {
+                isDarkMode = !this.checked;
+                document.body.classList.toggle('light-mode', !isDarkMode);
+                saveToLocalStorage();
+            });
+
+            // Users button
+            usersBtn.addEventListener('click', function() {
+                loadRandomUsers();
+                showPopup(usersPopup);
+            });
+
+            // Close users popup
+            closeUsers.addEventListener('click', function() {
+                hidePopup(usersPopup);
+            });
+
+            // Timer controls
+            playTimer.addEventListener('click', function() {
+                if (!timerInterval) {
+                    timerInterval = setInterval(function() {
+                        timerSeconds++;
+                        const hours = Math.floor(timerSeconds / 3600);
+                        const minutes = Math.floor((timerSeconds % 3600) / 60);
+                        const seconds = timerSeconds % 60;
+                        taskTimer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    }, 1000);
+                }
+            });
+
+            pauseTimer.addEventListener('click', function() {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+            });
+
+            // Add task button
+            addTaskBtn.addEventListener('click', function() {
+                // Clear form
+                taskForm.reset();
+                subtasksContainer.innerHTML = '';
+                
+                // Set default due date to tomorrow
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                document.getElementById('taskDueDate').value = tomorrow.toISOString().split('T')[0];
+                
+                showPopup(addTaskPopup);
+            });
+
+            // Close add task popup
+            closeAddTask.addEventListener('click', function() {
+                hidePopup(addTaskPopup);
+            });
+
+            cancelTask.addEventListener('click', function() {
+                hidePopup(addTaskPopup);
+            });
+
+            // Add subtask button
+            addSubtask.addEventListener('click', function() {
+                addSubtaskToContainer(subtasksContainer);
+            });
+
+            // Add edit subtask button
+            addEditSubtask.addEventListener('click', function() {
+                addSubtaskToContainer(editSubtasksContainer);
+            });
+
+            // Task form submission
+            taskForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const title = document.getElementById('taskTitle').value;
+                const description = document.getElementById('taskDescription').value;
+                const dueDate = document.getElementById('taskDueDate').value;
+                const priority = document.getElementById('taskPriority').value;
+                const category = document.getElementById('taskCategory').value;
+                const notes = document.getElementById('taskNotes').value;
+                
+                // Get subtasks
+                const subtaskInputs = subtasksContainer.querySelectorAll('.subtask-input');
+                const subtasks = Array.from(subtaskInputs).map(input => ({
+                    text: input.value,
+                    completed: false
+                }));
+                
+                // Create new task
+                const newTask = {
+                    id: Date.now().toString(),
+                    title,
+                    description,
+                    dueDate,
+                    priority,
+                    category,
+                    status: 'active',
+                    notes,
+                    subtasks: subtasks.filter(st => st.text.trim() !== ''),
+                    createdAt: new Date().toISOString()
+                };
+                
+                addTask(newTask);
+                hidePopup(addTaskPopup);
+            });
+
+            // Close view task popup
+            closeViewTask.addEventListener('click', function() {
+                hidePopup(viewTaskPopup);
+            });
+
+            closeViewTaskBtn.addEventListener('click', function() {
+                hidePopup(viewTaskPopup);
+            });
+
+            // Close edit task popup
+            closeEditTask.addEventListener('click', function() {
+                hidePopup(editTaskPopup);
+            });
+
+            cancelEditTask.addEventListener('click', function() {
+                hidePopup(editTaskPopup);
+            });
+
+            // Edit task form submission
+            editTaskForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const id = document.getElementById('editTaskId').value;
+                const title = document.getElementById('editTaskTitle').value;
+                const description = document.getElementById('editTaskDescription').value;
+                const dueDate = document.getElementById('editTaskDueDate').value;
+                const priority = document.getElementById('editTaskPriority').value;
+                const category = document.getElementById('editTaskCategory').value;
+                const notes = document.getElementById('editTaskNotes').value;
+                const status = document.getElementById('editTaskStatus').value;
+                
+                // Get subtasks
+                const subtaskInputs = editSubtasksContainer.querySelectorAll('.subtask-input');
+                const subtasks = Array.from(subtaskInputs).map(input => ({
+                    text: input.value,
+                    completed: input.style.textDecoration === 'line-through'
+                }));
+                
+                // Find task to update
+                const taskIndex = tasks.findIndex(t => t.id === id);
+                if (taskIndex !== -1) {
+                    const updatedTask = {
+                        ...tasks[taskIndex],
+                        title,
+                        description,
+                        dueDate,
+                        priority,
+                        category,
+                        status,
+                        notes,
+                        subtasks: subtasks.filter(st => st.text.trim() !== '')
+                    };
+                    
+                    // If task is being completed now, set completedAt
+                    if (status === 'completed' && tasks[taskIndex].status !== 'completed') {
+                        updatedTask.completedAt = new Date().toISOString();
+                    }
+                    
+                    updateTask(updatedTask);
+                    hidePopup(editTaskPopup);
+                }
+            });
+
+            // Filter events
+            statusFilter.addEventListener('change', filterTasks);
+            categoryFilter.addEventListener('change', filterTasks);
+            priorityFilter.addEventListener('change', filterTasks);
+            dueDateFilter.addEventListener('change', function() {
+                customDateRange.style.display = this.value === 'custom' ? 'block' : 'none';
+                filterTasks();
+            });
+            dateRangePicker.addEventListener('change', filterTasks);
+            taskSearch.addEventListener('input', debounce(filterTasks, 300));
+
+            // Export button
+            exportBtn.addEventListener('click', function() {
+                showPopup(exportPopup);
+            });
+
+            // Close export popup
+            closeExport.addEventListener('click', function() {
+                hidePopup(exportPopup);
+            });
+
+            cancelExport.addEventListener('click', function() {
+                hidePopup(exportPopup);
+            });
+
+            // Export options
+            exportPDF.addEventListener('click', function() {
+                // Simple PDF export using jsPDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                doc.text('Task List', 10, 10);
+                
+                let y = 20;
+                tasks.forEach((task, index) => {
+                    doc.text(`${index + 1}. ${task.title} (${task.status})`, 10, y);
+                    doc.text(`Due: ${new Date(task.dueDate).toLocaleDateString()} | Priority: ${task.priority}`, 10, y + 5);
+                    y += 15;
+                    
+                    if (y > 280) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                });
+                
+                doc.save('tasks.pdf');
+                hidePopup(exportPopup);
+                showToast('Tasks exported to PDF', 'success');
+            });
+
+            exportDOCX.addEventListener('click', function() {
+                // Simple DOCX export using docx
+                const { Document, Paragraph, TextRun, Packer } = window.docx;
+                
+                const doc = new Document({
+                    sections: [{
+                        properties: {},
+                        children: [
+                            new Paragraph({
+                                children: [
+                                    new TextRun({
+                                        text: "Task List",
+                                        bold: true,
+                                        size: 28
+                                    })
+                                ]
+                            }),
+                            ...tasks.map(task => new Paragraph({
+                                children: [
+                                    new TextRun({
+                                        text: `${task.title} (${task.status})`,
+                                        bold: true
+                                    }),
+                                    new TextRun({
+                                        text: `\nDue: ${new Date(task.dueDate).toLocaleDateString()} | Priority: ${task.priority}`,
+                                        break: 1
+                                    }),
+                                    new TextRun({
+                                        text: task.description ? `\n${task.description}` : '',
+                                        break: 1
+                                    })
+                                ]
+                            }))
+                        ]
+                    }]
+                });
+                
+                Packer.toBlob(doc).then(blob => {
+                    saveAs(blob, "tasks.docx");
+                    hidePopup(exportPopup);
+                    showToast('Tasks exported to DOCX', 'success');
+                });
+            });
+
+            exportJSON.addEventListener('click', function() {
+                const dataStr = JSON.stringify(tasks, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = 'tasks.json';
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                hidePopup(exportPopup);
+                showToast('Tasks exported to JSON', 'success');
+            });
+
+            exportExcel.addEventListener('click', function() {
+                // Convert tasks to worksheet
+                const ws = XLSX.utils.json_to_sheet(tasks.map(task => ({
+                    Title: task.title,
+                    Description: task.description,
+                    'Due Date': new Date(task.dueDate).toLocaleDateString(),
+                    Priority: task.priority,
+                    Category: task.category,
+                    Status: task.status,
+                    'Created At': new Date(task.createdAt).toLocaleDateString()
+                })));
+                
+                // Create workbook
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Tasks");
+                
+                // Export to file
+                XLSX.writeFile(wb, "tasks.xlsx");
+                
+                hidePopup(exportPopup);
+                showToast('Tasks exported to Excel', 'success');
+            });
+
+            // Import button
+            importBtn.addEventListener('click', function() {
+                // Reset import sections
+                jsonImportSection.style.display = 'block';
+                urlImportSection.style.display = 'none';
+                importURLInput.value = '';
+                jsonFileInput.value = '';
+                
+                showPopup(importPopup);
+            });
+
+            // Close import popup
+            closeImport.addEventListener('click', function() {
+                hidePopup(importPopup);
+            });
+
+            cancelImportBtn.addEventListener('click', function() {
+                hidePopup(importPopup);
+            });
+
+            // Import options
+            importJSON.addEventListener('click', function() {
+                jsonImportSection.style.display = 'block';
+                urlImportSection.style.display = 'none';
+            });
+
+            importURL.addEventListener('click', function() {
+                jsonImportSection.style.display = 'none';
+                urlImportSection.style.display = 'block';
+            });
+
+            // JSON file drop area
+            jsonFileDrop.addEventListener('click', function() {
+                jsonFileInput.click();
+            });
+
+            jsonFileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        try {
+                            const importedTasks = JSON.parse(event.target.result);
+                            if (Array.isArray(importedTasks)) {
+                                // Add to history before making changes
+                                addToHistory();
+                                
+                                // Merge with existing tasks
+                                tasks = [...importedTasks, ...tasks];
+                                saveToLocalStorage();
+                                updateTaskCounters();
+                                renderTaskList();
+                                updateCharts();
+                                updateInsights();
+                                
+                                hidePopup(importPopup);
+                                showToast(`${importedTasks.length} tasks imported`, 'success');
+                            } else {
+                                showToast('Invalid tasks format', 'error');
+                            }
+                        } catch (error) {
+                            showToast('Error parsing JSON file', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            });
+
+            // Drag and drop for JSON file
+            jsonFileDrop.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.backgroundColor = 'rgba(0, 0, 139, 0.2)';
+            });
+
+            jsonFileDrop.addEventListener('dragleave', function() {
+                this.style.backgroundColor = '';
+            });
+
+            jsonFileDrop.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.backgroundColor = '';
+                
+                const file = e.dataTransfer.files[0];
+                if (file && file.name.endsWith('.json')) {
+                    jsonFileInput.files = e.dataTransfer.files;
+                    const event = new Event('change');
+                    jsonFileInput.dispatchEvent(event);
+                } else {
+                    showToast('Please drop a JSON file', 'error');
+                }
+            });
+
+            // Confirm import
+            confirmImport.addEventListener('click', function() {
+                if (urlImportSection.style.display !== 'none') {
+                    const url = importURLInput.value.trim();
+                    if (url) {
+                        fetch(url)
+                            .then(response => response.json())
+                            .then(importedTasks => {
+                                if (Array.isArray(importedTasks)) {
+                                    // Add to history before making changes
+                                    addToHistory();
+                                    
+                                    // Merge with existing tasks
+                                    tasks = [...importedTasks, ...tasks];
+                                    saveToLocalStorage();
+                                    updateTaskCounters();
+                                    renderTaskList();
+                                    updateCharts();
+                                    updateInsights();
+                                    
+                                    hidePopup(importPopup);
+                                    showToast(`${importedTasks.length} tasks imported`, 'success');
+                                } else {
+                                    showToast('Invalid tasks format from URL', 'error');
+                                }
+                            })
+                            .catch(error => {
+                                showToast('Error fetching tasks from URL', 'error');
+                            });
+                    } else {
+                        showToast('Please enter a valid URL', 'error');
+                    }
+                }
+            });
+
+            // Manage categories button
+            manageCategoriesBtn.addEventListener('click', function() {
+                // Populate categories list
+                categoriesList.innerHTML = '';
+                categories.forEach((category, index) => {
+                    const categoryItem = document.createElement('div');
+                    categoryItem.className = 'category-item';
+                    categoryItem.innerHTML = `
+                        <div class="category-name">
+                            <div class="category-color" style="background-color: ${getCategoryColor(category)}"></div>
+                            <span>${category}</span>
+                        </div>
+                        <div class="category-actions">
+                            <button class="task-btn edit" data-index="${index}" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="task-btn delete" data-index="${index}" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    categoriesList.appendChild(categoryItem);
+                    
+                    // Add event listeners to edit and delete buttons
+                    categoryItem.querySelector('.edit').addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        newCategoryName.value = categories[index];
+                        categories.splice(index, 1);
+                        categoryItem.remove();
+                    });
+                    
+                    categoryItem.querySelector('.delete').addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        categories.splice(index, 1);
+                        categoryItem.remove();
+                    });
+                });
+                
+                showPopup(categoriesPopup);
+            });
+
+            // Close categories popup
+            closeCategories.addEventListener('click', function() {
+                hidePopup(categoriesPopup);
+            });
+
+            cancelCategories.addEventListener('click', function() {
+                hidePopup(categoriesPopup);
+            });
+
+            // Add category button
+            addCategoryBtn.addEventListener('click', function() {
+                const name = newCategoryName.value.trim();
+                if (name && !categories.includes(name)) {
+                    categories.push(name);
+                    
+                    const categoryItem = document.createElement('div');
+                    categoryItem.className = 'category-item';
+                    categoryItem.innerHTML = `
+                        <div class="category-name">
+                            <div class="category-color" style="background-color: ${getCategoryColor(name)}"></div>
+                            <span>${name}</span>
+                        </div>
+                        <div class="category-actions">
+                            <button class="task-btn edit" data-index="${categories.length - 1}" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="task-btn delete" data-index="${categories.length - 1}" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    categoriesList.appendChild(categoryItem);
+                    
+                    // Add event listeners to edit and delete buttons
+                    categoryItem.querySelector('.edit').addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        newCategoryName.value = categories[index];
+                        categories.splice(index, 1);
+                        categoryItem.remove();
+                    });
+                    
+                    categoryItem.querySelector('.delete').addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        categories.splice(index, 1);
+                        categoryItem.remove();
+                    });
+                    
+                    newCategoryName.value = '';
+                }
+            });
+
+            // Save categories
+            saveCategories.addEventListener('click', function() {
+                saveToLocalStorage();
+                updateCategoryFilters();
+                hidePopup(categoriesPopup);
+                showToast('Categories saved', 'success');
+            });
+
+            // View switcher
+            listViewBtn.addEventListener('click', function() {
+                listViewBtn.classList.add('active');
+                graphViewBtn.classList.remove('active');
+                taskList.style.display = 'grid';
+                graphView.style.display = 'none';
+            });
+
+            graphViewBtn.addEventListener('click', function() {
+                graphViewBtn.classList.add('active');
+                listViewBtn.classList.remove('active');
+                taskList.style.display = 'none';
+                graphView.style.display = 'block';
+                updateCharts();
+            });
+
+            // Batch actions
+            document.addEventListener('change', function(e) {
+                if (e.target.classList.contains('task-checkbox')) {
+                    const selected = document.querySelectorAll('.task-checkbox:checked');
+                    selectedCount.textContent = selected.length;
+                    
+                    if (selected.length > 0) {
+                        batchActions.classList.add('active');
+                    } else {
+                        batchActions.classList.remove('active');
+                    }
+                }
+            });
+
+            // Batch delete
+            batchDelete.addEventListener('click', function() {
+                const selected = document.querySelectorAll('.task-checkbox:checked');
+                if (selected.length === 0) return;
+                
+                // Add to history before making changes
+                addToHistory();
+                
+                const selectedIds = Array.from(selected).map(checkbox => checkbox.getAttribute('data-id'));
+                tasks = tasks.filter(task => !selectedIds.includes(task.id));
+                
+                saveToLocalStorage();
+                updateTaskCounters();
+                renderTaskList();
+                updateCharts();
+                updateInsights();
+                
+                batchActions.classList.remove('active');
+                showToast(`${selectedIds.length} tasks deleted`, 'success');
+                
+                // Add to notifications
+                addNotification('Tasks Deleted', `You deleted ${selectedIds.length} tasks`);
+            });
+
+            // Batch complete
+            batchComplete.addEventListener('click', function() {
+                const selected = document.querySelectorAll('.task-checkbox:checked');
+                if (selected.length === 0) return;
+                
+                // Add to history before making changes
+                addToHistory();
+                
+                const selectedIds = Array.from(selected).map(checkbox => checkbox.getAttribute('data-id'));
+                const now = new Date().toISOString();
+                
+                tasks = tasks.map(task => {
+                    if (selectedIds.includes(task.id)) {
+                        return {
+                            ...task,
+                            status: 'completed',
+                            completedAt: now
+                        };
+                    }
+                    return task;
+                });
+                
+                saveToLocalStorage();
+                updateTaskCounters();
+                renderTaskList();
+                updateCharts();
+                updateInsights();
+                
+                batchActions.classList.remove('active');
+                showToast(`${selectedIds.length} tasks marked as complete`, 'success');
+                
+                // Add to notifications
+                addNotification('Tasks Completed', `You completed ${selectedIds.length} tasks`);
+            });
+
+            // Clear selection
+            clearSelection.addEventListener('click', function() {
+                document.querySelectorAll('.task-checkbox:checked').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                batchActions.classList.remove('active');
+            });
+
+            // Notifications button
+            notificationsBtn.addEventListener('click', function() {
+                notificationsPopup.classList.toggle('active');
+            });
+
+            // Close notifications
+            closeNotifications.addEventListener('click', function() {
+                notificationsPopup.classList.remove('active');
+            });
+
+            // Mark all as read
+            markAllRead.addEventListener('click', function() {
+                notifications.forEach(notification => {
+                    notification.read = true;
+                });
+                updateNotificationBadge();
+                
+                // Update notification items
+                document.querySelectorAll('.notification-item').forEach(item => {
+                    item.classList.remove('unread');
+                });
+                
+                showToast('All notifications marked as read', 'success');
+            });
+
+            // Notification item click
+            document.querySelectorAll('.notification-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const notificationId = parseInt(this.getAttribute('data-id') || '0');
+                    const notification = notifications.find(n => n.id === notificationId);
+                    
+                    if (notification && !notification.read) {
+                        notification.read = true;
+                        this.classList.remove('unread');
+                        updateNotificationBadge();
+                    }
+                });
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Undo: Ctrl+Z
+                if (e.ctrlKey && e.key === 'z') {
+                    e.preventDefault();
+                    undoAction();
+                }
+                
+                // Redo: Ctrl+Y
+                if (e.ctrlKey && e.key === 'y') {
+                    e.preventDefault();
+                    redoAction();
+                }
+                
+                // Add task: Ctrl+N
+                if (e.ctrlKey && e.key === 'n') {
+                    e.preventDefault();
+                    addTaskBtn.click();
+                }
+                
+                // Search: Ctrl+F
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    taskSearch.focus();
+                }
+            });
+
+            // Helper functions
+            function debounce(func, wait) {
+                let timeout;
+                return function() {
+                    const context = this, args = arguments;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(context, args), wait);
+                };
+            }
+
+            function getCategoryColor(category) {
+                // Simple hash function to generate consistent colors for categories
+                let hash = 0;
+                for (let i = 0; i < category.length; i++) {
+                    hash = category.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                
+                const h = hash % 360;
+                return `hsl(${h}, 70%, 60%)`;
+            }
+
+            // Initialize the app
+            function init() {
+                // Load data from local storage
+                loadFromLocalStorage();
+                
+                // If no users, create sample users
+                if (users.length === 0) {
+                    users = generateSampleUsers();
+                }
+                
+                // If no tasks, create sample tasks
+                if (tasks.length === 0) {
+                    tasks = generateSampleTasks();
+                    saveToLocalStorage();
+                }
+                
+                // Initialize task history
+                taskHistory = [JSON.stringify(tasks)];
+                historyPointer = 0;
+                
+                // Update UI
+                updateTaskCounters();
+                updateCategoryFilters();
+                renderTaskList();
+                updateCharts();
+                updateInsights();
+                updateNotificationBadge();
+                
+                // Set default view
+                listViewBtn.click();
+            }
+
+            // Start the app
+            init();
+        });
+    </script>
+</body>
+</html>
