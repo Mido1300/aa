@@ -1952,4 +1952,830 @@
                 </button>
                 <div class="timer-container">
                     <div class="timer" id="taskTimer">00:00:00</div>
-                    <div class="
+                    <div class="timer-controls">
+                        <button class="timer-btn" id="playTimer"><i class="fas fa-play"></i></button>
+                        <button class="timer-btn" id="pauseTimer"><i class="fas fa-pause"></i></button>
+                    </div>
+                </div>
+                <div class="profile-container">
+                    <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Profile" class="profile-pic" id="profilePic">
+                    <span class="notification-badge">3</span>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="dropdown-item" id="viewProfile"><i class="fas fa-user"></i> View Profile</div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div>
+                        <div class="dropdown-item" id="switchMode"><i class="fas fa-moon"></i> Switch Mode</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Tasks Summary -->
+            <div class="tasks-summary">
+                <div class="summary-card">
+                    <h3>Total Tasks</h3>
+                    <div class="count" id="totalTasks">0</div>
+                </div>
+                <div class="summary-card completed">
+                    <h3>Completed Tasks</h3>
+                    <div class="count" id="completedTasks">0</div>
+                </div>
+                <div class="summary-card pending">
+                    <h3>Pending Tasks</h3>
+                    <div class="count" id="pendingTasks">0</div>
+                </div>
+            </div>
+
+            <!-- Tasks Section -->
+            <div class="tasks-section">
+                <div class="section-header">
+                    <h2 class="section-title">Tasks</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-success" id="addTaskBtn"><i class="fas fa-plus"></i> Add Task</button>
+                        <button class="btn btn-primary" id="exportBtn"><i class="fas fa-file-export"></i> Export</button>
+                        <button class="btn btn-primary" id="importBtn"><i class="fas fa-file-import"></i> Import</button>
+                        <button class="btn btn-warning" id="manageCategoriesBtn"><i class="fas fa-tags"></i> Categories</button>
+                    </div>
+                </div>
+
+                <!-- Task Filters -->
+                <div class="task-filters">
+                    <div class="filter-group">
+                        <span class="filter-label">Status:</span>
+                        <select class="filter-select" id="statusFilter">
+                            <option value="all">All</option>
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <span class="filter-label">Category:</span>
+                        <select class="filter-select" id="categoryFilter">
+                            <option value="all">All</option>
+                            <!-- Categories will be loaded via JS -->
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <span class="filter-label">Priority:</span>
+                        <select class="filter-select" id="priorityFilter">
+                            <option value="all">All</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <span class="filter-label">Due Date:</span>
+                        <select class="filter-select" id="dueDateFilter">
+                            <option value="all">All</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" id="customDateRange" style="display: none;">
+                        <input type="text" class="filter-select" id="dateRangePicker" placeholder="Select date range">
+                    </div>
+                    <div class="search-bar">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" id="taskSearch" placeholder="Search tasks...">
+                    </div>
+                </div>
+
+                <!-- View Switcher -->
+                <div class="view-switcher">
+                    <button class="switch-btn active" id="listViewBtn">List View</button>
+                    <button class="switch-btn" id="graphViewBtn">Graph View</button>
+                </div>
+
+                <!-- List View -->
+                <div class="task-list" id="taskList">
+                    <!-- Tasks will be loaded via JS -->
+                </div>
+
+                <!-- Graph View -->
+                <div class="graph-view" id="graphView">
+                    <div class="graphs-container">
+                        <div class="graph-card">
+                            <h3 class="graph-title">Tasks Completion Over Time</h3>
+                            <div class="graph-container">
+                                <canvas id="tasksChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="graph-card">
+                            <h3 class="graph-title">Tasks Status Distribution</h3>
+                            <div class="graph-container">
+                                <canvas id="pieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Insights Section -->
+            <div class="insights-section">
+                <div class="section-header">
+                    <h2 class="section-title">Insights</h2>
+                </div>
+                <div class="insights-grid">
+                    <div class="insight-card">
+                        <div class="insight-header">
+                            <div class="insight-icon">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="insight-title">Productivity Rate</div>
+                        </div>
+                        <div class="insight-value" id="productivityRate">0%</div>
+                        <div class="insight-description">Percentage of tasks completed on time</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-header">
+                            <div class="insight-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="insight-title">Average Completion Time</div>
+                        </div>
+                        <div class="insight-value" id="avgCompletionTime">0h 0m</div>
+                        <div class="insight-description">Average time taken to complete tasks</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-header">
+                            <div class="insight-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="insight-title">Overdue Tasks</div>
+                        </div>
+                        <div class="insight-value" id="overdueTasks">0</div>
+                        <div class="insight-description">Tasks past their due date</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-header">
+                            <div class="insight-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="insight-title">Active Users</div>
+                        </div>
+                        <div class="insight-value" id="activeUsers">0</div>
+                        <div class="insight-description">Number of registered users</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Task Popup -->
+    <div class="popup-overlay" id="addTaskPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>Add New Task</h3>
+                <button class="close-popup" id="closeAddTask">&times;</button>
+            </div>
+            <form class="task-form" id="taskForm">
+                <div class="form-group">
+                    <label for="taskTitle">Title</label>
+                    <input type="text" id="taskTitle" placeholder="Enter task title" required>
+                </div>
+                <div class="form-group">
+                    <label for="taskDescription">Description</label>
+                    <textarea id="taskDescription" placeholder="Enter task description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Sub-Tasks</label>
+                    <div class="subtasks-container" id="subtasksContainer">
+                        <!-- Subtasks will be added here -->
+                    </div>
+                    <button type="button" class="add-subtask" id="addSubtask">
+                        <i class="fas fa-plus"></i> Add Sub-Task
+                    </button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="taskDueDate">Due Date</label>
+                        <input type="text" id="taskDueDate" placeholder="Select due date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskPriority">Priority</label>
+                        <select id="taskPriority" required>
+                            <option value="high">High</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="taskCategory">Category</label>
+                        <select id="taskCategory" required>
+                            <!-- Categories will be loaded via JS -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskNotes">Notes</label>
+                        <input type="text" id="taskNotes" placeholder="Any additional notes">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelTask">Cancel</button>
+                    <button type="submit" class="btn btn-success">Create Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Task Popup -->
+    <div class="popup-overlay" id="viewTaskPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>Task Details</h3>
+                <button class="close-popup" id="closeViewTask">&times;</button>
+            </div>
+            <div class="task-details" id="taskDetails">
+                <!-- Task details will be loaded via JS -->
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="closeViewTaskBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Task Popup -->
+    <div class="popup-overlay" id="editTaskPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>Edit Task</h3>
+                <button class="close-popup" id="closeEditTask">&times;</button>
+            </div>
+            <form class="task-form" id="editTaskForm">
+                <input type="hidden" id="editTaskId">
+                <div class="form-group">
+                    <label for="editTaskTitle">Title</label>
+                    <input type="text" id="editTaskTitle" placeholder="Enter task title" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTaskDescription">Description</label>
+                    <textarea id="editTaskDescription" placeholder="Enter task description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Sub-Tasks</label>
+                    <div class="subtasks-container" id="editSubtasksContainer">
+                        <!-- Subtasks will be added here -->
+                    </div>
+                    <button type="button" class="add-subtask" id="addEditSubtask">
+                        <i class="fas fa-plus"></i> Add Sub-Task
+                    </button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editTaskDueDate">Due Date</label>
+                        <input type="text" id="editTaskDueDate" placeholder="Select due date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTaskPriority">Priority</label>
+                        <select id="editTaskPriority" required>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editTaskCategory">Category</label>
+                        <select id="editTaskCategory" required>
+                            <!-- Categories will be loaded via JS -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTaskNotes">Notes</label>
+                        <input type="text" id="editTaskNotes" placeholder="Any additional notes">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editTaskStatus">Status</label>
+                        <select id="editTaskStatus">
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelEditTask">Cancel</button>
+                    <button type="submit" class="btn btn-success">Update Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Users Popup -->
+    <div class="popup-overlay" id="usersPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>All Users</h3>
+                <button class="close-popup" id="closeUsers">&times;</button>
+            </div>
+            <div class="users-grid" id="usersGrid">
+                <!-- Users will be loaded via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Popup -->
+    <div class="popup-overlay" id="profilePopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>My Profile</h3>
+                <button class="close-popup" id="closeProfile">&times;</button>
+            </div>
+            <div class="profile-view" id="profileView">
+                <!-- Profile will be loaded via JS -->
+            </div>
+            <div class="profile-actions">
+                <button type="button" class="btn btn-secondary" id="closeProfileBtn">Close</button>
+                <button type="button" class="btn btn-primary" id="editProfileBtn">Edit Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Popup -->
+    <div class="popup-overlay" id="editProfilePopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>Edit Profile</h3>
+                <button class="close-popup" id="closeEditProfile">&times;</button>
+            </div>
+            <form class="profile-form" id="editProfileForm">
+                <div class="avatar-upload">
+                    <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Profile" class="avatar-preview" id="avatarPreview">
+                    <div class="upload-btn">
+                        <button type="button" class="btn btn-primary">Change Photo</button>
+                        <input type="file" id="profilePhoto" accept="image/*">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editFirstName">First Name</label>
+                        <input type="text" id="editFirstName" placeholder="Enter your first name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editLastName">Last Name</label>
+                        <input type="text" id="editLastName" placeholder="Enter your last name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="editEmail">Email</label>
+                    <input type="email" id="editEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="editPhone">Phone</label>
+                    <input type="tel" id="editPhone" placeholder="Enter your phone number">
+                </div>
+                <div class="form-group">
+                    <label for="editNationality">Nationality</label>
+                    <select id="editNationality" required>
+                        <!-- Countries will be loaded via JS -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editRole">Role</label>
+                    <select id="editRole" required>
+                        <option value="Manager">Manager</option>
+                        <option value="Staff">Staff</option>
+                        <option value="Customer">Customer</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelEditProfile">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Export Popup -->
+    <div class="popup-overlay" id="exportPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>Export Tasks</h3>
+                <button class="close-popup" id="closeExport">&times;</button>
+            </div>
+            <div class="export-options">
+                <div class="export-option" id="exportPDF">
+                    <i class="fas fa-file-pdf option-icon"></i>
+                    <span class="option-label">PDF</span>
+                </div>
+                <div class="export-option" id="exportDOCX">
+                    <i class="fas fa-file-word option-icon"></i>
+                    <span class="option-label">DOCX</span>
+                </div>
+                <div class="export-option" id="exportJSON">
+                    <i class="fas fa-file-code option-icon"></i>
+                    <span class="option-label">JSON</span>
+                </div>
+                <div class="export-option" id="exportExcel">
+                    <i class="fas fa-file-excel option-icon"></i>
+                    <span class="option-label">Excel</span>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelExport">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Popup -->
+    <div class="popup-overlay" id="importPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>Import Tasks</h3>
+                <button class="close-popup" id="closeImport">&times;</button>
+            </div>
+            <div class="import-options">
+                <div class="import-option" id="importJSON">
+                    <i class="fas fa-file-code option-icon"></i>
+                    <span class="option-label">JSON File</span>
+                </div>
+                <div class="import-option" id="importURL">
+                    <i class="fas fa-link option-icon"></i>
+                    <span class="option-label">From URL</span>
+                </div>
+            </div>
+            <div id="jsonImportSection">
+                <div class="import-file" id="jsonFileDrop">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 30px; margin-bottom: 10px;"></i>
+                    <p>Drag & Drop JSON file here or click to browse</p>
+                    <input type="file" id="jsonFileInput" accept=".json" style="display: none;">
+                </div>
+            </div>
+            <div id="urlImportSection" style="display: none;">
+                <div class="form-group">
+                    <label for="importURLInput">URL</label>
+                    <input type="text" id="importURLInput" placeholder="Enter URL to import tasks from">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelImportBtn">Cancel</button>
+                <button type="button" class="btn btn-success" id="confirmImport">Import</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Popup -->
+    <div class="popup-overlay" id="categoriesPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>Manage Categories</h3>
+                <button class="close-popup" id="closeCategories">&times;</button>
+            </div>
+            <div class="categories-list" id="categoriesList">
+                <!-- Categories will be loaded via JS -->
+            </div>
+            <div class="add-category">
+                <input type="color" class="category-color-picker" id="categoryColor" value="#00008B">
+                <input type="text" class="category-input" id="newCategoryName" placeholder="Enter new category name">
+                <button class="add-category-btn" id="addCategoryBtn">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelCategories">Cancel</button>
+                <button type="button" class="btn btn-success" id="saveCategories">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications Popup -->
+    <div class="notifications-popup" id="notificationsPopup">
+        <div class="notifications-header">
+            <h3 class="notifications-title">Notifications</h3>
+            <button class="close-notifications" id="closeNotifications">&times;</button>
+        </div>
+        <div class="notification-item unread">
+            <div class="notification-title">
+                <span>New Task Assigned</span>
+                <span class="notification-time">2 min ago</span>
+            </div>
+            <div class="notification-message">You have been assigned a new task: "Complete project report"</div>
+        </div>
+        <div class="notification-item unread">
+            <div class="notification-title">
+                <span>Task Due Soon</span>
+                <span class="notification-time">1 hour ago</span>
+            </div>
+            <div class="notification-message">Task "Review design mockups" is due in 24 hours</div>
+        </div>
+        <div class="notification-item">
+            <div class="notification-title">
+                <span>Task Completed</span>
+                <span class="notification-time">5 hours ago</span>
+            </div>
+            <div class="notification-message">You completed task "Update documentation"</div>
+        </div>
+        <button class="mark-all-read" id="markAllRead">Mark All as Read</button>
+    </div>
+
+    <!-- Batch Actions Bar -->
+    <div class="batch-actions" id="batchActions">
+        <div class="batch-count"><span id="selectedCount">0</span> tasks selected</div>
+        <button class="btn btn-danger" id="batchDelete"><i class="fas fa-trash"></i> Delete</button>
+        <button class="btn btn-success" id="batchComplete"><i class="fas fa-check"></i> Mark Complete</button>
+        <button class="btn btn-secondary" id="clearSelection"><i class="fas fa-times"></i> Clear</button>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer">
+        <!-- Toasts will be added here via JS -->
+    </div>
+
+    <!-- CDN Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.min.js"></script>
+
+    <!-- Main Script -->
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Global variables
+            let currentUser = null;
+            let tasks = [];
+            let users = [];
+            let categories = ['Work', 'Personal', 'Study', 'Health', 'Finance'];
+            let notifications = [
+                { id: 1, title: 'New Task Assigned', message: 'You have been assigned a new task: "Complete project report"', time: '2 min ago', read: false },
+                { id: 2, title: 'Task Due Soon', message: 'Task "Review design mockups" is due in 24 hours', time: '1 hour ago', read: false },
+                { id: 3, title: 'Task Completed', message: 'You completed task "Update documentation"', time: '5 hours ago', read: true }
+            ];
+            let taskHistory = [];
+            let historyPointer = -1;
+            let timerInterval = null;
+            let timerSeconds = 0;
+            let isDarkMode = true;
+
+            // DOM Elements
+            const loginPage = document.getElementById('loginPage');
+            const dashboard = document.getElementById('dashboard');
+            const loginBtn = document.getElementById('loginBtn');
+            const registerLink = document.getElementById('registerLink');
+            const registrationPopup = document.getElementById('registrationPopup');
+            const closeRegistration = document.getElementById('closeRegistration');
+            const cancelRegistration = document.getElementById('cancelRegistration');
+            const registrationForm = document.getElementById('registrationForm');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const profilePic = document.getElementById('profilePic');
+            const profileDropdown = document.getElementById('profileDropdown');
+            const viewProfile = document.getElementById('viewProfile');
+            const switchMode = document.getElementById('switchMode');
+            const modeToggle = document.getElementById('modeToggle');
+            const usersBtn = document.getElementById('usersBtn');
+            const usersPopup = document.getElementById('usersPopup');
+            const closeUsers = document.getElementById('closeUsers');
+            const usersGrid = document.getElementById('usersGrid');
+            const profilePopup = document.getElementById('profilePopup');
+            const closeProfile = document.getElementById('closeProfile');
+            const closeProfileBtn = document.getElementById('closeProfileBtn');
+            const editProfileBtn = document.getElementById('editProfileBtn');
+            const profileView = document.getElementById('profileView');
+            const editProfilePopup = document.getElementById('editProfilePopup');
+            const closeEditProfile = document.getElementById('closeEditProfile');
+            const cancelEditProfile = document.getElementById('cancelEditProfile');
+            const editProfileForm = document.getElementById('editProfileForm');
+            const avatarPreview = document.getElementById('avatarPreview');
+            const profilePhoto = document.getElementById('profilePhoto');
+            const taskTimer = document.getElementById('taskTimer');
+            const playTimer = document.getElementById('playTimer');
+            const pauseTimer = document.getElementById('pauseTimer');
+            const totalTasks = document.getElementById('totalTasks');
+            const completedTasks = document.getElementById('completedTasks');
+            const pendingTasks = document.getElementById('pendingTasks');
+            const addTaskBtn = document.getElementById('addTaskBtn');
+            const addTaskPopup = document.getElementById('addTaskPopup');
+            const closeAddTask = document.getElementById('closeAddTask');
+            const cancelTask = document.getElementById('cancelTask');
+            const taskForm = document.getElementById('taskForm');
+            const subtasksContainer = document.getElementById('subtasksContainer');
+            const addSubtask = document.getElementById('addSubtask');
+            const taskList = document.getElementById('taskList');
+            const viewTaskPopup = document.getElementById('viewTaskPopup');
+            const closeViewTask = document.getElementById('closeViewTask');
+            const closeViewTaskBtn = document.getElementById('closeViewTaskBtn');
+            const taskDetails = document.getElementById('taskDetails');
+            const editTaskPopup = document.getElementById('editTaskPopup');
+            const closeEditTask = document.getElementById('closeEditTask');
+            const cancelEditTask = document.getElementById('cancelEditTask');
+            const editTaskForm = document.getElementById('editTaskForm');
+            const editSubtasksContainer = document.getElementById('editSubtasksContainer');
+            const addEditSubtask = document.getElementById('addEditSubtask');
+            const statusFilter = document.getElementById('statusFilter');
+            const categoryFilter = document.getElementById('categoryFilter');
+            const priorityFilter = document.getElementById('priorityFilter');
+            const dueDateFilter = document.getElementById('dueDateFilter');
+            const customDateRange = document.getElementById('customDateRange');
+            const dateRangePicker = document.getElementById('dateRangePicker');
+            const taskSearch = document.getElementById('taskSearch');
+            const exportBtn = document.getElementById('exportBtn');
+            const exportPopup = document.getElementById('exportPopup');
+            const closeExport = document.getElementById('closeExport');
+            const cancelExport = document.getElementById('cancelExport');
+            const exportPDF = document.getElementById('exportPDF');
+            const exportDOCX = document.getElementById('exportDOCX');
+            const exportJSON = document.getElementById('exportJSON');
+            const exportExcel = document.getElementById('exportExcel');
+            const importBtn = document.getElementById('importBtn');
+            const importPopup = document.getElementById('importPopup');
+            const closeImport = document.getElementById('closeImport');
+            const cancelImportBtn = document.getElementById('cancelImportBtn');
+            const importJSON = document.getElementById('importJSON');
+            const importURL = document.getElementById('importURL');
+            const jsonImportSection = document.getElementById('jsonImportSection');
+            const urlImportSection = document.getElementById('urlImportSection');
+            const jsonFileDrop = document.getElementById('jsonFileDrop');
+            const jsonFileInput = document.getElementById('jsonFileInput');
+            const importURLInput = document.getElementById('importURLInput');
+            const confirmImport = document.getElementById('confirmImport');
+            const manageCategoriesBtn = document.getElementById('manageCategoriesBtn');
+            const categoriesPopup = document.getElementById('categoriesPopup');
+            const closeCategories = document.getElementById('closeCategories');
+            const cancelCategories = document.getElementById('cancelCategories');
+            const saveCategories = document.getElementById('saveCategories');
+            const categoriesList = document.getElementById('categoriesList');
+            const newCategoryName = document.getElementById('newCategoryName');
+            const categoryColor = document.getElementById('categoryColor');
+            const addCategoryBtn = document.getElementById('addCategoryBtn');
+            const listViewBtn = document.getElementById('listViewBtn');
+            const graphViewBtn = document.getElementById('graphViewBtn');
+            const graphView = document.getElementById('graphView');
+            const tasksChartCtx = document.getElementById('tasksChart').getContext('2d');
+            const pieChartCtx = document.getElementById('pieChart').getContext('2d');
+            let tasksChart, pieChart;
+            const batchActions = document.getElementById('batchActions');
+            const selectedCount = document.getElementById('selectedCount');
+            const batchDelete = document.getElementById('batchDelete');
+            const batchComplete = document.getElementById('batchComplete');
+            const clearSelection = document.getElementById('clearSelection');
+            const productivityRate = document.getElementById('productivityRate');
+            const avgCompletionTime = document.getElementById('avgCompletionTime');
+            const overdueTasks = document.getElementById('overdueTasks');
+            const activeUsers = document.getElementById('activeUsers');
+            const notificationsBtn = document.getElementById('notificationsBtn');
+            const notificationsPopup = document.getElementById('notificationsPopup');
+            const closeNotifications = document.getElementById('closeNotifications');
+            const markAllRead = document.getElementById('markAllRead');
+            const toastContainer = document.getElementById('toastContainer');
+            const notificationsBadge = document.querySelector('.notifications-badge');
+
+            // Initialize date pickers
+            flatpickr("#birthdate", {
+                dateFormat: "Y-m-d",
+                maxDate: "today"
+            });
+
+            flatpickr("#taskDueDate", {
+                dateFormat: "Y-m-d",
+                minDate: "today"
+            });
+
+            flatpickr("#editTaskDueDate", {
+                dateFormat: "Y-m-d"
+            });
+
+            flatpickr("#dateRangePicker", {
+                mode: "range",
+                dateFormat: "Y-m-d"
+            });
+
+            // Load countries for registration form
+            fetch('https://restcountries.com/v3.1/all')
+                .then(response => response.json())
+                .then(data => {
+                    const nationalitySelect = document.getElementById('nationality');
+                    const editNationalitySelect = document.getElementById('editNationality');
+                    
+                    // Sort countries alphabetically
+                    data.sort((a, b) => a.name.common.localeCompare(b.name.common));
+                    
+                    data.forEach(country => {
+                        const option = document.createElement('option');
+                        option.value = country.name.common;
+                        option.textContent = country.name.common;
+                        nationalitySelect.appendChild(option);
+                        
+                        const editOption = option.cloneNode(true);
+                        editNationalitySelect.appendChild(editOption);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading countries:', error);
+                    showToast('Failed to load countries list', 'error');
+                });
+
+            // Load random users
+            function loadRandomUsers() {
+                fetch('https://randomuser.me/api/?results=10')
+                    .then(response => response.json())
+                    .then(data => {
+                        usersGrid.innerHTML = '';
+                        data.results.forEach(user => {
+                            const roles = ['Manager', 'Staff', 'Customer', 'Admin'];
+                            const randomRole = roles[Math.floor(Math.random() * roles.length)];
+                            
+                            const userCard = document.createElement('div');
+                            userCard.className = 'user-card';
+                            userCard.innerHTML = `
+                                <div class="user-header">
+                                    <img src="${user.picture.large}" alt="${user.name.first}" class="user-avatar">
+                                    <div>
+                                        <div class="user-name">${user.name.first} ${user.name.last}</div>
+                                        <div class="user-email">${user.email}</div>
+                                    </div>
+                                </div>
+                                <div class="user-details">
+                                    <div class="user-detail">
+                                        <div class="detail-label">Role</div>
+                                        <div class="detail-value">${randomRole}</div>
+                                    </div>
+                                    <div class="user-detail">
+                                        <div class="detail-label">Phone</div>
+                                        <div class="detail-value">${user.phone}</div>
+                                    </div>
+                                    <div class="user-detail">
+                                        <div class="detail-label">Country</div>
+                                        <div class="detail-value">${user.location.country}</div>
+                                    </div>
+                                    <div class="user-detail">
+                                        <div class="detail-label">Joined</div>
+                                        <div class="detail-value">${new Date(user.registered.date).toLocaleDateString()}</div>
+                                    </div>
+                                </div>
+                            `;
+                            usersGrid.appendChild(userCard);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error loading random users:', error);
+                        showToast('Failed to load users', 'error');
+                    });
+            }
+
+            // Load data from local storage
+            function loadFromLocalStorage() {
+                const storedUsers = localStorage.getItem('todoUsers');
+                if (storedUsers) {
+                    users = JSON.parse(storedUsers);
+                }
+                
+                const storedTasks = localStorage.getItem('todoTasks');
+                if (storedTasks) {
+                    tasks = JSON.parse(storedTasks);
+                    updateTaskCounters();
+                    renderTaskList();
+                    updateCharts();
+                    updateInsights();
+                }
+                
+                const storedCategories = localStorage.getItem('todoCategories');
+                if (storedCategories) {
+                    categories = JSON.parse(storedCategories);
+                    updateCategoryFilters();
+                }
+                
+                const storedUser = localStorage.getItem('currentUser');
+                if (storedUser) {
+                    currentUser = JSON.parse(storedUser);
+                    showDashboard();
+                }
+                
+                const storedMode = localStorage.getItem('darkMode');
+                if (storedMode !== null) {
+                    isDarkMode = storedMode === 'true';
+                    document.body.classList.toggle('light-mode', !isDarkMode);
+                    modeToggle.checked = !isDarkMode;
+                }
+            }
+
+            // Save data to local storage
+            function saveToLocalStorage() {
+                localStorage.setItem('todoUsers', JSON.stringify(users));
+                localStorage.setItem('todoTasks', JSON.stringify(tasks));
+                localStorage.setItem('todoCategories', JSON.stringify(categories));
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                localStorage.setItem('darkMode', isDarkMode);
+            }
+
+            // Show dashboard
+            function showDashboard() {
+                loginPage.style.display = 'none';
+                dashboard.style.display = 'block';
+                setTimeout(() => {
+                    dashboard.classList.add('active');
+                }, 10);
+                
+                // Load profile picture
+                if (current
